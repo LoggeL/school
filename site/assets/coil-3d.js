@@ -64,15 +64,15 @@ try {
     host.querySelector('canvas').setAttribute('aria-label',document.getElementById('model-description').textContent+' Mit Pfeiltasten oder Ziehen drehen.');
   }
   addEventListener('coilchange',event=>update(event.detail)); update(state);
-  let yaw=.2,pitch=.28,drag=null;
-  function orient(){camera.position.set(10*Math.sin(yaw)*Math.cos(pitch),10*Math.sin(pitch),10*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(0,0,0);}
+  let yaw=.2,pitch=.28,drag=null,cameraDistance=10;
+  function orient(){camera.position.set(cameraDistance*Math.sin(yaw)*Math.cos(pitch),cameraDistance*Math.sin(pitch),cameraDistance*Math.cos(yaw)*Math.cos(pitch));camera.lookAt(0,0,0);}
   orient();
   const canvas=renderer.domElement;
   canvas.addEventListener('pointerdown',event=>{drag={x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);});
   canvas.addEventListener('pointermove',event=>{if(!drag)return;yaw-=(event.clientX-drag.x)*.008;pitch=Math.max(-1.1,Math.min(1.1,pitch+(event.clientY-drag.y)*.006));drag={x:event.clientX,y:event.clientY};orient();});
   for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,()=>{drag=null;});
   canvas.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home'].includes(event.key))return;event.preventDefault();if(event.key==='ArrowLeft')yaw-=.12;if(event.key==='ArrowRight')yaw+=.12;if(event.key==='ArrowUp')pitch=Math.min(1.1,pitch+.12);if(event.key==='ArrowDown')pitch=Math.max(-1.1,pitch-.12);if(event.key==='Home'){yaw=.2;pitch=.28;}orient();});
-  function resize(){if(host.hidden)return;const {width,height}=host.getBoundingClientRect();if(width&&height){renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();}}
+  function resize(){if(host.hidden)return;const {width,height}=host.getBoundingClientRect();if(width&&height){renderer.setSize(width,height,false);camera.aspect=width/height;cameraDistance=Math.max(10,4.7/(Math.tan(Math.PI/10)*camera.aspect));orient();camera.updateProjectionMatrix();}}
   new ResizeObserver(resize).observe(host);addEventListener('coilresize',resize);
   let visible=true;new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;}).observe(host);
   let last=0,phase=0;
