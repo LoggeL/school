@@ -1,0 +1,25 @@
+{
+  "assets": [
+    {
+      "name": "math-studio-v2",
+      "prompt": "Use case: stylized-concept\nAsset type: landscape 3:2 subject-cover illustration for a premium German school learning website.\nScene/backdrop: warm ivory seamless studio surface with softly layered ivory graph paper and very subtle grid, quiet cream background.\nSubject: a single elegant smooth U-shaped parabolic curve sculpted from thick matte lavender wire, standing upright above a light coordinate grid base. A thin straight horizontal coordinate line intersects the curve at exactly two symmetric points, marked with two small copper beads. The bottom vertex lies below that horizontal line. Keep the mathematics visually coherent; the decorative still life does not need numbers.\nStyle/medium: refined tactile 3D editorial schoolbook art, realistic paper fibers and ceramic-coated wire, art-directed studio still life, rich but restrained materials. Beautiful soft natural side light and subtle contact shadows.\nComposition: centered clean geometric object, slightly elevated oblique camera, ample negative space, generous framing for web card crop. Restrained muted lavender, warm ivory, copper accents.\nConstraints: no text, no numerals, no equations, no logos, no watermark, no extra graphs, no flat vector or icon aesthetic, no glossy toy plastic. One single beautiful composition.",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/math-studio-v2.png",
+      "source": "/Users/logge/.codex/generated_images/01a163d9-a62f-77b3-82c5-d9624fb0b217/exec-1ae4b48f-6f1b-4a8c-9e41-77e6d0d056cf.png"
+    },
+    {
+      "name": "deutsch-story-v2",
+      "prompt": "Use case: illustration-story\nAsset type: landscape 3:2 subject-cover illustration for a premium German school learning website, topic picture description and careful observation.\nScene/backdrop: warm ivory seamless studio surface and soft cream background.\nSubject: an open thick ivory book with a beautifully detailed miniature paper landscape rising delicately from its pages: softly layered sage-green hills, two small textured paper trees, a tiny warm ochre house, a winding cream path and a pale warm sun. A gentle rectangular paper picture-frame shape behind the scene emphasizes observing a picture. No people. Book pages have subtle paper fibers and a few faint blank guide lines, no writing.\nStyle/medium: premium handcrafted paper diorama photographed with real depth and soft natural studio light, tactile material detail, quietly magical editorial schoolbook illustration. Calm restrained sage, copper-ochre and ivory palette, tiny lavender accent.\nComposition: centered three-quarter oblique view, all objects fully contained, elegant generous breathing room and soft contact shadows, useful web-card landscape crop.\nConstraints: no text, letters, numerals, logos or watermark. No flat vector icon aesthetic, no garish saturation, no unrelated props. Beautiful realistic paper craftsmanship.",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/deutsch-story-v2.png",
+      "source": "/Users/logge/.codex/generated_images/01a163d9-a62f-77b3-82c5-d9624fb0b217/exec-8483a6df-e889-4d0c-84d5-8bd8d77ed367.png"
+    },
+    {
+      "name": "teaching-plan-v2",
+      "prompt": "Use case: stylized-concept\nAsset type: landscape 3:2 editorial cover illustration for a German school tutoring lesson-plan page.\nScene/backdrop: warm ivory desktop and seamless cream background.\nSubject: a carefully composed blank open lined notebook with subtly textured paper, one elegant wooden pencil in muted sage green laid diagonally beside it, small warm ochre and lavender paper page tabs, and a small matte ivory analog desk clock. Clock face has simple thin hour tick marks and two conventional hands showing ten past ten, no numerals and no extra hands. No written text anywhere.\nStyle/medium: premium tactile 3D editorial schoolbook still life, realistic paper fibers, softly rounded ceramic clock case and natural wood pencil texture, soft natural light, restrained sage/copper/lavender accents on warm ivory.\nComposition: slightly elevated oblique overhead view, centered balanced objects with generous negative space around them, polished product-photo quality but warm and human, subtle contact shadows.\nConstraints: no text, no logos, no watermark, no hands or people, no flat vector/icon aesthetic, no garish color or shiny plastic. No illegible pseudo-writing.",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/teaching-plan-v2.png",
+      "source": "/Users/logge/.codex/generated_images/01a163d9-a62f-77b3-82c5-d9624fb0b217/exec-dd309228-5f68-4553-ac75-bda5f052c660.png"
+    }
+  ]
+}

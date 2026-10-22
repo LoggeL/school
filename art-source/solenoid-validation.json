@@ -1,0 +1,10 @@
+{
+  "file": "site/assets/models/solenoid-v2.glb",
+  "bytes": 568272,
+  "meshes": 30,
+  "triangles": 26892,
+  "animations": [
+    "InsertCore"
+  ],
+  "verified": "finite mesh bounds, expected mesh and animation names; rendered in Blender 5.2.1"
+}

@@ -1,12 +1,12 @@
-const buttons = [...document.querySelectorAll('.filter')];
-const cards = [...document.querySelectorAll('.card')];
-function filter(subject) {
-  if (!buttons.some(button => button.dataset.filter === subject)) subject = 'alle';
-  buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === subject)));
-  cards.forEach(card => { card.hidden = subject !== 'alle' && !card.dataset.subject.split(' ').includes(subject); });
-  const count = cards.filter(card => !card.hidden).length;
-  document.querySelector('#result-count').textContent = `${count} ${count === 1 ? 'Lerneinheit' : 'Lerneinheiten'}`;
+// The catalogue is grouped by subject in the HTML and works without JavaScript.
+// The active subject follows the URL hash; overview hashes clear the selection.
+const links = [...document.querySelectorAll('.subject-jump')];
+function markSubject(id) {
+  links.forEach(link => {
+    if (link.hash === `#${id}`) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
 }
-buttons.forEach(button => button.addEventListener('click', () => { filter(button.dataset.filter); history.replaceState(null, '', button.dataset.filter === 'alle' ? '#faecher' : `#${button.dataset.filter}`); }));
-filter(location.hash.slice(1));
-addEventListener('hashchange', () => filter(location.hash.slice(1)));
+links.forEach(link => link.addEventListener('click', () => markSubject(link.hash.slice(1))));
+markSubject(location.hash.slice(1));
+addEventListener('hashchange', () => markSubject(location.hash.slice(1)));

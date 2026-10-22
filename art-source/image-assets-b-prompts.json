@@ -1,0 +1,18 @@
+{
+  "mode": "built-in image_gen",
+  "generatedAt": "2026-10-22",
+  "assets": [
+    {
+      "file": "movement-studio-v2.png",
+      "prompt": "Use case: stylized-concept\nAsset type: landscape 3:2 website subject cover for movement education, matching a premium tactile editorial schoolbook.\nPrimary request: A beautifully staged miniature arrangement of physical education learning materials: a low wooden balance beam on two block supports, three rounded wooden stepping stones, one soft sage-green textured ball and two thin tasteful exercise hoops, on a warm ivory studio surface.\nStyle/medium: refined miniature 3D still-life illustration with realistic wood grain, tactile paper-like matte finishes, subtly rounded edges and soft contact shadows; sophisticated educational editorial photography, not a flat icon.\nComposition/framing: landscape 3:2, slight elevated three-quarter view, unified centered arrangement occupying the middle two thirds with generous breathing room and all objects fully visible. Simple calm composition readable at small card size.\nLighting/mood: large soft daylight from upper left, warm approachable learning atmosphere, believable gentle shadows and material detail.\nColor palette: warm ivory, natural pale wood, muted sage, restrained copper accent, desaturated teal.\nConstraints: no people, no text, no letters, no numbers, no logos, no watermark, no border. Avoid stock clipart, SVG flatness, glossy plastic toy look, busy gym backgrounds, scattered extra props.",
+      "path": "site/assets/images/movement-studio-v2.png",
+      "source": "/Users/logge/.codex/generated_images/01a163d9-e1fc-7923-a544-8ea9dc868170/exec-c1d9fb4f-f0b7-45d6-8c66-9e292315789a.png"
+    },
+    {
+      "file": "chemistry-lab-v2.png",
+      "prompt": "Use case: scientific-educational\nAsset type: landscape 3:2 website subject cover for chemistry and distillation, matching a premium tactile editorial schoolbook.\nPrimary request: An elegant miniature fractional distillation laboratory apparatus on a warm ivory studio surface. One clear glass round-bottom flask containing a little pale amber liquid sits in a simple sage electric heating mantle (no flame), connected vertically to a glass fractionating column with visible packing. A plausible distillation head connects to a downward-sloping glass condenser and a small receiving flask. Two minimal muted brass support stands hold the apparatus securely.\nStyle/medium: refined 3D editorial still life, convincing delicate borosilicate glass with restrained reflections, subtle material textures, soft rounded edges on the matte heating mantle. Beautiful classroom illustration with physical depth, not a flat icon or operational technical diagram.\nComposition/framing: landscape 3:2, three-quarter elevated view, centered complete arrangement occupying the middle two thirds, ample ivory negative space, all apparatus fully visible. Clear connections and simple readable silhouette at card size.\nLighting/mood: large soft daylight upper left, calm warm studio shadows, no dark background.\nColor palette: warm ivory, transparent glass, muted sage and brass/copper, tiny amber liquid accent.\nConstraints: no text, letters, numerals, logos, watermark or border. No flame or burner, no fantasy glowing particles, no floating apparatus, no impossible intersecting glass tubes, no dense laboratory clutter. This is a tasteful educational cover, not a detailed setup instruction.",
+      "path": "site/assets/images/chemistry-lab-v2.png",
+      "source": "/Users/logge/.codex/generated_images/01a163d9-e1fc-7923-a544-8ea9dc868170/exec-fdeb6b89-5c9f-4ddf-a3cb-0adc9221fb99.png"
+    }
+  ]
+}

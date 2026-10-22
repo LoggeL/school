@@ -11,12 +11,15 @@
     $('ratio-label').textContent = core ? 'Qualitativer Vergleich' : 'Feld im Vergleich zum Start';
     $('model-description').textContent = current === 0 ? 'Kein Strom: Im Modell verschwindet das Spulenfeld.' : `${turns} Windungen, ${fmt(current)} A: Innen zeigt das Feld nach ${reverse ? 'links' : 'rechts'}, ${reverse ? 'links' : 'rechts'} ist der Nordpol.${core ? ' Der Eisenkern verstärkt das Feld.' : ''}`;
     $('field-lines').style.opacity = current === 0 ? 0 : Math.min(.95, .25 + current * turns / 900);
-    $('field-lines').setAttribute('transform', reverse ? 'translate(400 0) scale(-1 1)' : '');
-    $('svg-core').setAttribute('opacity', core ? '.25' : '0');
+    $('field-lines').setAttribute('transform', reverse ? 'translate(640 0) scale(-1 1)' : '');
+    $('svg-core').setAttribute('opacity', core ? '.7' : '0');
     $('pole-left').textContent = current === 0 ? '' : reverse ? 'N' : 'S';
     $('pole-right').textContent = current === 0 ? '' : reverse ? 'S' : 'N';
-    $('cross-top').querySelectorAll('text').forEach(node => { node.textContent = current === 0 ? '○' : reverse ? '⊗' : '⊙'; });
-    $('cross-bottom').querySelectorAll('text').forEach(node => { node.textContent = current === 0 ? '○' : reverse ? '⊙' : '⊗'; });
+    for (const [row, outwards] of [['cross-top', !reverse], ['cross-bottom', reverse]]) {
+      $(row).querySelectorAll('.current-dot').forEach(node => node.setAttribute('opacity', current > 0 && outwards ? '1' : '0'));
+      $(row).querySelectorAll('.current-cross').forEach(node => node.setAttribute('opacity', current > 0 && !outwards ? '1' : '0'));
+    }
+    $('model').dataset.active = String(current > 0);
     $('cross-section').querySelector('svg').setAttribute('aria-label', $('model-description').textContent);
     window.coilState = {current, turns, core, reverse, paused};
     dispatchEvent(new CustomEvent('coilchange', {detail: window.coilState}));
