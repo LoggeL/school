@@ -1,0 +1,8 @@
+#hausuebung textarea{display:block;width:100%;max-width:100%;min-height:7rem;box-sizing:border-box;resize:vertical;padding:.8rem;margin-top:.5rem;border:1px solid #a8b7a8;border-radius:.6rem;background:var(--paper,#fff);color:inherit;font:inherit;line-height:1.5}
+#hausuebung textarea:focus-visible{outline:3px solid #45775d;outline-offset:2px}
+#hausuebung .worksheet-question label{font-weight:600}
+#hausuebung .worksheet-solutions{margin-top:1.5rem}
+#hausuebung summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+#hausuebung .check-control{min-height:44px}
+#hausuebung h4{font-size:1.1rem;margin-top:0}
+@media print{#hausuebung textarea{background:white;color:black}#hausuebung .panel{break-inside:avoid}#hausuebung .check-control,#hausuebung .progress-label{display:none}}

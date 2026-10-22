@@ -12,7 +12,7 @@ Production serves `site/` directly with nginx. No application server, database, 
 
 ## Content
 
-- Physics: coils and electromagnets, rotatable animated 3D model, cross-section, iron core, Ohm's law, field ratios, electrical power, optional magnetic energy, eight checked exercises and worked solutions.
+- Physics: coils and electromagnets, rotatable animated 3D model, cross-section, iron core, Ohm's law, field ratios, electrical power, optional magnetic energy, eight checked exercises and worked solutions. The grade-nine homework at `#hausuebung` adds five qualitative questions (15 minutes, 10 points), private unsaved answer fields, a separately collapsed rubric, and manual self-assessment. Its content lives in `scripts/physics-worksheet.py`; run `python3 scripts/test-physics-worksheet.py` after rebuilding.
 - Mathematics: quadratic equations and a 90-minute tutoring plan.
 - German: picture description for grade 5, including its worksheets and games.
 - Pedagogy: movement education.
