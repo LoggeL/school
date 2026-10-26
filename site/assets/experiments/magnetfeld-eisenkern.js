@@ -26,9 +26,9 @@ export function createExperiment({ THREE, group, kit }) {
   const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
   // ---------- geometry constants (scene units) ----------
-  const COIL_R = 0.78, COIL_L = 3.6, CORE_R = 0.5, CORE_L = 4.0;
+  const COIL_R = 0.78, COIL_L = 3.6, CORE_R = 0.5, CORE_L = 4.5;
   const BASE_TOP = -1.2;
-  const CORE_OUT_X = -4.05; // centre of the core when pulled out to the left
+  const CORE_OUT_X = -4.3; // centre of the core when pulled out to the left
 
   // ---------- base, supports, bobbin ----------
   kit.roundedBox([9.7, 0.22, 3.4], 0.1, mats.base, [-1.35, BASE_TOP - 0.11, 0]);
@@ -68,7 +68,7 @@ export function createExperiment({ THREE, group, kit }) {
 
   // Conventional current: + terminal -> red lead -> helix (t: 0 -> 1) -> black lead -> − terminal.
   // The helix turns positively about +x, so I > 0 makes the field point to +x inside: north pole on the right.
-  const currentDots = kit.dots(helix, { count: 120, radius: 0.026, color: 0xffcf6e, emissive: 0.9 });
+  const currentDots = kit.dots(kit.helixCurve({ radius: COIL_R + 0.06, length: COIL_L, turns: TURNS }), { count: 120, radius: 0.026, color: 0xffcf6e, emissive: 0.9 });
   const leadDotsIn = kit.dots(new THREE.CatmullRomCurve3(leadIn.userData.curve.points.slice().reverse(), false, 'centripetal'), { count: 8, radius: 0.034, color: 0xffcf6e, emissive: 0.9 });
   const leadDotsOut = kit.dots(leadOut.userData.curve, { count: 8, radius: 0.034, color: 0xffcf6e, emissive: 0.9 });
 
@@ -83,11 +83,11 @@ export function createExperiment({ THREE, group, kit }) {
     cap.rotation.z = Math.PI / 2;
   }
   // wooden cradle that receives the core when it is pulled out
-  for (const x of [-5.4, -2.75]) {
-    const cradle = kit.roundedBox([0.32, 0.5, 0.9], 0.05, mats.wood, [x, BASE_TOP + 0.25, 0]);
-    cradle.scale.y = 1;
-  }
-  const coreLabel = kit.label('Eisenkern', [-CORE_L / 2 + 0.25, CORE_R + 0.38, 0.3], { parent: coreGroup, tone: 'dark', size: 's' });
+  const vShape = new THREE.Shape([[-0.45, 0], [0.45, 0], [0.45, 0.7], [0.25, 0.7], [0, 0.45], [-0.25, 0.7], [-0.45, 0.7]].map(([a, b]) => new THREE.Vector2(a, b)));
+  const vGeom = new THREE.ExtrudeGeometry(vShape, { depth: 0.3, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025, bevelSegments: 2 });
+  vGeom.translate(0, 0, -0.15); vGeom.rotateY(Math.PI / 2);
+  for (const x of [-5.75, -2.85]) kit.mesh(vGeom, mats.wood, [x, BASE_TOP, 0]);
+  const coreLabel = kit.label('Eisenkern', [-CORE_L / 2 + 0.05, -CORE_R - 0.32, 0.45], { parent: coreGroup, tone: 'dark', size: 's' });
 
   // ---------- Weiss domains: instanced arrows inside the core ----------
   const arrowGeom = new THREE.LatheGeometry([
@@ -150,10 +150,12 @@ export function createExperiment({ THREE, group, kit }) {
   const fieldAir = makeField(coilLoops);
   const fieldCore = makeField([...coilLoops, ...coreLoops]);
 
+  // Lines are seeded where they cross the mid-plane OUTSIDE the coil (radius r):
+  // small r gives the tight loops close to the coil, large r the wide outer loops.
   function traceClosed(fieldFn, r) {
     const start = V(0, r, 0);
     const pts = kit.traceField(fieldFn, start, {
-      step: 0.045, maxSteps: 900, bounds: 7.5,
+      step: 0.04, maxSteps: 1100, bounds: 6.5,
       stop: (p, i) => i > 40 && p.distanceTo(start) < 0.07,
     });
     const last = pts[pts.length - 1];
@@ -178,8 +180,8 @@ export function createExperiment({ THREE, group, kit }) {
   }
   const airAngles = [0, Math.PI * 0.5, Math.PI * 0.82, Math.PI * 0.18];
   const coreAngles = [0, Math.PI * 0.5, Math.PI * 0.18, Math.PI * 0.82, Math.PI * 0.34, Math.PI * 0.66];
-  const airLines = buildSet(fieldAir, [0.18, 0.4, 0.62], airAngles, 0x3a9a6c, 0.017);
-  const coreLines = buildSet(fieldCore, [0.08, 0.19, 0.3, 0.42], coreAngles, 0x23855a, 0.019);
+  const airLines = buildSet(fieldAir, [1.12, 1.55, 2.3], airAngles, 0x178a55, 0.02);
+  const coreLines = buildSet(fieldCore, [1.08, 1.32, 1.65, 2.1, 2.8], coreAngles, 0x0f7d4b, 0.022);
 
   // ---------- paper clips at the right pole ----------
   function clipCurve() {
@@ -191,10 +193,12 @@ export function createExperiment({ THREE, group, kit }) {
   const clipMat = kit.mat(0xc9cfd1, 0.95, 0.22);
   const clips = [];
   for (let i = 0; i < 4; i++) {
-    const holder = new THREE.Group(); group.add(holder);
+    const holder = new THREE.Group(); group.add(holder); holder.scale.setScalar(1.45);
     kit.wire(clipCurve(), 0.011, clipMat, holder);
-    const hang = { pos: V(CORE_L / 2 + 0.08 + (i % 2) * 0.012, -CORE_R + 0.06 - 0.3 * i, 0.02 * (i % 2)), rot: new THREE.Euler(0, (i % 2) * Math.PI / 2, 0.06 * (i % 2 ? 1 : -1)) };
-    const rest = { pos: V(2.45 + i * 0.22 + (i % 2) * 0.05, BASE_TOP + 0.03, 0.55 - i * 0.28), rot: new THREE.Euler(-Math.PI / 2, 0, 0.4 + i * 1.1) };
+    // held against the pole face, long axis along the field lines; clip 3 hangs on clip 0
+    const face = [[0.24, 0.22, 0.12], [0.24, -0.18, 0.28], [0.24, -0.3, -0.2], [0.68, 0.16, 0.14]][i];
+    const hang = { pos: V(CORE_L / 2 + face[0], face[1], face[2]), rot: new THREE.Euler(0.35 * (i - 1.5), 0.25 * (i % 2 ? 1 : -1), -Math.PI / 2 + 0.12 * (i - 1.5)) };
+    const rest = { pos: V(2.95 + (i % 2) * 0.32, BASE_TOP + 0.03, 0.75 - i * 0.42), rot: new THREE.Euler(-Math.PI / 2, 0, 0.4 + i * 1.1) };
     clips.push({ holder, hang, rest, threshold: 0.25 + i * 0.12 });
   }
   const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
@@ -203,7 +207,7 @@ export function createExperiment({ THREE, group, kit }) {
   const north = kit.label('N', [2.75, 0.05, 0], { tone: 'n' });
   const south = kit.label('S', [-2.75, 0.05, 0], { tone: 'south' });
   const turnsLabel = kit.label('400 Windungen · ℓ = 20 cm', [0, -COIL_R - 0.15, 1.2], { tone: 'ghost', size: 's' });
-  const currentLabel = kit.label('Strom I', [-0.95, COIL_R + 0.32, 0.45], { tone: 'copper', size: 's' });
+  const currentLabel = kit.label('Strom I', [0.9, COIL_R + 0.28, 0.75], { tone: 'copper', size: 's' });
 
   // ---------- camera-dependent see-through (zoom in to look inside) ----------
   const centre = V(0, 0, 0);
@@ -281,10 +285,10 @@ export function createExperiment({ THREE, group, kit }) {
 
       // field lines: air-coil picture fades into the iron-core picture
       const active = absI > 0.001;
-      const level = 0.35 + 0.65 * absI;
       const speed = active ? sign * (0.18 + 0.32 * absI) : 0;
-      airLines.forEach(l => l.set({ visible: active && (1 - p) > 0.02, strength: (1 - p) * (0.25 + 0.55 * absI), speed }));
-      coreLines.forEach(l => l.set({ visible: active && p > 0.02, strength: p * (0.3 + 0.7 * align) * level, speed: speed * 1.15 }));
+      const dim = 1 - 0.7 * closeness;
+      airLines.forEach(l => l.set({ visible: active && (1 - p) > 0.02, strength: dim * (1 - p) * (0.55 + 0.6 * absI), speed }));
+      coreLines.forEach(l => l.set({ visible: active && p > 0.02, strength: dim * p * (0.7 + 0.9 * absI * (0.4 + 0.6 * align)), speed: speed * 1.15 }));
 
       // current dots in winding and leads
       dotOffset += dt * sign * (0.012 + 0.03 * absI);

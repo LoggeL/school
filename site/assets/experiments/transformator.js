@@ -66,7 +66,7 @@ export function createExperiment({ THREE, group, kit }) {
   const coilBottom = COIL.center - COIL.length / 2, coilTop = COIL.center + COIL.length / 2;
   for (const x of legX) {
     kit.cylinder(0.43, COIL.length + 0.12, mats.plastic, [x, COIL.center, 0], group, 40);
-    for (const y of [coilBottom - 0.07, coilTop + 0.07]) kit.cylinder(0.72, 0.06, mats.plastic, [x, y, 0], group, 48);
+    for (const y of [coilBottom - 0.07, coilTop + 0.07]) kit.cylinder(0.66, 0.06, mats.plastic, [x, y, 0], group, 48);
   }
   const brass = kit.mat(0xc9a35c, 1, 0.3);
   const posts = legX.map(x => [V(x - 0.17, coilTop + 0.2, 0.52), V(x + 0.17, coilTop + 0.2, 0.52)]);
@@ -142,12 +142,12 @@ export function createExperiment({ THREE, group, kit }) {
 
   // ---------- external circuits ----------
   const pA = posts[0][0], pB = posts[0][1], sA = posts[1][0], sB = posts[1][1];
-  const primaryOut = kit.wire([[pA.x, pA.y + 0.04, pA.z], [pA.x - 0.25, pA.y + 0.32, pA.z + 0.25], [-2.6, 1.2, 1.05], [-3.7, 0.25, 0.95], [-3.95, -0.05, 0.6], [sourceTerminals[0].x, -0.24, 0.45]], 0.035, mats.cableRed);
-  const primaryBack = kit.wire([[-3.4, -0.24, 0.45], [-3.25, 0.05, 0.75], [-2.55, 0.85, 1.2], [-1.75, 1.75, 0.95], [pB.x, pB.y + 0.3, pB.z + 0.1], [pB.x, pB.y + 0.04, pB.z]], 0.035, mats.cableBlack);
-  const secondaryOut = kit.wire([[sB.x, sB.y + 0.04, sB.z], [sB.x + 0.25, sB.y + 0.32, sB.z + 0.25], [2.65, 1.1, 1.1], [3.35, -0.35, 1.05], [lampTerminals[1].x, -0.95, lampTerminals[1].z + 0.2], [lampTerminals[1].x, -1.1, lampTerminals[1].z]], 0.035, mats.cableRed);
-  const secondaryBack = kit.wire([[lampTerminals[0].x, -1.1, lampTerminals[0].z], [lampTerminals[0].x - 0.1, -0.9, lampTerminals[0].z + 0.35], [2.55, -0.2, 1.2], [2.05, 1.2, 1.0], [sA.x, sA.y + 0.35, sA.z + 0.15], [sA.x, sA.y + 0.04, sA.z]], 0.035, mats.cableBlack);
+  const primaryOut = kit.wire([[pA.x, pA.y + 0.04, pA.z], [pA.x - 0.2, pA.y + 0.3, pA.z - 0.05], [-2.5, 1.55, 0.35], [-3.55, 0.75, 0.4], [-3.95, 0.05, 0.45], [sourceTerminals[0].x, -0.24, 0.45]], 0.035, mats.cableRed);
+  const primaryBack = kit.wire([[-3.4, -0.24, 0.45], [-3.35, 0.15, 0.6], [-2.7, 1.0, 0.75], [-1.95, 1.85, 0.55], [pB.x, pB.y + 0.32, pB.z], [pB.x, pB.y + 0.04, pB.z]], 0.035, mats.cableBlack);
+  const secondaryOut = kit.wire([[sB.x, sB.y + 0.04, sB.z], [sB.x + 0.2, sB.y + 0.3, sB.z - 0.05], [2.55, 1.55, 0.2], [3.9, 0.55, 0.1], [lampTerminals[1].x + 0.12, -0.85, lampTerminals[1].z - 0.05], [lampTerminals[1].x, -1.1, lampTerminals[1].z]], 0.035, mats.cableRed);
+  const secondaryBack = kit.wire([[lampTerminals[0].x, -1.1, lampTerminals[0].z], [lampTerminals[0].x - 0.15, -0.85, lampTerminals[0].z + 0.25], [2.65, -0.1, 0.75], [2.4, 1.05, 0.7], [1.75, 1.85, 0.55], [sA.x, sA.y + 0.32, sA.z], [sA.x, sA.y + 0.04, sA.z]], 0.035, mats.cableBlack);
   // Current dots: conventional current direction, synchronised with the instantaneous current.
-  const dotOpts = { count: 9, radius: 0.045, color: 0xffd27a, emissive: 0.9 };
+  const dotOpts = { count: 9, radius: 0.042, color: 0xffb547, emissive: 0.45 };
   const primaryDots = [kit.dots(primaryOut.userData.curve, dotOpts), kit.dots(primaryBack.userData.curve, dotOpts)];
   const secondaryDots = [kit.dots(secondaryBack.userData.curve, dotOpts), kit.dots(secondaryOut.userData.curve, dotOpts)];
   // primaryOut runs post→source, so positive current (source + → coil) moves backwards along it.
@@ -173,7 +173,7 @@ export function createExperiment({ THREE, group, kit }) {
   for (const [offset, z] of [[-0.13, depth / 2 + 0.018], [0, depth / 2 + 0.022], [0.13, depth / 2 + 0.018], [0, -depth / 2 - 0.02]]) {
     const points = loop(offset, z);
     const curve = new THREE.CatmullRomCurve3(points, true, 'catmullrom', 0.1);
-    fluxLines.push(kit.flowLine(curve, { color: 0x2f9a68, radius: 0.022, opacity: 0.95, closed: true, repeat: 5, width: 0.35 }));
+    fluxLines.push(kit.flowLine(curve, { color: 0x1f9d63, radius: 0.026, opacity: 1, closed: true, repeat: 5, width: 0.4 }));
   }
   const fluxArrows = [
     { from: [-0.35, (winTop + top) / 2, depth / 2 + 0.03], dir: [1, 0, 0] },
@@ -181,12 +181,12 @@ export function createExperiment({ THREE, group, kit }) {
   ].map(a => ({ ...a, api: kit.arrow({ from: a.from, dir: a.dir, length: 0.7, radius: 0.035, color: 0x1f7a52, emissive: 0.15 }) }));
 
   // ---------- labels ----------
-  const primaryLabel = kit.label('Primärspule N₁ = 400', [legX[0], coilTop + 0.75, 0], { tone: 'copper' });
-  const secondaryLabel = kit.label('Sekundärspule N₂ = 200', [legX[1], coilTop + 0.75, 0], { tone: 'copper' });
-  kit.label('Eisenkern', [0, top + 0.25, 0], { size: 's' });
+  const primaryLabel = kit.label('Primärspule N₁ = 400', [legX[0] - 0.45, coilTop + 0.78, 0], { tone: 'copper' });
+  const secondaryLabel = kit.label('Sekundärspule N₂ = 200', [legX[1] + 0.45, coilTop + 0.78, 0], { tone: 'copper' });
+  kit.label('Eisenkern', [0, top + 0.22, -0.1], { size: 's' });
   const fluxLabel = kit.label('magnetischer Fluss Φ', [0, bottom - 0.02, depth / 2 + 0.35], { tone: 'accent', size: 's' });
   const sourceLabel = kit.label('~ 12 V', [-3.6, -0.78, 0.8], { tone: 'accent' });
-  kit.label('Spannungsquelle', [-3.6, 0.0, 0.25], { size: 's', tone: 'ghost' });
+  kit.label('Spannungsquelle', [-3.6, -1.22, 1.0], { size: 's' });
   const lampLabel = kit.label('Lampe · 20 Ω', [lampX, 0.42, lampZ], { size: 's' });
 
   let built = '', lastTime = 0, labelKey = '';

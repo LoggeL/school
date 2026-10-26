@@ -57,10 +57,10 @@ export function createExperiment({ THREE, group, kit }) {
       const y = hill(x, z);
       pos.setY(i, y);
       const shade = clamp((y - TOP) / 0.45);
-      c.setHSL(0.27 + 0.02 * Math.sin(x * 2.1 + z), 0.26, 0.56 + shade * 0.1 + 0.025 * Math.sin(x * 7.3) * Math.cos(z * 5.1));
+      c.setHSL(0.26 + 0.025 * Math.sin(x * 2.1 + z), 0.3, 0.4 + shade * 0.1 + 0.02 * Math.sin(x * 7.3) * Math.cos(z * 5.1));
       // a small sandy road along the front edge
       const road = Math.abs(z - (1.72 + 0.12 * Math.sin(x * 0.7))) < 0.11;
-      if (road) c.setRGB(0.86, 0.82, 0.71);
+      if (road) c.setRGB(0.78, 0.74, 0.63);
       colors.push(c.r, c.g, c.b);
     }
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -296,8 +296,8 @@ export function createExperiment({ THREE, group, kit }) {
   kit.wire(routePoints(peaks[0], peaks.slice(1, -1), peaks.at(-1), 0.16).filter((_, i) => i % 2 === 0).map(p => [p.x, p.y, p.z]), 0.007, kit.mat(0x9aa3a4, 0.7, 0.4));
 
   // current direction: Hinleiter towards the village, Rückleiter back
-  const currentFront = kit.flowLine(curves.front, { color: 0xffd27a, radius: 0.032, opacity: 0.55, repeat: 16, speed: 0.4, width: 0.35 });
-  const currentBack = kit.flowLine(curves.back, { color: 0xffd27a, radius: 0.032, opacity: 0.55, repeat: 16, speed: -0.4, width: 0.35 });
+  const currentFront = kit.flowLine(curves.front, { color: 0xfff1c4, radius: 0.027, opacity: 0.42, repeat: 16, speed: 0.4, width: 0.3 });
+  const currentBack = kit.flowLine(curves.back, { color: 0xfff1c4, radius: 0.027, opacity: 0.42, repeat: 16, speed: -0.4, width: 0.3 });
 
   // ---------- energy packets travelling between the two conductors ----------
   const energyCurve = new THREE.CatmullRomCurve3(routes.front.map((p, i) => p.clone().lerp(routes.back[i], 0.5).add(V(0, 0.06, 0))), false, 'centripetal');
@@ -343,12 +343,13 @@ export function createExperiment({ THREE, group, kit }) {
   kit.wire([[5.25, hill(5.25, 0) + 0.02, 0], [5.5, hill(5.5, 0.4) + 0.02, 0.4], [5.75, hill(5.75, 0.9) + 0.02, 1.0]], 0.008, kit.mat(0x3d4644, 0, 0.6));
 
   // ---------- labels ----------
-  const plantLabel = kit.label('Kraftwerk · hochtransformieren', [-5.2, 1.25, 0], { tone: 'dark' });
+  const plantLabel = kit.label('Kraftwerk · hochtransformieren', [-4.8, 1.3, 0], { tone: 'dark' });
   const lineLabel = kit.label('Leitung: Hin- und Rückleiter', [0, PYLON_TOP + TOP + 0.95, 0], { tone: 'dark' });
-  const subLabel = kit.label('Umspannwerk · Verbraucher', [5.55, 0.75, 0], { tone: 'dark' });
+  const subLabel = kit.label('Umspannwerk · Verbraucher', [4.75, 0.85, 0], { tone: 'dark' });
+  const arrivalLabel = kit.label('kommt an: 9,90 MW', [5.35, -0.05, 0.9], { tone: 'accent', size: 's' });
   const midFront = curves.front.getPointAt(0.5);
-  const currentLabel = kit.label('I = 100 A', [midFront.x, midFront.y + 0.32, midFront.z + 0.1], { tone: 'accent' });
-  const lossLabel = kit.label('Wärme: 100 kW', [midFront.x + 1.15, midFront.y + 0.45, midFront.z + 0.1], { tone: 'copper', size: 's' });
+  const currentLabel = kit.label('I = 100 A', [midFront.x - 0.75, midFront.y + 0.42, midFront.z + 0.1], { tone: 'accent' });
+  const lossLabel = kit.label('Wärme: 100 kW', [midFront.x + 0.9, midFront.y - 0.32, midFront.z + 0.15], { tone: 'copper', size: 's' });
   const warnLabel = kit.label('', [0, 0.55, 0.9], { tone: 'warn', size: 'l' });
   warnLabel.show(false);
   kit.label('Hinleiter', [-2.2, curves.front.getPointAt(0.3).y - 0.25, ARM_Z + 0.05], { tone: 'ghost', size: 's' });
@@ -432,7 +433,7 @@ export function createExperiment({ THREE, group, kit }) {
       else if (status === 'short') { warnLabel.set('⚠ Grenzfall: Die ganze Leistung wird zu Wärme'); warnLabel.show(true); }
       else warnLabel.show(false);
       plantLabel.set(`Kraftwerk · hochtransformieren auf ${number(values.voltage / 1000, 0)} kV`);
-      subLabel.set(status === 'ok' ? `Umspannwerk · Verbraucher: ${watts(values.received)}` : 'Umspannwerk · Verbraucher: 0 W');
+      arrivalLabel.set(status === 'ok' ? `kommt an: ${watts(values.received)}` : 'kommt an: 0 W');
       lineLabel.set(`Leitung: Hin- und Rückleiter · R = ${number(values.resistance, 0)} Ω`);
 
 

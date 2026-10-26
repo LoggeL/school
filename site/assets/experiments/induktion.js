@@ -27,7 +27,7 @@ export function calculate(state, time) {
 // Scene layout (model units). The coil axis and the magnet axis share y = AXIS_Y.
 const AXIS_Y = 0.35;
 const TABLE_Y = -1.1;
-const MAGNET_HALF = 0.62;      // half length of the bar magnet
+const MAGNET_HALF = 0.8;      // half length of the bar magnet
 const COIL_R = 0.6;            // winding radius
 const COIL_LEN = 1.6;          // winding length
 
@@ -39,10 +39,10 @@ export function createExperiment({THREE, group, kit}) {
   kit.plinth([7.4, 0.2, 2.9], [-0.35, TABLE_Y - 0.1, 0.25]);
   // Rail with two steel rods and end stops; the magnet carriage slides along it.
   for (const z of [-0.16, 0.16]) {
-    const rod = kit.cylinder(0.035, 4.1, mats.steel, [-1.25, TABLE_Y + 0.13, z], group, 20);
+    const rod = kit.cylinder(0.035, 4.1, mats.steel, [-1.45, TABLE_Y + 0.13, z], group, 20);
     rod.rotation.z = Math.PI / 2;
   }
-  for (const x of [-3.3, 0.8]) kit.roundedBox([0.16, 0.26, 0.56], 0.04, mats.plastic, [x, TABLE_Y + 0.13, 0]);
+  for (const x of [-3.5, 0.6]) kit.roundedBox([0.16, 0.26, 0.56], 0.04, mats.plastic, [x, TABLE_Y + 0.13, 0]);
 
   // ---------- magnet on its carriage ----------
   const magnet = new THREE.Group(); group.add(magnet);
@@ -55,10 +55,10 @@ export function createExperiment({THREE, group, kit}) {
   kit.roundedBox([0.5, 0.06, 0.34], 0.025, mats.ceramic, [0, cradleY, 0], carriage);
   // The polarity group flips by 180° when the magnet is turned around ("umpolen").
   const polarity = new THREE.Group(); magnet.add(polarity);
-  kit.roundedBox([MAGNET_HALF - 0.01, 0.4, 0.4], 0.05, mats.magnetN, [MAGNET_HALF / 2, 0, 0], polarity);
-  kit.roundedBox([MAGNET_HALF - 0.01, 0.4, 0.4], 0.05, mats.magnetS, [-MAGNET_HALF / 2, 0, 0], polarity);
-  const north = kit.label('N', [MAGNET_HALF * 0.5, 0.36, 0], {parent: polarity, tone: 'n'});
-  const south = kit.label('S', [-MAGNET_HALF * 0.5, 0.36, 0], {parent: polarity, tone: 'south'});
+  kit.roundedBox([MAGNET_HALF - 0.01, 0.42, 0.42], 0.05, mats.magnetN, [MAGNET_HALF / 2, 0, 0], polarity);
+  kit.roundedBox([MAGNET_HALF - 0.01, 0.42, 0.42], 0.05, mats.magnetS, [-MAGNET_HALF / 2, 0, 0], polarity);
+  const north = kit.label('N', [MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'n'});
+  const south = kit.label('S', [-MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'south'});
 
   // Real dipole field lines (two-pole model), traced once in the magnet frame.
   const field = kit.barMagnetField(V(0, 0, 0), MAGNET_HALF * 0.82, V(1, 0, 0), 1);
@@ -66,27 +66,49 @@ export function createExperiment({THREE, group, kit}) {
   const lines = [];
   const fieldGroup = new THREE.Group(); polarity.add(fieldGroup);
   // Emission angles from the north pole (relative to +x); fewer lines = weaker magnet.
+  // rank decides from which magnet strength on a line is drawn (line density ~ field strength).
+  // Closed loops leave the north pole sideways and return to the south pole. Lines that leave
+  // almost along the axis reach far (through the coil) and are clipped at the edge of the scene;
+  // their mirror images arrive at the south pole.
   const recipe = [
-    {alpha: 62, az: [0, 180], rank: 0},
-    {alpha: 92, az: [90, 270], rank: 0},
-    {alpha: 120, az: [0, 180], rank: 1},
-    {alpha: 44, az: [90, 270], rank: 1},
-    {alpha: 76, az: [45, 135, 225, 315], rank: 2},
-    {alpha: 34, az: [0, 180], rank: 3},
-    {alpha: 140, az: [90, 270], rank: 3},
+    {alpha: 22, az: [0, 180], rank: 0, open: true},
+    {alpha: 110, az: [0, 180], rank: 0},
+    {alpha: 70, az: [0, 180], rank: 1},
+    {alpha: 45, az: [90, 270], rank: 1, open: true},
+    {alpha: 140, az: [90, 270], rank: 1},
+    {alpha: 12, az: [90, 270], rank: 2, open: true},
+    {alpha: 90, az: [90, 270], rank: 2},
+    {alpha: 38, az: [0, 180], rank: 3, open: true},
+    {alpha: 125, az: [0, 180], rank: 3},
   ];
-  for (const {alpha, az, rank} of recipe) {
+  const BOX = {x: 2.75, y: 1.45, z: 1.25};
+  const outOfBox = p => Math.abs(p.x) > BOX.x || Math.abs(p.y) > BOX.y || Math.abs(p.z) > BOX.z;
+  const outsideBar = p => Math.abs(p.x) > MAGNET_HALF + 0.01 || Math.hypot(p.y, p.z) > 0.24;
+  const POLE = MAGNET_HALF * 0.82;
+  const northPole = V(POLE, 0, 0);
+  function addLine(points, rank) {
+    const visible = points.filter(outsideBar);
+    if (visible.length < 6) return;
+    const line = kit.flowLine(visible, {parent: fieldGroup, color: 0x23865a, radius: 0.019, opacity: 1, speed: 0.22});
+    line.rank = rank; lines.push(line);
+  }
+  const reversedField = p => field(p).negate();
+  for (const {alpha, az, rank, open} of recipe) {
     for (const azimuth of az) {
       const a = alpha * Math.PI / 180, b = azimuth * Math.PI / 180;
-      const start = V(MAGNET_HALF * 0.82 + 0.06 * Math.cos(a), 0.06 * Math.sin(a) * Math.cos(b), 0.06 * Math.sin(a) * Math.sin(b));
-      const points = kit.traceField(field, start, {step: 0.03, maxSteps: 900, bounds: 4.2, stop: p => p.distanceTo(southPole) < 0.07});
-      if (points.length < 6 || points.at(-1).distanceTo(southPole) > 0.12) continue; // only closed loops
-      // Hide the part inside the magnet body: start where the line leaves the bar.
-      const outside = points.filter(p => Math.abs(p.x) > MAGNET_HALF + 0.01 || Math.hypot(p.y, p.z) > 0.21);
-      if (outside.length < 6) continue;
-      const line = kit.flowLine(outside, {parent: fieldGroup, color: 0x23865a, radius: 0.019, opacity: 1, speed: 0.22});
-      line.rank = rank;
-      lines.push(line);
+      const offset = V(0.06 * Math.cos(a), 0.06 * Math.sin(a) * Math.cos(b), 0.06 * Math.sin(a) * Math.sin(b));
+      if (!open) {
+        const points = kit.traceField(field, northPole.clone().add(offset), {step: 0.03, maxSteps: 1200, bounds: 9, stop: p => p.distanceTo(southPole) < 0.07 || outOfBox(p)});
+        if (points.at(-1).distanceTo(southPole) > 0.12) continue; // must close inside the scene
+        addLine(points, rank);
+      } else {
+        const out = kit.traceField(field, northPole.clone().add(offset), {step: 0.03, maxSteps: 1200, bounds: 9, stop: outOfBox});
+        addLine(out, rank);
+        // Mirror: the same line arriving at the south pole (traced backwards, then reversed).
+        const mirrored = offset.clone(); mirrored.x *= -1;
+        const back = kit.traceField(reversedField, southPole.clone().add(mirrored), {step: 0.03, maxSteps: 1200, bounds: 9, stop: outOfBox});
+        addLine(back.reverse(), rank);
+      }
     }
   }
 
@@ -115,21 +137,22 @@ export function createExperiment({THREE, group, kit}) {
       coilMesh.push(m);
     }
     const outer = coilMesh[coilMesh.length - 1];
-    current = kit.dots(outer.userData.curve, {count: visibleTurns * 2, radius: 0.034, color: 0xf6c35a, parent: coilHolder, emissive: 0.9});
+    current = kit.dots(outer.userData.curve, {count: visibleTurns * 3 + 1, radius: 0.034, color: 0xf6c35a, parent: coilHolder, emissive: 0.9});
     shownTurns = turns;
   }
-  kit.label('Spule (hohl)', [0.35, COIL_R + 0.3, 0], {parent: coilHolder, tone: 'copper', size: 's'});
-
-  // Flux indicator inside the coil: a disc whose tint shows |Φ|, and arrows.
+  // Flux indicator inside the coil: a disc whose tint shows |Φ|.
   const fluxDisc = new THREE.Mesh(new THREE.CircleGeometry(COIL_R - 0.07, 48), new THREE.MeshBasicMaterial({color: 0x2f8f63, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false}));
   fluxDisc.rotation.y = Math.PI / 2; coilHolder.add(fluxDisc);
-  const fluxRing = new THREE.Mesh(new THREE.TorusGeometry(COIL_R - 0.07, 0.012, 8, 64), new THREE.MeshBasicMaterial({color: 0x2f8f63, transparent: true, opacity: 0.55}));
-  fluxRing.rotation.y = Math.PI / 2; coilHolder.add(fluxRing);
-  const magnetArrow = kit.arrow({from: [0, 0.12, 0], dir: [1, 0, 0], length: 0.6, radius: 0.03, color: 0x2f8f63, parent: coilHolder});
-  const inducedArrow = kit.arrow({from: [0, -0.12, 0], dir: [-1, 0, 0], length: 0.6, radius: 0.03, color: 0xd9822b, parent: coilHolder, emissive: 0.25});
+  // Two explanatory arrows above the coil: the magnet's flux through the coil (green)
+  // and the field of the induced current (orange), which opposes the change (Lenz).
+  const ARROW_Y = COIL_R + 0.42, ARROW_Z = 0.15;
+  const magnetArrow = kit.arrow({from: [0, ARROW_Y + 0.17, ARROW_Z], dir: [1, 0, 0], length: 0.6, radius: 0.028, color: 0x23865a, parent: coilHolder});
+  const inducedArrow = kit.arrow({from: [0, ARROW_Y - 0.05, ARROW_Z], dir: [-1, 0, 0], length: 0.6, radius: 0.028, color: 0xd9822b, parent: coilHolder, emissive: 0.25});
+  const fluxLabel = kit.label('Fluss Φ', [COIL_LEN / 2 + 0.35, ARROW_Y + 0.17, ARROW_Z], {parent: coilHolder, tone: 'ghost', size: 's'});
+  const inducedLabel = kit.label('', [COIL_LEN / 2 + 0.35, ARROW_Y - 0.08, ARROW_Z], {parent: coilHolder, tone: 'warn', size: 's'});
+  fluxLabel.element.style.color = '#23865a';
   // Induced pole at the opening that faces the magnet (Lenz).
-  const inducedPole = kit.label('', [-(COIL_LEN / 2 + 0.12), COIL_R + 0.2, 0], {parent: coilHolder, tone: 'n'});
-  const inducedHint = kit.label('', [-(COIL_LEN / 2 + 0.2), COIL_R + 0.55, 0], {parent: coilHolder, tone: 'warn', size: 's'});
+  const inducedPole = kit.label('', [-(COIL_LEN / 2 + 0.1), COIL_R + 0.2, 0.2], {parent: coilHolder, tone: 'n'});
 
   // ---------- meter and cables ----------
   const meter = kit.meter({position: [1.65, TABLE_Y, 1.25], rotationY: -0.18, size: 1.05, centerZero: true, unit: 'U'});
@@ -175,27 +198,30 @@ export function createExperiment({THREE, group, kit}) {
 
       const fluxMax = FLUX_SCALE * 2 * 0.6;
       const fluxFill = Math.min(1, Math.abs(result.flux) / fluxMax);
-      fluxDisc.material.opacity = 0.05 + 0.4 * fluxFill;
-      magnetArrow.set([Math.sign(result.flux) || 1, 0, 0], 0.15 + 0.9 * fluxFill);
-      magnetArrow.group.position.x = -Math.sign(result.flux) * 0.45 * (0.15 + 0.9 * fluxFill);
+      fluxDisc.material.opacity = 0.06 + 0.45 * fluxFill;
+      const fluxLen = 0.32 + 0.95 * fluxFill, fluxDir = Math.sign(result.flux) || 1;
+      magnetArrow.set([fluxDir, 0, 0], fluxLen);
+      magnetArrow.group.position.x = -fluxDir * fluxLen / 2;
       const induced = Math.min(1, Math.abs(u));
       const inducedDir = -Math.sign(result.fluxRate);
-      inducedArrow.group.visible = induced > 0.06;
-      if (induced > 0.06) {
-        inducedArrow.set([inducedDir, 0, 0], 0.2 + 0.9 * induced);
-        inducedArrow.group.position.x = -inducedDir * 0.45 * (0.2 + 0.9 * induced);
+      const active = induced > 0.06;
+      inducedArrow.group.visible = active;
+      if (active) {
+        const len = 0.32 + 0.95 * induced;
+        inducedArrow.set([inducedDir, 0, 0], len);
+        inducedArrow.group.position.x = -inducedDir * len / 2;
       }
-      // Induced field inside points along inducedDir; it leaves the coil at the end it points to.
-      // So the left opening (facing the magnet) is a north pole when the induced field points to −x.
+      // The induced field leaves the coil at the end it points to: pointing to −x makes
+      // the opening that faces the magnet a north pole.
       const showPole = induced > 0.12;
-      inducedPole.show(showPole); inducedHint.show(showPole);
+      inducedPole.show(showPole);
+      inducedLabel.show(active);
       if (showPole) {
         const pole = inducedDir < 0 ? 'N' : 'S';
         inducedPole.set(pole);
         inducedPole.element.className = `em-label em-label-${pole === 'N' ? 'n' : 'south'} em-label-m`;
-        const approaching = result.velocity > 0;
-        inducedHint.set(approaching ? 'Spule bremst: stößt ab' : 'Spule bremst: zieht zurück');
       }
+      if (active) inducedLabel.set(result.velocity > 0 ? 'Gegenfeld: stößt ab' : 'Gegenfeld: zieht zurück');
 
       const facing = state.reverse ? 'Südpol' : 'Nordpol';
       let note;
