@@ -11,7 +11,8 @@ const number = new Intl.NumberFormat('de-DE', {maximumFractionDigits: 2});
 const pause = document.getElementById('em-pause');
 const step = document.getElementById('em-step');
 let renderer, experiment, elapsed = 0, paused = motion.matches, visible = true;
-let camera, scene, resize, draw, resetView;
+let camera, scene, resize, draw, resetView, showView, kitTick;
+const VERSION = document.querySelector('script[src*="electromagnetism.js"]')?.src.split('v=')[1] || '1';
 
 function readState() {
   return Object.fromEntries([...controls.querySelectorAll('input[name]')].map(input => [input.name, input.type === 'checkbox' ? input.checked : Number(input.value)]));
@@ -79,6 +80,7 @@ function showReadout(result, force = false) {
 function refresh(force = true) {
   if (!experiment) return;
   showReadout(experiment.update(state, elapsed), force);
+  kitTick?.(elapsed);
   draw?.();
 }
 
@@ -89,12 +91,20 @@ controls.addEventListener('input', () => {
   if (previous.speed !== state.speed) elapsed = 0;
   clearGraph(); syncControls(); refresh();
 });
-controls.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => {
-  for (const [key, value] of Object.entries(JSON.parse(button.dataset.preset))) {
-    const input = controls.elements.namedItem(key);
-    if (input) { if (input.type === 'checkbox') input.checked = value; else input.value = value; }
+document.querySelectorAll('[data-preset], [data-view]').forEach(button => button.addEventListener('click', () => {
+  if (button.dataset.preset) {
+    for (const [key, value] of Object.entries(JSON.parse(button.dataset.preset))) {
+      const input = controls.elements.namedItem(key);
+      if (input) { if (input.type === 'checkbox') input.checked = value; else input.value = value; }
+    }
+    state = readState(); elapsed = 0; clearGraph();
   }
-  state = readState(); elapsed = 0; clearGraph(); syncControls(); refresh();
+  if (button.dataset.view) showView?.(button.dataset.view);
+  if (!controls.contains(button)) {
+    if (paused && !motion.matches) paused = false;
+    document.getElementById('experiment')?.scrollIntoView({behavior: motion.matches ? 'auto' : 'smooth', block: 'start'});
+  }
+  syncControls(); refresh();
 }));
 pause.addEventListener('click', () => { paused = !paused; syncControls(); refresh(); });
 step.addEventListener('click', () => { paused = true; elapsed += .1; syncControls(); refresh(); });
@@ -108,108 +118,136 @@ new IntersectionObserver(entries => { visible = entries[0].isIntersecting; }).ob
 
 try {
   if (!topics.has(page.dataset.experiment)) throw new Error('Unknown experiment');
-  const module = await import(`./experiments/${page.dataset.experiment}.js?v=20261026-1`);
+  const [module, {OrbitControls}, {RoomEnvironment}, {CSS2DRenderer}, {createKit}] = await Promise.all([
+    import(`./experiments/${page.dataset.experiment}.js?v=${VERSION}`),
+    import('./vendor/OrbitControls.js'),
+    import('./vendor/RoomEnvironment.js'),
+    import('./vendor/CSS2DRenderer.js'),
+    import(`./em-kit.js?v=${VERSION}`),
+  ]);
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x142b28);
-  scene.fog = new THREE.Fog(0x142b28, 22, 45);
   const group = new THREE.Group(); scene.add(group);
-  experiment = module.createExperiment({THREE, group});
-  camera = new THREE.PerspectiveCamera(38, 1, .1, 70);
-  scene.add(new THREE.HemisphereLight(0xddece7, 0x172a22, 2.8));
-  const key = new THREE.DirectionalLight(0xffe0b4, 4.5);
-  key.position.set(-4, 7, 6); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xb1e8ec, 3);
-  rim.position.set(3, 4, -4); scene.add(rim);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({color: 0x1a3630, roughness: .95}));
-  floor.rotation.x = -Math.PI / 2; floor.position.y = -1.5; scene.add(floor);
-  const grid = new THREE.GridHelper(20, 40, 0x34554c, 0x25473e);
-  grid.position.y = -1.49; scene.add(grid);
+  const kit = createKit(THREE, group);
+  experiment = module.createExperiment({THREE, group, kit});
+  const view = Object.assign({target: [0, 0.2, 0], distance: 12, yaw: 0.35, pitch: 0.38, fov: 34, floor: -1.5, shadowSize: 8}, experiment.camera || {});
+  camera = new THREE.PerspectiveCamera(view.fov, 1, .05, 120);
 
-  let yaw = .30, pitch = .32, distance = 13, zoom = 1;
-  function orient() {
-    const radius = distance * zoom;
-    camera.position.set(radius * Math.sin(yaw) * Math.cos(pitch), .3 + radius * Math.sin(pitch), radius * Math.cos(yaw) * Math.cos(pitch));
-    camera.lookAt(0, .3, 0);
-  }
-  resetView = () => { yaw = .30; pitch = .32; zoom = 1; orient(); };
-  orient();
+  // Soft studio light: environment for reflections, one shadow-casting key light, gentle fill.
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfd9cf, 0.55));
+  const key = new THREE.DirectionalLight(0xfff1de, 2.4);
+  key.position.set(-5, 9, 6); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xdcefff, 0.7);
+  fill.position.set(6, 3, -5); scene.add(fill);
+
+  // Shadow catcher on a cream studio floor that fades into the background.
+  const floorTexture = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d'); const r = g.createRadialGradient(256, 256, 30, 256, 256, 256);
+    r.addColorStop(0, 'rgba(236,240,230,1)'); r.addColorStop(.55, 'rgba(232,237,226,.85)'); r.addColorStop(1, 'rgba(232,237,226,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 512, 512);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  })();
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(view.shadowSize * 2.2, 64), new THREE.MeshBasicMaterial({map: floorTexture, transparent: true, depthWrite: false}));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = view.floor - .002; scene.add(floor);
+  const shadow = new THREE.Mesh(new THREE.CircleGeometry(view.shadowSize * 1.6, 64), new THREE.ShadowMaterial({opacity: .16}));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = view.floor; shadow.receiveShadow = true; scene.add(shadow);
 
   try {
-    renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'low-power'});
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+    renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, powerPreference: 'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    Object.assign(key.shadow.camera, {left: -7, right: 7, top: 6, bottom: -6, near: .5, far: 25});
-    key.shadow.normalBias = .035;
-    floor.receiveShadow = true;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    key.shadow.mapSize.set(2048, 2048);
+    const s = view.shadowSize;
+    Object.assign(key.shadow.camera, {left: -s, right: s, top: s, bottom: -s, near: .5, far: 40});
+    key.shadow.radius = 4; key.shadow.normalBias = .02; key.shadow.bias = -.0004;
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+    scene.environmentIntensity = .9;
+    pmrem.dispose();
+
     const canvas = renderer.domElement;
     canvas.tabIndex = 0;
     canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', 'Interaktives 3D-Modell. Ziehen oder Pfeiltasten: drehen. Plus und Minus: zoomen. Pos1: Ansicht zurücksetzen.');
+    canvas.setAttribute('aria-label', 'Interaktives 3D-Modell. Ziehen oder Pfeiltasten: drehen. Mausrad, Pinch oder Plus/Minus: zoomen. Pos1: Ansicht zurücksetzen.');
     canvas.setAttribute('aria-describedby', 'em-note');
     host.querySelector('.em-loading')?.remove();
     host.prepend(canvas); host.dataset.status = 'ready';
 
-    // A locally generated studio reflection brings out the copper and steel.
-    const bitmap = document.createElement('canvas'); bitmap.width = 512; bitmap.height = 256;
-    const ctx = bitmap.getContext('2d');
-    const gradient = ctx.createLinearGradient(0, 0, 0, 256);
-    gradient.addColorStop(0, '#d9e5dc'); gradient.addColorStop(.5, '#657e72'); gradient.addColorStop(1, '#20372e');
-    ctx.fillStyle = gradient; ctx.fillRect(0, 0, 512, 256);
-    ctx.fillStyle = '#fff0db'; ctx.fillRect(60, 25, 85, 100);
-    ctx.fillStyle = '#dbf4ee'; ctx.fillRect(340, 30, 45, 125);
-    const texture = new THREE.CanvasTexture(bitmap);
-    texture.mapping = THREE.EquirectangularReflectionMapping; texture.colorSpace = THREE.SRGBColorSpace;
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromEquirectangular(texture).texture;
-    texture.dispose(); pmrem.dispose();
+    const labels = new CSS2DRenderer();
+    labels.domElement.className = 'em-labels';
+    host.append(labels.domElement);
+
+    const controls3d = new OrbitControls(camera, canvas);
+    controls3d.enableDamping = true; controls3d.dampingFactor = .09;
+    controls3d.enablePan = false;
+    controls3d.minPolarAngle = .15; controls3d.maxPolarAngle = Math.PI / 2 - .04;
+    controls3d.rotateSpeed = .7; controls3d.zoomSpeed = .8;
+    controls3d.target.set(...view.target);
+    let baseDistance = view.distance;
+    const placeCamera = (v = view, distance = baseDistance) => {
+      const t = new THREE.Vector3(...(v.target || view.target));
+      const yaw = v.yaw ?? view.yaw, pitch = v.pitch ?? view.pitch;
+      const d = distance * (v.zoom ?? 1);
+      camera.position.set(t.x + d * Math.sin(yaw) * Math.cos(pitch), t.y + d * Math.sin(pitch), t.z + d * Math.cos(yaw) * Math.cos(pitch));
+      controls3d.target.copy(t); controls3d.update();
+    };
+    resetView = () => placeCamera();
+    // Camera presets that the article can trigger ("Im Modell zeigen").
+    showView = (name) => { const v = experiment.views?.[name]; if (v) placeCamera({...view, ...v}); };
+    controls3d.addEventListener('change', () => { if (paused) draw?.(); });
+    canvas.addEventListener('keydown', event => {
+      if (event.key === 'Home') { event.preventDefault(); resetView(); }
+      if (event.key === '+' || event.key === '=' || event.key === '-') {
+        event.preventDefault();
+        const dir = camera.position.clone().sub(controls3d.target);
+        dir.multiplyScalar(event.key === '-' ? 1.12 : .89);
+        const len = Math.min(controls3d.maxDistance, Math.max(controls3d.minDistance, dir.length()));
+        camera.position.copy(controls3d.target).add(dir.setLength(len)); controls3d.update();
+      }
+    });
+    controls3d.listenToKeyEvents(canvas);
+    controls3d.keyRotateSpeed = 1.2;
 
     const hint = document.createElement('p'); hint.className = 'em-canvas-hint';
-    hint.textContent = 'Ziehen zum Drehen · + / − zum Zoomen'; host.append(hint);
+    hint.textContent = 'Ziehen: drehen · Mausrad/Pinch: zoomen'; host.append(hint);
     const zoomTools = document.createElement('div'); zoomTools.className = 'em-zoom';
-    for (const [title, text, amount] of [['Vergrößern', '+', -.12], ['Verkleinern', '−', .12]]) {
+    for (const [title, text, factor] of [['Vergrößern', '+', .86], ['Verkleinern', '−', 1.16]]) {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = text; button.setAttribute('aria-label', title);
-      button.addEventListener('click', () => { zoom = Math.max(.65, Math.min(1.7, zoom + amount)); orient(); refresh(); });
+      button.addEventListener('click', () => {
+        const dir = camera.position.clone().sub(controls3d.target).multiplyScalar(factor);
+        const len = Math.min(controls3d.maxDistance, Math.max(controls3d.minDistance, dir.length()));
+        camera.position.copy(controls3d.target).add(dir.setLength(len)); controls3d.update(); draw?.();
+      });
       zoomTools.append(button);
     }
     host.append(zoomTools);
-    let drag = null;
-    canvas.addEventListener('pointerdown', event => { drag = {x: event.clientX, y: event.clientY}; canvas.setPointerCapture(event.pointerId); });
-    canvas.addEventListener('pointermove', event => {
-      if (!drag) return;
-      yaw -= (event.clientX - drag.x) * .008;
-      pitch = Math.max(-.1, Math.min(1.2, pitch + (event.clientY - drag.y) * .006));
-      drag = {x: event.clientX, y: event.clientY}; orient(); refresh();
-    });
-    for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) canvas.addEventListener(type, () => { drag = null; });
-    canvas.addEventListener('keydown', event => {
-      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', '+', '=', '-'].includes(event.key)) return;
-      event.preventDefault();
-      if (event.key === 'ArrowLeft') yaw -= .12;
-      if (event.key === 'ArrowRight') yaw += .12;
-      if (event.key === 'ArrowUp') pitch = Math.min(1.2, pitch + .12);
-      if (event.key === 'ArrowDown') pitch = Math.max(-.1, pitch - .12);
-      if (event.key === '+' || event.key === '=') zoom = Math.max(.65, zoom - .12);
-      if (event.key === '-') zoom = Math.min(1.7, zoom + .12);
-      if (event.key === 'Home') resetView();
-      orient(); refresh();
-    });
+
     resize = () => {
       const {width, height} = host.getBoundingClientRect();
       if (!width || !height) return;
-      renderer.setSize(width, height, false); camera.aspect = width / height;
-      distance = Math.max(11.8, 4.5 / (Math.tan(19 * Math.PI / 180) * camera.aspect));
-      camera.updateProjectionMatrix(); orient(); draw?.();
+      renderer.setSize(width, height, false); labels.setSize(width, height);
+      camera.aspect = width / height;
+      // Keep the whole apparatus in frame on narrow screens.
+      baseDistance = view.distance * Math.max(1, (view.fitAspect ?? 1.55) / camera.aspect);
+      controls3d.minDistance = baseDistance * .45; controls3d.maxDistance = baseDistance * 1.8;
+      camera.updateProjectionMatrix(); placeCamera(); draw?.();
     };
-    draw = () => { if (host.dataset.status === 'ready') renderer.render(scene, camera); };
+    draw = () => {
+      if (host.dataset.status !== 'ready') return;
+      controls3d.update();
+      renderer.render(scene, camera); labels.render(scene, camera);
+    };
+    kitTick = (t) => kit.tick(t);
     new ResizeObserver(resize).observe(host); resize();
     canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fallback('Die 3D-Ansicht wurde unterbrochen. Regler, Messwerte und Schaubild bleiben nutzbar. Lade die Seite neu, um 3D erneut zu starten.'); });
-  } catch {
+  } catch (error) {
+    console.error(error);
     fallback('3D ist in diesem Browser nicht verfügbar. Probiere die Regler mit den Messwerten aus und nutze das Schaubild darunter.');
   }
   syncControls(); refresh();
@@ -217,9 +255,10 @@ try {
   function frame(now) {
     requestAnimationFrame(frame);
     const dt = Math.min((now - last) / 1000, .1); last = now;
-    if (document.hidden || !visible || paused) return;
+    if (document.hidden || !visible) return;
+    if (paused) { if (now - lastPaint > 32) { lastPaint = now; draw?.(); } return; }
     elapsed += dt;
-    if (now - lastPaint < 32) return;
+    if (now - lastPaint < 16) return;
     lastPaint = now; refresh(false);
   }
   requestAnimationFrame(frame);

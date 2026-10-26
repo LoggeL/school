@@ -55,6 +55,17 @@ subjects = [
     ]}
 ]
 
+# Raster covers generated for the physics chapters replace the interim SVGs once present.
+PHYSICS_COVERS = {'induktion.svg': 'induktion-v3.webp', 'generator.svg': 'generator-v3.webp', 'magnetfeld-eisenkern.svg': 'eisenkern-v3.webp', 'transformator.svg': 'transformator-v3.webp', 'hochspannungsleitungen.svg': 'hochspannung-v3.webp'}
+for _subject in subjects:
+    for _lesson in _subject['lessons']:
+        _cover = PHYSICS_COVERS.get(_lesson['image'])
+        if _cover and (SITE / 'assets' / 'images' / _cover).exists():
+            _lesson['image'] = _cover
+        if _lesson['href'].startswith('/physik/') and _lesson['href'] != '/physik/spule-elektromagnet/':
+            _lesson['meta'] = 'Schritt für Schritt erklärt · 3D-Labor · Selbsttest'
+
+
 subject_links = ''
 subject_sections = ''
 for subject in subjects:

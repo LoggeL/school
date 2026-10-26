@@ -50,7 +50,7 @@ ids = [node['attrs']['id'] for node in nodes if 'id' in node['attrs']]
 assert len(ids) == len(set(ids)), 'Duplicate IDs'
 for section in ['grundidee', 'spulenlabor', 'eisenkern', 'rechnen', 'uebungen', 'hausuebung']:
     assert section in ids, section
-assert html.index('id="hausuebung"') < html.index('id="spulenlabor"') < html.index('id="rechnen"'), 'Theory self-test must precede lab and calculations'
+assert html.index('id="grundidee"') < html.index('id="spulenlabor"') < html.index('id="hausuebung"'), 'Explanation first, then lab, then self-test'
 assert not any(node['tag'] in {'form', 'textarea'} for node in nodes), 'Self-tests must not require typed answers'
 for node in nodes:
     if node['tag'] == 'input':

@@ -17,176 +17,266 @@ export function calculate(state, time = 0) {
   };
 }
 
-export function createExperiment({ THREE, group }) {
-  const fmt = (value, digits = 1) => value.toLocaleString('de-DE', { maximumFractionDigits: digits });
-  const material = (color, metalness = 0, roughness = .45) => new THREE.MeshStandardMaterial({ color, metalness, roughness });
-  const copper = material(0xd28a4e, .78, .26);
-  const secondaryCopper = material(0xb56d3c, .78, .25);
-  const steel = material(0x71847f, .82, .32);
-  const dark = material(0x263c37, .35, .4);
-  const ceramic = material(0xe4ded0, .08, .6);
-  const wireRed = material(0xa85d4b, .05, .58);
-  const wireBlue = material(0x79a8b8, .05, .58);
+// Scene layout (units ≈ dm): floor at y = -1.5, core in the xy plane, front faces +z.
+const CORE = { outer: 1.7, leg: 0.5, bottom: -1.15, window: [-0.65, 1.35], top: 1.85, depth: 0.6 };
+const COIL = { length: 1.8, center: 0.35, wire: 0.03, r0: 0.47, layerStep: 0.066 };
 
-  function mesh(geometry, surface, x, y, z, parent = group) {
-    const object = new THREE.Mesh(geometry, surface);
-    object.position.set(x, y, z);
-    object.castShadow = true; object.receiveShadow = true;
-    parent.add(object);
-    return object;
-  }
-  function box(w, h, d, surface, x, y, z) {
-    return mesh(new THREE.BoxGeometry(w, h, d), surface, x, y, z);
-  }
-  function tube(points, radius, surface) {
-    const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
-    return mesh(new THREE.TubeGeometry(curve, Math.max(48, points.length * 14), radius, 8, false), surface, 0, 0, 0);
-  }
-  function label(text, x, y, z, width = 2.1, color = '#e7ecdf') {
-    const canvas = document.createElement('canvas');
-    canvas.width = 768; canvas.height = 104;
-    const context = canvas.getContext('2d');
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }));
-    sprite.position.set(x, y, z);
-    group.add(sprite);
-    const set = value => {
-      context.font = '500 49px system-ui, sans-serif';
-      canvas.width = Math.ceil(context.measureText(value).width + 48);
-      context.clearRect(0, 0, canvas.width, 104);
-      context.fillStyle = '#183129df';
-      context.beginPath(); context.roundRect(2, 6, canvas.width - 4, 92, 20); context.fill();
-      context.fillStyle = color; context.font = '500 49px system-ui, sans-serif';
-      context.textAlign = 'center'; context.textBaseline = 'middle';
-      context.fillText(value, canvas.width / 2, 54);
-      const displayWidth = Math.min(width, .42 * canvas.width / 104);
-      sprite.scale.set(displayWidth, displayWidth * 104 / canvas.width, 1);
-      texture.needsUpdate = true;
-    };
-    set(text);
-    return { sprite, set };
+export function createExperiment({ THREE, group, kit }) {
+  const { mats } = kit;
+  const fmt = (value, digits = 1) => (Math.abs(value) < 1e-9 ? 0 : value).toLocaleString('de-DE', { maximumFractionDigits: digits });
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  // ---------- base ----------
+  kit.roundedBox([9.2, 0.2, 2.7], 0.08, mats.base, [0, -1.4, 0.15]);
+  kit.roundedBox([8.9, 0.02, 2.42], 0.01, kit.mat(0x3b5a51, 0.05, 0.7), [0, -1.295, 0.15]);
+  for (const x of [-1.45, 1.45]) {
+    kit.box([0.62, 0.15, 0.86], mats.steel, [x, -1.215, 0]);
+    for (const z of [-0.33, 0.33]) kit.cylinder(0.045, 0.06, mats.steel, [x - 0.2, -1.12, z], group, 12);
   }
 
-  box(4.15, .18, 1.9, dark, 0, -1.17, 0);
-  for (const x of [-1.55, 1.55]) {
-    box(.4, .13, 1.3, steel, x, -1.02, 0);
-    for (const z of [-.48, .48]) mesh(new THREE.CylinderGeometry(.07, .07, .07, 12), steel, x, -.92, z);
+  // ---------- laminated core: U-core plus separate yoke ----------
+  const { outer, leg, bottom, top, depth } = CORE;
+  const [winBottom, winTop] = CORE.window;
+  const inner = outer - leg;
+  const uShape = new THREE.Shape([
+    [-outer, bottom], [outer, bottom], [outer, winTop], [inner, winTop], [inner, winBottom],
+    [-inner, winBottom], [-inner, winTop], [-outer, winTop],
+  ].map(([x, y]) => new THREE.Vector2(x, y)));
+  const yokeShape = new THREE.Shape([[-outer, winTop + 0.006], [outer, winTop + 0.006], [outer, top], [-outer, top]].map(([x, y]) => new THREE.Vector2(x, y)));
+  const sheets = 12, pitch = depth / sheets, thickness = pitch * 0.86;
+  const sheetOptions = { depth: thickness - 0.006, bevelEnabled: true, bevelThickness: 0.003, bevelSize: 0.004, bevelSegments: 1, curveSegments: 1 };
+  const uGeometry = new THREE.ExtrudeGeometry(uShape, sheetOptions);
+  const yokeGeometry = new THREE.ExtrudeGeometry(yokeShape, sheetOptions);
+  const sheetA = kit.mat(0x8e979a, 0.82, 0.34);
+  const sheetB = kit.mat(0x737c80, 0.82, 0.4);
+  for (let i = 0; i < sheets; i++) {
+    const z = -depth / 2 + i * pitch + (pitch - thickness) / 2;
+    const surface = i % 2 ? sheetB : sheetA;
+    kit.mesh(uGeometry, surface, [0, 0, z]);
+    kit.mesh(yokeGeometry, surface, [0, 0, z]);
+  }
+  // clamping bolts through the yoke
+  for (const x of [-1.45, 0, 1.45]) {
+    const bolt = kit.cylinder(0.05, depth + 0.12, mats.steel, [x, (winTop + top) / 2, 0], group, 14);
+    bolt.rotation.x = Math.PI / 2;
   }
 
-  // Separate laminated rings make the closed magnetic path visible.
-  const ring = new THREE.Shape();
-  ring.moveTo(-1.62, -1.0); ring.lineTo(1.62, -1.0); ring.lineTo(1.62, 1.78); ring.lineTo(-1.62, 1.78); ring.closePath();
-  const hole = new THREE.Path();
-  hole.moveTo(-.87, -.48); hole.lineTo(-.87, 1.26); hole.lineTo(.87, 1.26); hole.lineTo(.87, -.48); hole.closePath();
-  ring.holes.push(hole);
-  const laminate = new THREE.ExtrudeGeometry(ring, { depth: .052, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: .008, bevelThickness: .006 });
-  for (let i = 0; i < 10; i++) mesh(laminate, steel, 0, 0, -.31 + i * .063);
+  // ---------- coils on bobbins ----------
+  const legX = [-(outer - leg / 2), outer - leg / 2];
+  const coilBottom = COIL.center - COIL.length / 2, coilTop = COIL.center + COIL.length / 2;
+  for (const x of legX) {
+    kit.cylinder(0.43, COIL.length + 0.12, mats.plastic, [x, COIL.center, 0], group, 40);
+    for (const y of [coilBottom - 0.07, coilTop + 0.07]) kit.cylinder(0.72, 0.06, mats.plastic, [x, y, 0], group, 48);
+  }
+  const brass = kit.mat(0xc9a35c, 1, 0.3);
+  const posts = legX.map(x => [V(x - 0.17, coilTop + 0.2, 0.52), V(x + 0.17, coilTop + 0.2, 0.52)]);
+  for (const pair of posts) for (const p of pair) {
+    kit.cylinder(0.05, 0.16, brass, [p.x, p.y - 0.05, p.z], group, 14);
+    kit.cylinder(0.075, 0.04, brass, [p.x, p.y + 0.02, p.z], group, 16);
+  }
 
-  // Winding counts are reduced for legibility, while the labels show the actual N.
-  let primaryWinding = null, secondaryWinding = null, lastTurns = '';
-  const leftLabel = label('N₁ = 400', -1.34, 2.04, .15, 1.75, '#f3c392');
-  const rightLabel = label('N₂ = 200', 1.34, 2.04, .15, 1.75, '#f3c392');
-  label('Primärspule', -1.43, 2.43, .15, 2);
-  label('Sekundärspule', 1.43, 2.43, .15, 2);
-  label('Geschlossener Eisenkern', 0, -.28, .52, 1.55, '#bdcdc0');
-
-  function winding(x, count, phase, surface) {
-    const turns = Math.max(3, Math.round(count / 40));
-    const segments = turns * 52;
-    const points = [];
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments, angle = phase + t * turns * Math.PI * 2;
-      points.push(new THREE.Vector3(x + .59 * Math.cos(angle), -.35 + 1.47 * t, .54 * Math.sin(angle)));
+  const windings = [[], []];
+  const perLayer = Math.floor(COIL.length / (2 * COIL.wire * 1.08));
+  function buildWinding(side, n, surface) {
+    for (const old of windings[side]) { group.remove(old); old.geometry.dispose(); }
+    windings[side] = [];
+    const x = legX[side];
+    const visible = Math.max(8, Math.round(n / 10));
+    const layers = Math.ceil(visible / perLayer);
+    let left = visible, radius = COIL.r0;
+    for (let layer = 0; layer < layers; layer++) {
+      const turns = Math.min(perLayer, left);
+      const length = layers === 1 ? COIL.length : COIL.length * turns / perLayer;
+      radius = COIL.r0 + layer * COIL.layerStep;
+      const item = kit.coil({ radius, length, turns, wireRadius: COIL.wire, axis: 'y', material: surface, position: [x, coilBottom + length / 2, 0], segmentsPerTurn: 28 });
+      item.rotation.y = -Math.PI / 2; // start and end of each layer face the viewer (+z)
+      windings[side].push(item);
+      left -= turns;
     }
-    return mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), segments, .047, 8, false), surface, 0, 0, 0);
+    // leads: last layer end to right post, first layer start brought up the front to left post
+    const lastLength = layers === 1 ? COIL.length : COIL.length * (visible - perLayer * (layers - 1)) / perLayer;
+    const endY = coilBottom + lastLength;
+    const [postA, postB] = posts[side];
+    const out = radius + COIL.wire;
+    const leadEnd = kit.wire([[x, endY, out - 0.01], [x + 0.06, Math.max(endY + 0.08, coilTop + 0.02), out + 0.03], [postB.x, coilTop + 0.12, postB.z + 0.02], [postB.x, postB.y + 0.02, postB.z]], 0.022, surface);
+    const leadStart = kit.wire([[x, coilBottom, COIL.r0], [x - 0.04, coilBottom + 0.02, out + 0.05], [x - 0.1, COIL.center, out + 0.07], [x - 0.15, coilTop + 0.02, out + 0.06], [postA.x, coilTop + 0.12, postA.z + 0.03], [postA.x, postA.y + 0.02, postA.z]], 0.022, surface);
+    windings[side].push(leadEnd, leadStart);
   }
-  function rebuild(primary, secondary) {
-    const key = `${primary}:${secondary}`;
-    if (key === lastTurns) return;
-    lastTurns = key;
-    for (const old of [primaryWinding, secondaryWinding]) {
-      if (old) { group.remove(old); old.geometry.dispose(); }
-    }
-    primaryWinding = winding(-1.25, primary, Math.PI, copper);
-    secondaryWinding = winding(1.25, secondary, 0, secondaryCopper);
-    leftLabel.set(`N₁ = ${primary}`); rightLabel.set(`N₂ = ${secondary}`);
-  }
+  const copperPrimary = mats.copper;
+  const copperSecondary = kit.mat(0xb8693a, 1, 0.3, { clearcoat: 0.35, clearcoatRoughness: 0.25 });
 
-  // Each electric circuit is separate. Only the iron core links their magnetic flux.
-  box(1.02, .66, .8, dark, -3.06, -.72, .28);
-  box(.83, .42, .025, ceramic, -3.06, -.64, .695);
-  const supplyLabel = label('~ 12 V', -3.06, -.6, .73, .84, '#f2d3a1');
-  label('Spannungsquelle', -3.05, .23, .3, 1.8);
-  for (const x of [-3.32, -2.8]) mesh(new THREE.CylinderGeometry(.075, .075, .12, 12), copper, x, -.33, .3);
-  tube([[-1.84, -.35, 0], [-2.1, -.45, .55], [-2.35, -.68, .85], [-2.8, -.28, .3]], .034, wireBlue);
-  tube([[-1.84, 1.12, 0], [-2.13, 1.12, .38], [-2.45, .84, .7], [-3.32, -.28, .3]], .034, wireRed);
+  // ---------- AC source ----------
+  kit.roundedBox([1.4, 0.95, 1.0], 0.1, mats.plastic, [-3.6, -0.82, 0.25]);
+  kit.roundedBox([1.1, 0.42, 0.02], 0.04, kit.mat(0x182320, 0.1, 0.3), [-3.6, -0.78, 0.755]);
+  const knob = kit.cylinder(0.09, 0.08, mats.steel, [-3.25, -1.12, 0.78], group, 20); knob.rotation.x = Math.PI / 2;
+  const sourceTerminals = [V(-3.95, -0.3, 0.45), V(-3.4, -0.3, 0.45)];
+  kit.cylinder(0.06, 0.12, mats.cableRed, [sourceTerminals[0].x, -0.31, 0.45], group, 16);
+  kit.cylinder(0.06, 0.12, mats.cableBlack, [sourceTerminals[1].x, -0.31, 0.45], group, 16);
 
-  mesh(new THREE.CylinderGeometry(.4, .45, .18, 32), ceramic, 3.05, -1.0, .3);
-  mesh(new THREE.CylinderGeometry(.2, .23, .3, 28), steel, 3.05, -.76, .3);
+  // ---------- lamp ----------
+  const lampX = 3.55, lampZ = 0.3;
+  kit.cylinder(0.5, 0.12, mats.ceramic, [lampX, -1.23, lampZ], group, 40);
+  kit.cylinder(0.26, 0.32, mats.ceramic, [lampX, -1.02, lampZ], group, 32);
+  kit.cylinder(0.19, 0.22, mats.steel, [lampX, -0.77, lampZ], group, 28);
   for (let i = 0; i < 4; i++) {
-    const thread = mesh(new THREE.TorusGeometry(.213, .018, 6, 24), dark, 3.05, -.86 + .065 * i, .3);
+    const thread = kit.mesh(new THREE.TorusGeometry(0.192, 0.014, 6, 28), mats.steel, [lampX, -0.85 + 0.05 * i, lampZ]);
     thread.rotation.x = Math.PI / 2;
   }
-  const glass = new THREE.MeshPhysicalMaterial({ color: 0xffe8ab, roughness: .16, metalness: 0, transparent: true, opacity: .24, emissive: 0xffb54f, emissiveIntensity: .05, depthWrite: false });
-  mesh(new THREE.SphereGeometry(.42, 32, 20), glass, 3.05, -.26, .3);
-  const filamentMaterial = new THREE.MeshStandardMaterial({ color: 0xffd58b, emissive: 0xffb648, emissiveIntensity: 0, roughness: .5 });
-  tube([[2.91, -.57, .3], [2.92, -.22, .3], [2.98, -.12, .3], [3.04, -.27, .3], [3.1, -.12, .3], [3.17, -.22, .3], [3.18, -.57, .3]], .018, filamentMaterial);
-  const loadLabel = label('Last: 20 Ω', 3.05, .45, .3, 1.6, '#f0d2a0');
-  const lampLight = new THREE.PointLight(0xffc36a, 0, 2.5);
-  lampLight.position.set(3.05, -.1, .5); group.add(lampLight);
-  tube([[1.84, -.35, 0], [2.03, -.56, .52], [2.28, -.91, .75], [2.82, -.76, .3]], .034, wireBlue);
-  tube([[1.84, 1.12, 0], [2.13, 1.05, .4], [2.5, .74, .65], [3.28, -.76, .3]], .034, wireRed);
+  const glass = new THREE.MeshPhysicalMaterial({ color: 0xfff6dd, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.22, emissive: 0xffb44c, emissiveIntensity: 0, depthWrite: false });
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.4, 40, 28), glass);
+  bulb.scale.set(1, 1.12, 1); bulb.position.set(lampX, -0.28, lampZ); bulb.renderOrder = 3; group.add(bulb);
+  const filament = new THREE.MeshStandardMaterial({ color: 0x8a7a66, emissive: 0xffa53a, emissiveIntensity: 0, roughness: 0.5 });
+  kit.wire([[lampX - 0.1, -0.66, lampZ], [lampX - 0.1, -0.33, lampZ], [lampX - 0.05, -0.22, lampZ], [lampX, -0.3, lampZ], [lampX + 0.05, -0.22, lampZ], [lampX + 0.1, -0.33, lampZ], [lampX + 0.1, -0.66, lampZ]], 0.012, filament);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: kit.canvasTexture(128, 128, (ctx, w, h) => {
+      const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+      g.addColorStop(0, 'rgba(255,214,140,1)'); g.addColorStop(0.35, 'rgba(255,190,100,.45)'); g.addColorStop(1, 'rgba(255,170,80,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    }), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0,
+  }));
+  halo.position.set(lampX, -0.28, lampZ); halo.scale.set(1.8, 1.8, 1); halo.renderOrder = 4; group.add(halo);
+  const lampLight = new THREE.PointLight(0xffc06a, 0, 4, 2);
+  lampLight.position.set(lampX, -0.25, lampZ + 0.1); group.add(lampLight);
+  const lampTerminals = [V(lampX - 0.38, -1.15, lampZ + 0.12), V(lampX + 0.38, -1.15, lampZ + 0.12)];
+  for (const t of lampTerminals) kit.cylinder(0.05, 0.08, brass, [t.x, -1.15, t.z], group, 14);
 
-  const fluxArrows = [];
-  const arrowPositions = [
-    [-.58, 1.52, 1, 0], [.29, 1.52, 1, 0],
-    [1.25, .82, 0, -1], [1.25, .05, 0, -1],
-    [.58, -.75, -1, 0], [-.29, -.75, -1, 0],
-    [-1.25, .0, 0, 1], [-1.25, .77, 0, 1],
-  ];
-  for (const [x, y, dx, dy] of arrowPositions) {
-    const direction = new THREE.Vector3(dx, dy, 0);
-    const arrow = new THREE.ArrowHelper(direction, new THREE.Vector3(x, y, .67), .48, 0xc7e3ad, .16, .11);
-    arrow.line.material.transparent = true; arrow.cone.material.transparent = true;
-    group.add(arrow); fluxArrows.push({ arrow, direction });
+  // ---------- external circuits ----------
+  const pA = posts[0][0], pB = posts[0][1], sA = posts[1][0], sB = posts[1][1];
+  const primaryOut = kit.wire([[pA.x, pA.y + 0.04, pA.z], [pA.x - 0.25, pA.y + 0.32, pA.z + 0.25], [-2.6, 1.2, 1.05], [-3.7, 0.25, 0.95], [-3.95, -0.05, 0.6], [sourceTerminals[0].x, -0.24, 0.45]], 0.035, mats.cableRed);
+  const primaryBack = kit.wire([[-3.4, -0.24, 0.45], [-3.25, 0.05, 0.75], [-2.55, 0.85, 1.2], [-1.75, 1.75, 0.95], [pB.x, pB.y + 0.3, pB.z + 0.1], [pB.x, pB.y + 0.04, pB.z]], 0.035, mats.cableBlack);
+  const secondaryOut = kit.wire([[sB.x, sB.y + 0.04, sB.z], [sB.x + 0.25, sB.y + 0.32, sB.z + 0.25], [2.65, 1.1, 1.1], [3.35, -0.35, 1.05], [lampTerminals[1].x, -0.95, lampTerminals[1].z + 0.2], [lampTerminals[1].x, -1.1, lampTerminals[1].z]], 0.035, mats.cableRed);
+  const secondaryBack = kit.wire([[lampTerminals[0].x, -1.1, lampTerminals[0].z], [lampTerminals[0].x - 0.1, -0.9, lampTerminals[0].z + 0.35], [2.55, -0.2, 1.2], [2.05, 1.2, 1.0], [sA.x, sA.y + 0.35, sA.z + 0.15], [sA.x, sA.y + 0.04, sA.z]], 0.035, mats.cableBlack);
+  // Current dots: conventional current direction, synchronised with the instantaneous current.
+  const dotOpts = { count: 9, radius: 0.045, color: 0xffd27a, emissive: 0.9 };
+  const primaryDots = [kit.dots(primaryOut.userData.curve, dotOpts), kit.dots(primaryBack.userData.curve, dotOpts)];
+  const secondaryDots = [kit.dots(secondaryBack.userData.curve, dotOpts), kit.dots(secondaryOut.userData.curve, dotOpts)];
+  // primaryOut runs post→source, so positive current (source + → coil) moves backwards along it.
+  const primaryDir = [-1, -1];
+  // secondaryBack runs lamp→coil, secondaryOut coil→lamp: positive current leaves the coil at sB.
+  const secondaryDir = [-1, -1];
+
+  // ---------- magnetic flux inside the core ----------
+  function loop(offset, z) {
+    const x = legX[1] + offset, yb = bottom + leg / 2 - offset, yt = winTop + (top - winTop) / 2 + offset, r = 0.16;
+    const pts = [];
+    const arc = (cx, cy, a0) => { for (let k = 0; k <= 4; k++) { const a = a0 - (k / 4) * Math.PI / 2; pts.push(V(cx + r * Math.cos(a), cy + r * Math.sin(a), z)); } };
+    // clockwise as seen from the front: up the left (primary) leg, right along the top, down the right leg
+    pts.push(V(-x, yb + r, z), V(-x, (yb + yt) / 2, z));
+    arc(-x + r, yt - r, Math.PI); pts.push(V(0, yt, z));
+    arc(x - r, yt - r, Math.PI / 2); pts.push(V(x, (yb + yt) / 2, z));
+    arc(x - r, yb + r, 0); pts.push(V(0, yb, z));
+    arc(-x + r, yb + r, -Math.PI / 2);
+    pts.pop(); // closing point coincides with the start
+    return pts;
   }
-  const fluxLabel = label('Wechselfluss Φ', 0, .68, .66, 1.48, '#c7e3ad');
-  let lastLabelKey = '';
+  const fluxLines = [];
+  for (const [offset, z] of [[-0.13, depth / 2 + 0.018], [0, depth / 2 + 0.022], [0.13, depth / 2 + 0.018], [0, -depth / 2 - 0.02]]) {
+    const points = loop(offset, z);
+    const curve = new THREE.CatmullRomCurve3(points, true, 'catmullrom', 0.1);
+    fluxLines.push(kit.flowLine(curve, { color: 0x2f9a68, radius: 0.022, opacity: 0.95, closed: true, repeat: 5, width: 0.35 }));
+  }
+  const fluxArrows = [
+    { from: [-0.35, (winTop + top) / 2, depth / 2 + 0.03], dir: [1, 0, 0] },
+    { from: [0.35, bottom + leg / 2, depth / 2 + 0.03], dir: [-1, 0, 0] },
+  ].map(a => ({ ...a, api: kit.arrow({ from: a.from, dir: a.dir, length: 0.7, radius: 0.035, color: 0x1f7a52, emissive: 0.15 }) }));
+
+  // ---------- labels ----------
+  const primaryLabel = kit.label('Primärspule N₁ = 400', [legX[0], coilTop + 0.75, 0], { tone: 'copper' });
+  const secondaryLabel = kit.label('Sekundärspule N₂ = 200', [legX[1], coilTop + 0.75, 0], { tone: 'copper' });
+  kit.label('Eisenkern', [0, top + 0.25, 0], { size: 's' });
+  const fluxLabel = kit.label('magnetischer Fluss Φ', [0, bottom - 0.02, depth / 2 + 0.35], { tone: 'accent', size: 's' });
+  const sourceLabel = kit.label('~ 12 V', [-3.6, -0.78, 0.8], { tone: 'accent' });
+  kit.label('Spannungsquelle', [-3.6, 0.0, 0.25], { size: 's', tone: 'ghost' });
+  const lampLabel = kit.label('Lampe · 20 Ω', [lampX, 0.42, lampZ], { size: 's' });
+
+  let built = '', lastTime = 0, labelKey = '';
+  let dotOffsetP = 0, dotOffsetS = 0;
 
   return {
+    camera: { target: [0, 0.2, 0.1], distance: 11.6, yaw: 0.32, pitch: 0.3, floor: -1.5, shadowSize: 6.5, fitAspect: 1.6 },
+    views: {
+      overview: { target: [0, 0.2, 0.1], yaw: 0.32, pitch: 0.3, zoom: 1 },
+      core: { target: [0, 0.35, 0], yaw: 0.02, pitch: 0.1, zoom: 0.62 },
+      secondary: { target: [2.55, -0.1, 0.3], yaw: 0.55, pitch: 0.26, zoom: 0.5 },
+    },
     update(state, time) {
       const values = calculate(state, time);
       const primary = Number(state.primary ?? 400), secondary = Number(state.secondary ?? 200);
-      rebuild(primary, secondary);
-      const labelKey = `${state.dc}:${state.voltage}:${state.load}`;
-      if (labelKey !== lastLabelKey) {
-        lastLabelKey = labelKey;
-        supplyLabel.set(`${state.dc ? '⎓' : '~'} ${fmt(Number(state.voltage ?? 12))} V`);
-        loadLabel.set(`Last: ${fmt(Number(state.load ?? 20))} Ω`);
-        fluxLabel.set(state.dc ? 'Feld konstant' : 'Wechselfluss Φ');
+      const input = Number(state.voltage ?? 12), load = Number(state.load ?? 20);
+      const key = `${primary}:${secondary}`;
+      if (key !== built) {
+        built = key;
+        buildWinding(0, primary, copperPrimary);
+        buildWinding(1, secondary, copperSecondary);
       }
-      const direction = values.flux < 0 ? -1 : 1;
-      for (const item of fluxArrows) {
-        item.arrow.setDirection(item.direction.clone().multiplyScalar(direction));
-        const opacity = state.dc ? .55 : Math.min(1, Math.abs(values.flux));
-        item.arrow.line.material.opacity = opacity;
-        item.arrow.cone.material.opacity = opacity;
-        item.arrow.visible = state.dc || Math.abs(values.flux) > .06;
+      const newLabelKey = `${primary}:${secondary}:${input}:${load}:${state.dc}`;
+      if (newLabelKey !== labelKey) {
+        labelKey = newLabelKey;
+        primaryLabel.set(`Primärspule N₁ = ${primary}`);
+        secondaryLabel.set(`Sekundärspule N₂ = ${secondary}`);
+        sourceLabel.set(`${state.dc ? '⎓' : '~'} ${fmt(input)} V`);
+        lampLabel.set(`Lampe · ${fmt(load)} Ω`);
+        fluxLabel.set(state.dc ? 'Fluss Φ konstant' : 'magnetischer Fluss Φ');
       }
-      const glow = state.dc ? 0 : Math.min(1, Math.log1p(values.power) / Math.log(65));
-      glass.emissiveIntensity = .04 + glow * .45;
-      filamentMaterial.emissiveIntensity = glow * 3;
-      lampLight.intensity = glow * 1.6;
+
+      let dt = time - lastTime; lastTime = time;
+      if (!(dt > 0 && dt < 0.5)) dt = 0;
+
+      // Flux: direction and strength follow Φ(t); in DC it is constant (no change → no induction).
+      const flux = values.flux;
+      for (const line of fluxLines) line.set({ speed: state.dc ? 0 : 0.55 * flux, strength: state.dc ? 0.95 : 0.35 + 0.65 * Math.abs(flux) });
+      for (const a of fluxArrows) {
+        const sign = flux < 0 ? -1 : 1;
+        a.api.set(a.dir.map(c => c * sign), 0.25 + 0.45 * Math.abs(flux));
+        a.api.material.opacity = 1;
+      }
+
+      // Currents (RMS ratio shown by speed, sign by the instantaneous value).
+      const phase = 2 * Math.PI * 0.35 * time;
+      const i2 = values.current, i1 = values.primaryCurrent ?? 0;
+      const imax = Math.max(i1, i2, 1e-6);
+      if (state.dc) {
+        dotOffsetP += dt * 0.22;
+      } else {
+        dotOffsetP += dt * 0.4 * Math.sin(phase) * (i1 / imax);
+        dotOffsetS += dt * 0.4 * Math.sin(phase) * (i2 / imax);
+      }
+      primaryDots.forEach((d, k) => d.place(primaryDir[k] * dotOffsetP));
+      secondaryDots.forEach((d, k) => { d.place(secondaryDir[k] * dotOffsetS); d.mesh.visible = !state.dc && i2 > 1e-6; });
+      primaryDots.forEach(d => { d.mesh.visible = state.dc || i1 > 1e-6; });
+
+      // Lamp: brightness from the (RMS) power, logarithmic so small and large loads both read.
+      const glow = state.dc ? 0 : Math.min(1, Math.log10(1 + values.power) / Math.log10(51));
+      filament.emissiveIntensity = 0.2 + glow * 6;
+      filament.color.setHex(glow > 0.02 ? 0xffd9a0 : 0x8a7a66);
+      glass.emissiveIntensity = glow * 0.55;
+      glass.opacity = 0.22 + glow * 0.25;
+      halo.material.opacity = glow * 0.85;
+      halo.scale.setScalar(1.2 + glow * 1.4);
+      lampLight.intensity = glow * 6;
+
+      let note;
+      if (state.dc) {
+        note = 'Gleichspannung: Nach dem Einschalten bleibt der Fluss im Kern konstant. Ohne Flussänderung wird in der Sekundärspule nichts induziert – U₂ = 0 V, die Lampe bleibt dunkel.';
+      } else if (input === 0) {
+        note = 'Ohne Eingangsspannung gibt es keinen wechselnden Fluss und damit keine Sekundärspannung.';
+      } else {
+        const moment = Math.abs(flux) > 0.92
+          ? 'Gerade ist der Fluss fast maximal, ändert sich aber kaum – U₂ geht durch null.'
+          : Math.abs(flux) < 0.3
+            ? 'Gerade wechselt der Fluss seine Richtung und ändert sich am schnellsten – U₂ ist fast maximal.'
+            : 'Der Fluss im Kern ändert sich ständig. Diese Änderung induziert U₂ in der Sekundärspule.';
+        const kind = values.ratio > 1.001 ? 'hochtransformiert' : values.ratio < 0.999 ? 'heruntertransformiert' : 'unverändert übertragen';
+        note = `N₂/N₁ = ${secondary}/${primary} = ${fmt(values.ratio, 2)}: Die Spannung wird ${kind} (${fmt(input)} V → ${fmt(values.voltage, 2)} V). Der Strom ändert sich umgekehrt: I₁ = ${fmt(i1, 3)} A, I₂ = ${fmt(i2, 3)} A. ${moment}`;
+      }
+
       return {
         metrics: [
           { label: 'Sekundärspannung U₂ (effektiv)', value: `${fmt(values.voltage, 2)} V` },
           { label: 'Sekundärstrom I₂ (effektiv)', value: `${fmt(values.current, 3)} A` },
           { label: 'Leistung an der Last P₂', value: `${fmt(values.power, 2)} W` },
         ],
-        note: state.dc
-          ? 'Konstanter Gleichstrom erzeugt keinen wechselnden Fluss: U₂ = 0 V. Einschaltvorgang und Primärstrom im Gleichstrombetrieb werden hier nicht berechnet.'
-          : `N₂/N₁ = ${fmt(values.ratio, 2)}. Im idealen Trafo gilt P₁ = P₂; der Primärstrom beträgt ${fmt(values.primaryCurrent, 3)} A. Wärmeverluste fehlen im Modell. Die Feldpfeile zeigen den Fluss in Zeitlupe; die Lampenhelligkeit ist schematisch.`,
+        note,
         graph: { value: values.instantaneousVoltage, max: Math.max(1, values.voltage * Math.SQRT2), label: 'Momentanspannung U₂ in V · Zeitlupe' },
       };
     },

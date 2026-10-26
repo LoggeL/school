@@ -1,9 +1,10 @@
-// A deliberately smooth, illustrative flux profile. Positions are model units,
-// not measured metres; the derivative and Faraday's law are internally exact.
+// Magnet rein, Magnet raus: a bar magnet slides towards a hollow coil and back.
+// The flux profile is a smooth, illustrative Gaussian in model units (not metres);
+// Faraday's law U = −N · dΦ/dt is applied exactly to that profile.
 const COIL_X = 1.6;
 const PROFILE_WIDTH = 1.8;
 const FLUX_SCALE = 0.001;
-const format = (value, digits = 2) => (Math.abs(value) < 1e-10 ? 0 : value).toLocaleString('de-DE', {maximumFractionDigits: digits});
+const format = (value, digits = 2) => (Math.abs(value) < 1e-10 ? 0 : value).toLocaleString('de-DE', {maximumFractionDigits: digits, minimumFractionDigits: digits});
 
 export function calculate(state, time) {
   const speed = Number(state.speed ?? 1);
@@ -17,147 +18,200 @@ export function calculate(state, time) {
   const flux = sign * FLUX_SCALE * strength * Math.exp(-((distance / PROFILE_WIDTH) ** 2));
   const fluxRate = flux * (-2 * distance / PROFILE_WIDTH ** 2) * velocity;
   const voltage = -turns * fluxRate || 0;
-  // Upper bound from the maximum spatial derivative of a Gaussian, multiplied
-  // by maximum speed. It is used only for the schematic dial/graph scale.
+  // Upper bound from the maximum spatial derivative of a Gaussian times the
+  // maximum speed. Used only for the dial and graph scale.
   const scale = Math.max(0.05, turns * FLUX_SCALE * strength * speed * 1.4 / PROFILE_WIDTH * Math.sqrt(2 / Math.E));
   return {position, velocity, flux, fluxRate, voltage, scale, turns, sign};
 }
 
-export function createExperiment({THREE, group}) {
-  const copper = new THREE.MeshStandardMaterial({color: 0xc8884a, metalness: 0.78, roughness: 0.27});
-  const steel = new THREE.MeshStandardMaterial({color: 0x9aaeb0, metalness: 0.65, roughness: 0.3});
-  const dark = new THREE.MeshStandardMaterial({color: 0x304a43, metalness: 0.15, roughness: 0.55});
-  const red = new THREE.MeshStandardMaterial({color: 0xd96f59, metalness: 0.2, roughness: 0.38});
-  const blue = new THREE.MeshStandardMaterial({color: 0x629fc4, metalness: 0.2, roughness: 0.38});
-  const ivory = new THREE.MeshStandardMaterial({color: 0xe4e7d5, roughness: 0.6});
+// Scene layout (model units). The coil axis and the magnet axis share y = AXIS_Y.
+const AXIS_Y = 0.35;
+const TABLE_Y = -1.1;
+const MAGNET_HALF = 0.62;      // half length of the bar magnet
+const COIL_R = 0.6;            // winding radius
+const COIL_LEN = 1.6;          // winding length
 
-  function box(parent, w, h, d, x, y, z, material) {
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
-    mesh.position.set(x, y, z); mesh.castShadow = true; mesh.receiveShadow = true;
-    parent.add(mesh); return mesh;
-  }
-  function tube(points, radius, material, parent = group) {
-    const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
-    const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(24, points.length * 8), radius, 8, false), material);
-    mesh.castShadow = true; parent.add(mesh); return mesh;
-  }
-  function label(text, x, y, z, color = '#e3e9d9', width = 2.0) {
-    const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 96;
-    const ctx = canvas.getContext('2d');
-    ctx.font = '500 38px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = color; ctx.fillText(text, 256, 48);
-    const texture = new THREE.CanvasTexture(canvas); texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: texture, depthTest: false}));
-    sprite.position.set(x, y, z); sprite.scale.set(width, width * 96 / 512, 1);
-    group.add(sprite); return sprite;
-  }
+export function createExperiment({THREE, group, kit}) {
+  const {mats} = kit;
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
 
-  // Separate experiment components on a lab plinth. The magnet slides along a
-  // rail; the open coil is visibly hollow and contains no hidden iron core.
-  box(group, 6.7, 0.16, 2.05, -0.1, -1.22, 0, dark);
-  box(group, 3.7, 0.07, 0.13, -1.45, -0.74, 0, steel);
-  for (const x of [-3.1, 0.2]) box(group, 0.13, 0.44, 0.5, x, -0.99, 0, dark);
-  const magnet = new THREE.Group(); group.add(magnet); magnet.position.y = 0.5;
-  const leftPole = box(magnet, 0.65, 0.46, 0.48, -0.325, 0, 0, blue);
-  const rightPole = box(magnet, 0.65, 0.46, 0.48, 0.325, 0, 0, red);
-  box(magnet, 0.68, 0.12, 0.66, 0, -1.18, 0, steel);
-  box(magnet, 0.16, 0.94, 0.18, 0, -0.7, 0, dark);
-  const north = label('N', 0, 0.56, 0.31, '#ffe2d6', 0.62);
-  const south = label('S', 0, 0.56, 0.31, '#e0f2ff', 0.62);
-  label('Magnet bewegen', -1.9, 1.46, 0, '#c5d8c7', 2.25);
-  label('Spule', COIL_X, 1.57, 0, '#edc599', 1.4);
-
-  const formerMaterial = new THREE.MeshStandardMaterial({color: 0xcddcca, transparent: true, opacity: 0.1, side: THREE.DoubleSide, roughness: 0.25, depthWrite: false});
-  const former = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.64, 1.7, 36, 1, true), formerMaterial);
-  former.rotation.z = Math.PI / 2; former.position.set(COIL_X, 0.5, 0); group.add(former);
-  const ringGeometry = new THREE.TorusGeometry(0.66, 0.048, 8, 48);
-  for (const x of [COIL_X - 0.87, COIL_X + 0.87]) {
-    const ring = new THREE.Mesh(ringGeometry, ivory); ring.rotation.y = Math.PI / 2;
-    ring.position.set(x, 0.5, 0); ring.castShadow = true; group.add(ring);
-    box(group, 0.14, 0.98, 0.3, x, -0.65, 0, dark);
+  // ---------- lab bench ----------
+  kit.plinth([7.4, 0.2, 2.9], [-0.35, TABLE_Y - 0.1, 0.25]);
+  // Rail with two steel rods and end stops; the magnet carriage slides along it.
+  for (const z of [-0.16, 0.16]) {
+    const rod = kit.cylinder(0.035, 4.1, mats.steel, [-1.25, TABLE_Y + 0.13, z], group, 20);
+    rod.rotation.z = Math.PI / 2;
   }
-  const coil = new THREE.Mesh(new THREE.BufferGeometry(), copper); group.add(coil); coil.castShadow = true;
-  let displayedTurns = -1;
-  function rebuildCoil(turns) {
-    // The visible count deliberately remains schematic, while N is the actual
-    // value used in Faraday's law and the numeric readout.
-    const count = Math.round(7 + turns / 50);
-    const points = [];
-    for (let i = 0; i <= count * 32; i++) {
-      const fraction = i / (count * 32), angle = fraction * count * Math.PI * 2;
-      points.push(new THREE.Vector3(COIL_X - 0.8 + 1.6 * fraction, 0.5 + 0.67 * Math.cos(angle), 0.67 * Math.sin(angle)));
+  for (const x of [-3.3, 0.8]) kit.roundedBox([0.16, 0.26, 0.56], 0.04, mats.plastic, [x, TABLE_Y + 0.13, 0]);
+
+  // ---------- magnet on its carriage ----------
+  const magnet = new THREE.Group(); group.add(magnet);
+  magnet.position.y = AXIS_Y;
+  const carriage = new THREE.Group(); magnet.add(carriage);
+  // Carriage: sled on the rods, a post and a cradle under the magnet (coordinates relative to the axis).
+  const plateY = TABLE_Y + 0.21 - AXIS_Y, cradleY = -0.23;
+  kit.roundedBox([0.62, 0.1, 0.56], 0.04, mats.ceramic, [0, plateY, 0], carriage);
+  kit.roundedBox([0.14, cradleY - plateY - 0.08, 0.14], 0.03, mats.ceramic, [0, (plateY + cradleY) / 2, 0], carriage);
+  kit.roundedBox([0.5, 0.06, 0.34], 0.025, mats.ceramic, [0, cradleY, 0], carriage);
+  // The polarity group flips by 180° when the magnet is turned around ("umpolen").
+  const polarity = new THREE.Group(); magnet.add(polarity);
+  kit.roundedBox([MAGNET_HALF - 0.01, 0.4, 0.4], 0.05, mats.magnetN, [MAGNET_HALF / 2, 0, 0], polarity);
+  kit.roundedBox([MAGNET_HALF - 0.01, 0.4, 0.4], 0.05, mats.magnetS, [-MAGNET_HALF / 2, 0, 0], polarity);
+  const north = kit.label('N', [MAGNET_HALF * 0.5, 0.36, 0], {parent: polarity, tone: 'n'});
+  const south = kit.label('S', [-MAGNET_HALF * 0.5, 0.36, 0], {parent: polarity, tone: 'south'});
+
+  // Real dipole field lines (two-pole model), traced once in the magnet frame.
+  const field = kit.barMagnetField(V(0, 0, 0), MAGNET_HALF * 0.82, V(1, 0, 0), 1);
+  const southPole = V(-MAGNET_HALF * 0.82, 0, 0);
+  const lines = [];
+  const fieldGroup = new THREE.Group(); polarity.add(fieldGroup);
+  // Emission angles from the north pole (relative to +x); fewer lines = weaker magnet.
+  const recipe = [
+    {alpha: 62, az: [0, 180], rank: 0},
+    {alpha: 92, az: [90, 270], rank: 0},
+    {alpha: 120, az: [0, 180], rank: 1},
+    {alpha: 44, az: [90, 270], rank: 1},
+    {alpha: 76, az: [45, 135, 225, 315], rank: 2},
+    {alpha: 34, az: [0, 180], rank: 3},
+    {alpha: 140, az: [90, 270], rank: 3},
+  ];
+  for (const {alpha, az, rank} of recipe) {
+    for (const azimuth of az) {
+      const a = alpha * Math.PI / 180, b = azimuth * Math.PI / 180;
+      const start = V(MAGNET_HALF * 0.82 + 0.06 * Math.cos(a), 0.06 * Math.sin(a) * Math.cos(b), 0.06 * Math.sin(a) * Math.sin(b));
+      const points = kit.traceField(field, start, {step: 0.03, maxSteps: 900, bounds: 4.2, stop: p => p.distanceTo(southPole) < 0.07});
+      if (points.length < 6 || points.at(-1).distanceTo(southPole) > 0.12) continue; // only closed loops
+      // Hide the part inside the magnet body: start where the line leaves the bar.
+      const outside = points.filter(p => Math.abs(p.x) > MAGNET_HALF + 0.01 || Math.hypot(p.y, p.z) > 0.21);
+      if (outside.length < 6) continue;
+      const line = kit.flowLine(outside, {parent: fieldGroup, color: 0x23865a, radius: 0.019, opacity: 1, speed: 0.22});
+      line.rank = rank;
+      lines.push(line);
     }
-    const previous = coil.geometry;
-    coil.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), count * 36, 0.035, 8, false);
-    previous.dispose(); displayedTurns = turns;
   }
 
-  // A sparse external field loop and an axial arrow show direction, with no
-  // travelling dots that could be mistaken for particles.
-  const fieldGroup = new THREE.Group(); magnet.add(fieldGroup);
-  const fieldMaterial = new THREE.LineBasicMaterial({color: 0xa5d6b1, transparent: true, opacity: 0.5});
-  const fieldLoops = [];
-  for (const side of [-1, 1]) {
-    const points = [new THREE.Vector3(0.65, 0, 0), new THREE.Vector3(1.0, side * 0.35, 0), new THREE.Vector3(0.6, side * 0.83, 0), new THREE.Vector3(-0.6, side * 0.83, 0), new THREE.Vector3(-1.0, side * 0.35, 0), new THREE.Vector3(-0.65, 0, 0)];
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(new THREE.CatmullRomCurve3(points).getPoints(64)), fieldMaterial);
-    fieldGroup.add(line); fieldLoops.push(line);
+  // ---------- coil ----------
+  const coilHolder = new THREE.Group(); coilHolder.position.set(COIL_X, AXIS_Y, 0); group.add(coilHolder);
+  const former = new THREE.Mesh(new THREE.CylinderGeometry(COIL_R - 0.045, COIL_R - 0.045, COIL_LEN + 0.12, 48, 1, true),
+    new THREE.MeshPhysicalMaterial({color: 0xe9efe4, roughness: 0.35, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false}));
+  former.rotation.z = Math.PI / 2; coilHolder.add(former);
+  for (const x of [-(COIL_LEN / 2 + 0.08), COIL_LEN / 2 + 0.08]) {
+    const flange = new THREE.Mesh(new THREE.TorusGeometry(COIL_R + 0.02, 0.06, 12, 56), mats.ceramic);
+    flange.rotation.y = Math.PI / 2; flange.position.x = x; flange.castShadow = true; coilHolder.add(flange);
+    // stands
+    kit.roundedBox([0.16, AXIS_Y - TABLE_Y - COIL_R - 0.02, 0.5], 0.04, mats.ceramic, [x, -(AXIS_Y - TABLE_Y + COIL_R) / 2 - 0.02, 0], coilHolder);
+    kit.roundedBox([0.4, 0.06, 0.7], 0.03, mats.ceramic, [x, TABLE_Y - AXIS_Y + 0.03, 0], coilHolder);
   }
-  const axialArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0.8, 0, 0), 0.75, 0xb9dfb4, 0.15, 0.09);
-  fieldGroup.add(axialArrow);
-  const returnArrow = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0.24, 0.83, 0), 0.48, 0xb9dfb4, 0.12, 0.08);
-  fieldGroup.add(returnArrow);
-
-  // Voltmeter with a zero-centred qualitative dial. The precise value is given
-  // by the shared accessible numeric readout below the 3D model.
-  box(group, 1.42, 0.82, 0.37, 1.56, -0.64, 1.2, dark);
-  const dialCanvas = document.createElement('canvas'); dialCanvas.width = 512; dialCanvas.height = 256;
-  const ctx = dialCanvas.getContext('2d');
-  ctx.fillStyle = '#e9eddf'; ctx.fillRect(0, 0, 512, 256);
-  ctx.strokeStyle = '#476453'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(256, 216, 168, Math.PI * 1.17, Math.PI * 1.83); ctx.stroke();
-  for (let i = 0; i <= 10; i++) {
-    const a = Math.PI * (1.17 + i / 10 * 0.66);
-    ctx.beginPath(); ctx.moveTo(256 + Math.cos(a) * 164, 216 + Math.sin(a) * 164);
-    ctx.lineTo(256 + Math.cos(a) * (i === 5 ? 143 : 151), 216 + Math.sin(a) * (i === 5 ? 143 : 151)); ctx.stroke();
+  let coilMesh = null, current = null, shownTurns = -1, visibleTurns = 0, layers = 1;
+  function rebuildCoil(turns) {
+    if (coilMesh) { coilHolder.remove(...coilMesh); coilMesh.forEach(m => m.geometry.dispose()); }
+    if (current) { coilHolder.remove(current.mesh); current.mesh.geometry.dispose(); }
+    // The drawn number of turns is proportional to N (not equal to it); more N also adds a second layer.
+    visibleTurns = Math.round(10 + turns / 22);
+    layers = turns > 250 ? 2 : 1;
+    coilMesh = [];
+    for (let layer = 0; layer < layers; layer++) {
+      const m = kit.coil({radius: COIL_R + layer * 0.06, length: COIL_LEN, turns: visibleTurns, wireRadius: 0.027, parent: coilHolder, material: layer ? mats.copperDark : mats.copper});
+      coilMesh.push(m);
+    }
+    const outer = coilMesh[coilMesh.length - 1];
+    current = kit.dots(outer.userData.curve, {count: visibleTurns * 2, radius: 0.034, color: 0xf6c35a, parent: coilHolder, emissive: 0.9});
+    shownTurns = turns;
   }
-  ctx.fillStyle = '#2c4c40'; ctx.textAlign = 'center'; ctx.font = '30px system-ui';
-  ctx.fillText('−', 70, 180); ctx.fillText('+', 443, 180); ctx.fillText('0', 256, 38);
-  ctx.font = '25px system-ui'; ctx.fillText('U ind', 256, 232);
-  const dialTexture = new THREE.CanvasTexture(dialCanvas); dialTexture.colorSpace = THREE.SRGBColorSpace;
-  const dial = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.63), new THREE.MeshBasicMaterial({map: dialTexture}));
-  dial.position.set(1.56, -0.61, 1.391); group.add(dial);
-  const needlePivot = new THREE.Group(); needlePivot.position.set(1.56, -0.82, 1.405); group.add(needlePivot);
-  box(needlePivot, 0.018, 0.4, 0.015, 0, 0.2, 0, red);
-  const hub = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 8), copper); needlePivot.add(hub);
-  tube([[0.8, 1.17, 0], [0.56, 1.08, 0.25], [0.5, -0.5, 0.9], [1.12, -0.9, 1.17]], 0.022, red);
-  tube([[2.4, 1.17, 0], [2.75, 0.9, 0.25], [2.79, -0.6, 0.85], [1.99, -0.9, 1.17]], 0.022, blue);
-  label('Spannungsmesser', 1.6, -1.12, 1.45, '#d3dfcd', 2.0);
+  kit.label('Spule (hohl)', [0.35, COIL_R + 0.3, 0], {parent: coilHolder, tone: 'copper', size: 's'});
 
+  // Flux indicator inside the coil: a disc whose tint shows |Φ|, and arrows.
+  const fluxDisc = new THREE.Mesh(new THREE.CircleGeometry(COIL_R - 0.07, 48), new THREE.MeshBasicMaterial({color: 0x2f8f63, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false}));
+  fluxDisc.rotation.y = Math.PI / 2; coilHolder.add(fluxDisc);
+  const fluxRing = new THREE.Mesh(new THREE.TorusGeometry(COIL_R - 0.07, 0.012, 8, 64), new THREE.MeshBasicMaterial({color: 0x2f8f63, transparent: true, opacity: 0.55}));
+  fluxRing.rotation.y = Math.PI / 2; coilHolder.add(fluxRing);
+  const magnetArrow = kit.arrow({from: [0, 0.12, 0], dir: [1, 0, 0], length: 0.6, radius: 0.03, color: 0x2f8f63, parent: coilHolder});
+  const inducedArrow = kit.arrow({from: [0, -0.12, 0], dir: [-1, 0, 0], length: 0.6, radius: 0.03, color: 0xd9822b, parent: coilHolder, emissive: 0.25});
+  // Induced pole at the opening that faces the magnet (Lenz).
+  const inducedPole = kit.label('', [-(COIL_LEN / 2 + 0.12), COIL_R + 0.2, 0], {parent: coilHolder, tone: 'n'});
+  const inducedHint = kit.label('', [-(COIL_LEN / 2 + 0.2), COIL_R + 0.55, 0], {parent: coilHolder, tone: 'warn', size: 's'});
+
+  // ---------- meter and cables ----------
+  const meter = kit.meter({position: [1.65, TABLE_Y, 1.25], rotationY: -0.18, size: 1.05, centerZero: true, unit: 'U'});
+  meter.group.updateMatrixWorld(true);
+  const size = 1.05, w = 1.25 * size, d = 0.42 * size;
+  const terminal = (x) => meter.group.localToWorld(V(x, 0.04 * size, d / 2 + 0.08 * size));
+  const tLeft = terminal(-w * 0.3), tRight = terminal(w * 0.3);
+  const leadStart = V(COIL_X - COIL_LEN / 2, AXIS_Y + COIL_R, 0);
+  const leadEnd = V(COIL_X + COIL_LEN / 2, AXIS_Y + COIL_R, 0);
+  kit.wire([[leadStart.x, leadStart.y, 0], [leadStart.x - 0.15, leadStart.y + 0.18, 0.3], [leadStart.x - 0.35, TABLE_Y + 0.35, 0.85], [tLeft.x - 0.1, TABLE_Y + 0.05, tLeft.z + 0.3], [tLeft.x, tLeft.y + 0.04, tLeft.z + 0.05]], 0.022, mats.cableRed);
+  kit.wire([[leadEnd.x, leadEnd.y, 0], [leadEnd.x + 0.15, leadEnd.y + 0.18, 0.3], [leadEnd.x + 0.4, TABLE_Y + 0.35, 0.85], [tRight.x + 0.1, TABLE_Y + 0.05, tRight.z + 0.3], [tRight.x, tRight.y + 0.04, tRight.z + 0.05]], 0.022, mats.cableBlack);
+
+  let lastTime = 0, offset = 0;
   return {
+    camera: {target: [-0.25, -0.05, 0.3], distance: 9.4, yaw: 0.42, pitch: 0.36, floor: TABLE_Y - 0.2, shadowSize: 6, fitAspect: 1.7},
+    views: {
+      overview: {target: [-0.25, -0.05, 0.3], yaw: 0.42, pitch: 0.36, zoom: 1},
+      field: {target: [-0.4, AXIS_Y, 0], yaw: 0.05, pitch: 1.2, zoom: 0.82},
+      coil: {target: [COIL_X - 0.3, AXIS_Y, 0], yaw: -0.55, pitch: 0.28, zoom: 0.5},
+      meter: {target: [1.65, TABLE_Y + 0.5, 1.25], yaw: 0.05, pitch: 0.3, zoom: 0.36},
+    },
     update(state, time) {
       const result = calculate(state, time);
-      if (displayedTurns !== result.turns) rebuildCoil(result.turns);
+      const strength = Number(state.strength ?? 1);
+      const speed = Number(state.speed ?? 1);
+      if (shownTurns !== result.turns) rebuildCoil(result.turns);
+      const dt = Math.max(0, Math.min(0.2, time - lastTime)); lastTime = time;
+
       magnet.position.x = result.position;
-      leftPole.material = state.reverse ? red : blue;
-      rightPole.material = state.reverse ? blue : red;
-      north.position.x = result.position + (state.reverse ? -0.33 : 0.33);
-      south.position.x = result.position - (state.reverse ? -0.33 : 0.33);
-      axialArrow.setDirection(new THREE.Vector3(result.sign, 0, 0));
-      axialArrow.position.x = state.reverse ? 1.55 : 0.8;
-      returnArrow.setDirection(new THREE.Vector3(-result.sign, 0, 0));
-      returnArrow.position.x = state.reverse ? -0.24 : 0.24;
-      fieldMaterial.opacity = 0.27 + 0.12 * Number(state.strength ?? 1);
-      needlePivot.rotation.z = -Math.max(-1, Math.min(1, result.voltage / result.scale)) * 0.99;
-      const direction = Math.abs(result.velocity) < 1e-9 ? 'Am Umkehrpunkt ist der Magnet einen Moment in Ruhe: U ist null.' : Math.abs(result.velocity) < 0.015 ? 'Nahe am Umkehrpunkt bewegt sich der Magnet kaum: U ist fast null.' : result.velocity > 0 ? 'Der Magnet nähert sich: Der magnetische Fluss durch die Spule nimmt im Betrag zu.' : 'Der Magnet entfernt sich: Der magnetische Fluss durch die Spule nimmt im Betrag ab.';
+      polarity.rotation.y = state.reverse ? Math.PI : 0;
+      // More field lines for a stronger magnet (density ~ field strength).
+      const ranks = strength <= 0.5 ? 0 : strength <= 0.75 ? 1 : strength <= 1.25 ? 2 : 3;
+      for (const line of lines) line.set({visible: line.rank <= ranks, strength: 0.75 + 0.15 * Math.min(strength, 2)});
+
+      const u = result.scale ? result.voltage / result.scale : 0;
+      meter.set(u);
+
+      // Conventional current along the winding. Positive U ⇒ current runs along the helix
+      // direction, which by the right-hand rule makes a field along +x inside the coil.
+      offset += dt * u * 0.35;
+      current.place(offset);
+      current.mesh.visible = Math.abs(u) > 0.02;
+
+      const fluxMax = FLUX_SCALE * 2 * 0.6;
+      const fluxFill = Math.min(1, Math.abs(result.flux) / fluxMax);
+      fluxDisc.material.opacity = 0.05 + 0.4 * fluxFill;
+      magnetArrow.set([Math.sign(result.flux) || 1, 0, 0], 0.15 + 0.9 * fluxFill);
+      magnetArrow.group.position.x = -Math.sign(result.flux) * 0.45 * (0.15 + 0.9 * fluxFill);
+      const induced = Math.min(1, Math.abs(u));
+      const inducedDir = -Math.sign(result.fluxRate);
+      inducedArrow.group.visible = induced > 0.06;
+      if (induced > 0.06) {
+        inducedArrow.set([inducedDir, 0, 0], 0.2 + 0.9 * induced);
+        inducedArrow.group.position.x = -inducedDir * 0.45 * (0.2 + 0.9 * induced);
+      }
+      // Induced field inside points along inducedDir; it leaves the coil at the end it points to.
+      // So the left opening (facing the magnet) is a north pole when the induced field points to −x.
+      const showPole = induced > 0.12;
+      inducedPole.show(showPole); inducedHint.show(showPole);
+      if (showPole) {
+        const pole = inducedDir < 0 ? 'N' : 'S';
+        inducedPole.set(pole);
+        inducedPole.element.className = `em-label em-label-${pole === 'N' ? 'n' : 'south'} em-label-m`;
+        const approaching = result.velocity > 0;
+        inducedHint.set(approaching ? 'Spule bremst: stößt ab' : 'Spule bremst: zieht zurück');
+      }
+
+      const facing = state.reverse ? 'Südpol' : 'Nordpol';
+      let note;
+      if (speed === 0) note = `Der Magnet steht still vor der Spule. Sein Feld durchsetzt die Spule, aber der Fluss ändert sich nicht. Deshalb ist U = 0.`;
+      else if (Math.abs(result.velocity) < 0.06 * speed * 1.4) note = 'Umkehrpunkt: Der Magnet ist kurz in Ruhe. Der Fluss ändert sich in diesem Moment nicht, also ist U fast null.';
+      else if (result.velocity > 0) note = `Der ${facing} nähert sich: Der Fluss durch die Spule wächst. Die Spule baut an ihrer Öffnung einen gleichnamigen Pol auf (${state.reverse ? 'S' : 'N'}) und bremst damit die Annäherung (Lenz).`;
+      else note = `Der ${facing} entfernt sich: Der Fluss nimmt ab. Jetzt entsteht an der Öffnung der ungleichnamige Pol (${state.reverse ? 'N' : 'S'}). Er zieht den Magneten zurück, die Spannung wechselt ihr Vorzeichen.`;
       return {
         metrics: [
           {label: 'Induktionsspannung', value: `${format(result.voltage * 1000, 0)} mV`},
           {label: 'Fluss je Windung', value: `${format(result.flux * 1000, 3)} mWb`},
-          {label: 'Windungen', value: `${result.turns}`}
+          {label: 'Flussänderung', value: `${format(result.fluxRate * 1000, 2)} mWb/s`},
         ],
-        note: Number(state.speed) === 0 ? 'Der Magnet steht. Der magnetische Fluss bleibt konstant und die Induktionsspannung ist null.' : direction + ' Das Vorzeichen bezieht sich auf die feste Anschlussrichtung des Messgeräts.',
-        graph: {value: result.voltage * 1000, max: result.scale * 1000, label: 'Induktionsspannung in mV'}
+        note,
+        graph: {value: result.voltage * 1000, max: result.scale * 1000, label: 'Induktionsspannung in mV'},
       };
-    }
+    },
   };
 }
