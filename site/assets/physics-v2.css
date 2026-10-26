@@ -42,3 +42,42 @@
 @media(max-width:900px){.physics-page .sim-body{grid-template-columns:minmax(0,1fr) 245px}.physics-page .sim-3d,.physics-page .sim-2d{height:390px}.physics-page .controls{padding:23px 18px}}
 @media(max-width:640px){.physics-page .sim-body{grid-template-columns:1fr}.physics-page .sim-heading{padding:20px;gap:17px;align-items:flex-start}.physics-page .sim-heading h3{font-size:20px}.physics-page .view-buttons{align-self:flex-start}.physics-page .sim-3d,.physics-page .sim-2d{height:330px}.physics-page .sim-3d .sim-hint{font-size:9px;left:17px;bottom:15px;right:17px}.physics-page .model-status{top:17px;left:17px}.physics-page .controls{padding:23px}.physics-page .sim-result{margin-top:20px}.physics-page .diagram>svg{height:auto}.physics-page .coil-illustration img{height:auto;aspect-ratio:1.55}.physics-page .schematic-legend{font-size:10px;gap:15px;padding:13px 17px}.physics-page .sim-explanation{padding:19px}.physics-page .lesson-tags{gap:6px}.physics-page .lesson-tags span{font-size:10px;padding:5px 10px}}
 @media print{.physics-page .sim-stage{background:white}.physics-page .model-status{display:none}.physics-page .sim-2d{height:250px;background:white}.physics-page .schematic-legend{color:#444}.physics-page .panel,.physics-page .simulation,.physics-page .exercise{box-shadow:none}.physics-page .sim-result{background:white}.physics-page .coil-illustration img{height:170px;object-fit:contain}.physics-page .diagram>svg{height:170px}.physics-page .sim-2d svg{height:240px}}
+
+/* A theory-first chapter: one idea, questions to think through, then the model. */
+.physics-page .lesson-hero{padding:42px 0 32px}
+.physics-page .lesson-hero .lead{max-width:750px;font-size:17px;line-height:1.8}
+.physics-page .lesson-hero h1{font-size:clamp(43px,5vw,64px);line-height:1.1}
+.physics-page .lesson-nav{margin-bottom:25px}
+.physics-page .coil-big-idea{background:linear-gradient(120deg,#e9f0e0,#f1f5eb);border:1px solid #d5e0cb;border-radius:12px;padding:24px 28px;margin:0 0 12px}
+.physics-page .coil-big-idea .lab-eyebrow{margin-bottom:8px}
+.physics-page .coil-big-idea p{font-size:18px;line-height:1.65;color:#375d43;max-width:900px;margin:0}
+.physics-page .coil-challenges{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:24px 0}
+.physics-page .coil-challenges span{font-size:12px;color:#5c7356;padding:14px 16px;border:1px solid #dce5d4;border-radius:8px;background:#f0f5e9;line-height:1.6}
+.physics-page .coil-challenges b{display:block;font:italic 17px Georgia,serif;color:#85a077;margin-bottom:5px}
+.physics-page .coil-next-note{font-size:13px;color:#657a5e;margin:22px 0 0}
+.physics-page .coil-next-note a{text-underline-offset:3px;color:#3c714d}
+.physics-page .coil-depth-section{padding:20px 0}
+.physics-page .calculation-depth{border:1px solid #dce3d4;background:#f2f5ec;border-radius:12px;padding:0 24px;margin:0}
+.physics-page .calculation-depth>summary{padding:22px 0;min-height:66px;font-size:17px;font-weight:600;line-height:1.5}
+.physics-page .calculation-depth>summary span{color:#4f6c46}
+.physics-page .calculation-depth>summary small{display:block;font-size:11px;font-weight:400;color:#819078;margin:4px 0 0 18px}
+.physics-page .calculation-depth[open]{padding-bottom:24px}
+.physics-page .calculation-depth[open]>summary{border-bottom:1px solid #dce3d4;margin-bottom:22px}
+.physics-page .calculation-depth>.callout:first-of-type{margin-top:0}
+.physics-page .calculation-depth .exercise{box-shadow:none}
+.physics-page .calculation-depth .data-grid{margin:22px 0}
+.physics-page .calculation-depth .formula{font-size:23px}
+.physics-page .calculation-hint{background:#f0f4e8;border-radius:6px;padding:12px;font-size:12px}
+.physics-page .exercise>.solution{margin-top:18px}
+.physics-page .exercise>.solution>summary{min-height:38px;display:flex;align-items:center;gap:8px}
+.physics-page .exercise>.solution>summary::before{content:'+';font:20px Georgia,serif;color:#6d8a62}
+.physics-page .exercise>.solution[open]>summary::before{content:'−'}
+.physics-page .coil-related{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin-top:23px}
+.physics-page .coil-related a{display:flex;flex-direction:column;position:relative;padding:21px 23px 42px;background:#edf3e6;border:1px solid #d8e3cf;border-radius:10px;text-decoration:none;transition:background .2s}
+.physics-page .coil-related a:hover{background:#e3eddb}
+.physics-page .coil-related small{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:#7b8d70;margin-bottom:8px}
+.physics-page .coil-related strong{font-weight:600;font-size:16px;line-height:1.5;color:#46663c}
+.physics-page .coil-related a>span{position:absolute;right:20px;bottom:12px;font-size:20px;color:#6f8d60}
+@media(max-width:800px){.physics-page .coil-related{grid-template-columns:repeat(2,minmax(0,1fr))}.physics-page .coil-challenges{gap:10px}}
+@media(max-width:640px){.physics-page .lesson-hero{padding:30px 0}.physics-page .lesson-hero h1{font-size:42px}.physics-page .lesson-hero .lead{font-size:16px}.physics-page .coil-big-idea{padding:20px 22px}.physics-page .coil-big-idea p{font-size:16px}.physics-page .coil-challenges{grid-template-columns:1fr;gap:8px}.physics-page .coil-challenges span{padding:12px 15px}.physics-page .coil-challenges b{display:inline-block;margin:0 10px 0 0}.physics-page .coil-related{grid-template-columns:1fr;gap:12px}.physics-page .coil-related a{padding:19px 22px 34px}.physics-page .calculation-depth{padding:0 18px}.physics-page .calculation-depth>summary{font-size:16px;padding:20px 0}.physics-page .calculation-depth>summary small{font-size:10px}.physics-page .calculation-depth .two-col{gap:16px}.physics-page .calculation-depth .panel{padding:18px}.physics-page .calculation-depth .formula{font-size:21px;padding:15px}}
+@media print{.physics-page .lesson-hero h1{font-size:28pt}.physics-page .coil-big-idea{background:white;padding:14px}.physics-page .coil-big-idea p{font-size:11pt}.physics-page .coil-challenges,.physics-page .coil-related{display:none}.physics-page .calculation-depth{background:white;border:1px solid #ddd;padding:12px}.physics-page .calculation-depth::details-content{content-visibility:visible}.physics-page .calculation-depth>summary{padding:4px 0;min-height:0}.physics-page .calculation-depth>summary small{margin-left:0}.physics-page .calculation-depth .two-col{display:block}.physics-page .calculation-depth .panel{margin-bottom:14px}.physics-page .exercise>.solution::details-content{content-visibility:visible}}

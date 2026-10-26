@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-labelledby="title desc"><title id="title">Eine Generatorspule zwischen zwei Magnetpolen</title><desc id="desc">Räumliche Illustration eines Generators mit Kupferspule, Magnetpolen und einer Handkurbel. Die Spule ist über eine Welle mit der Kurbel verbunden.</desc><defs>
+<linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fbfbf5"/><stop offset="1" stop-color="#e5ecdf"/></linearGradient>
+<linearGradient id="copper" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="#edc897"/><stop offset=".3" stop-color="#c48954"/><stop offset=".6" stop-color="#aa6a3c"/><stop offset=".83" stop-color="#e3b27a"/><stop offset="1" stop-color="#b47542"/></linearGradient>
+<linearGradient id="steel" x2="0" y2="1"><stop stop-color="#c4cec5"/><stop offset=".25" stop-color="#82988a"/><stop offset=".55" stop-color="#516b5d"/><stop offset="1" stop-color="#8b9e91"/></linearGradient>
+<linearGradient id="red" x2="1" y2="1"><stop stop-color="#c99478"/><stop offset="1" stop-color="#a96e55"/></linearGradient>
+<linearGradient id="blue" x2="1" y2="1"><stop stop-color="#8cabac"/><stop offset="1" stop-color="#527a7e"/></linearGradient>
+<linearGradient id="ceramic" x2="0" y2="1"><stop stop-color="#faf9ec"/><stop offset="1" stop-color="#cdd8c7"/></linearGradient>
+<filter id="shadow" x="-.5" y="-1" width="2" height="3"><feGaussianBlur stdDeviation="14"/></filter>
+</defs><rect width="900" height="600" fill="url(#paper)"/>
+<ellipse cx="460" cy="450" rx="280" ry="34" fill="#4d6750" opacity=".14" filter="url(#shadow)"/>
+<path d="M205 418L612 389 734 436 326 471Z" fill="#d7e0cf"/>
+<path d="M205 418V437L326 490V471Z" fill="#a9bba3"/>
+<path d="M326 471L734 436V454L326 490Z" fill="#bccbb4"/>
+<path d="M251 239L315 215 353 233 289 258Z" fill="#d8ad91"/>
+<path d="M251 239V402L289 421V258Z" fill="#a86f57"/>
+<path d="M289 258L353 233V396L289 421Z" fill="url(#red)"/>
+<path d="M587 213L651 189 689 207 625 232Z" fill="#afc4bf"/>
+<path d="M587 213V377L625 396V232Z" fill="#4f7776"/>
+<path d="M625 232L689 207V371L625 396Z" fill="url(#blue)"/>
+<text x="321" y="337" font-family="Georgia,serif" font-size="36" fill="#fff5e9" text-anchor="middle">N</text>
+<text x="654" y="311" font-family="Georgia,serif" font-size="36" fill="#f0f6eb" text-anchor="middle">S</text>
+<path d="M326 327L696 297" stroke="#435c50" stroke-width="12" stroke-linecap="round"/>
+<path d="M326 324L696 294" stroke="#b4c4b3" stroke-width="3" stroke-linecap="round"/>
+<g stroke-linejoin="round" fill="none">
+<path d="M388 228L547 214 555 379 396 392Z" stroke="#995d34" stroke-width="17"/>
+<path d="M388 225L547 211 555 376 396 389Z" stroke="url(#copper)" stroke-width="12"/>
+<path d="M401 235L534 223 541 365 408 377Z" stroke="#a76c3c" stroke-width="8"/>
+<path d="M401 233L534 221 541 363 408 375Z" stroke="#e3b381" stroke-width="4"/>
+<path d="M415 245L521 235 527 353 421 364Z" stroke="#ae7546" stroke-width="8"/>
+<path d="M415 243L521 233 527 351 421 362Z" stroke="#edc899" stroke-width="3"/>
+</g>
+<path d="M696 297L724 311 729 360 765 372" stroke="#516c5a" stroke-width="12" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M749 367L786 383" stroke="#bd8756" stroke-width="21" stroke-linecap="round"/>
+<path d="M749 362L784 377" stroke="#e1b584" stroke-width="6" stroke-linecap="round"/>
+<path d="M439 180C396 174 364 190 355 216" stroke="#829b7c" stroke-width="2" fill="none" stroke-dasharray="5 7"/>
+<path d="M347 204L353 222 368 211" stroke="#829b7c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M449 440L466 435 486 442 468 449Z" fill="#f3f4e9"/>
+<circle cx="467" cy="441" r="4" fill="#9aad91"/>
+</svg>

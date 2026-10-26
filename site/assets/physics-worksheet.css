@@ -1,8 +1,18 @@
-#hausuebung textarea{display:block;width:100%;max-width:100%;min-height:7rem;box-sizing:border-box;resize:vertical;padding:.8rem;margin-top:.5rem;border:1px solid #a8b7a8;border-radius:.6rem;background:var(--paper,#fff);color:inherit;font:inherit;line-height:1.5}
-#hausuebung textarea:focus-visible{outline:3px solid #45775d;outline-offset:2px}
-#hausuebung .worksheet-question label{font-weight:600}
-#hausuebung .worksheet-solutions{margin-top:1.5rem}
-#hausuebung summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
-#hausuebung .check-control{min-height:44px}
-#hausuebung h4{font-size:1.1rem;margin-top:0}
-@media print{#hausuebung textarea{background:white;color:black}#hausuebung .panel{break-inside:avoid}#hausuebung .check-control,#hausuebung .progress-label{display:none}}
+/* Each answer belongs to its question and remains closed until requested. */
+#hausuebung{padding-top:30px;padding-bottom:34px}
+#hausuebung .exercise-grid{gap:18px;align-items:start}
+#hausuebung .worksheet-question{padding:25px 27px;background:#fffefa;border-color:#dbe4d4;box-shadow:0 4px 20px #2c4e2c07}
+#hausuebung .worksheet-question>.section-number{display:inline-block;font-size:10px;letter-spacing:1.4px;color:#71876b;margin-bottom:8px}
+#hausuebung .worksheet-question h3{font-size:20px;line-height:1.35;margin:0 0 12px}
+#hausuebung .worksheet-question>p{font-size:14px;line-height:1.75;margin-bottom:12px}
+#hausuebung .solution{border-top:1px solid #dce5d3;padding-top:0;margin-top:17px}
+#hausuebung summary{min-height:44px;padding:12px 0;cursor:pointer;color:#3e6b46;font-size:12px;font-weight:650;list-style-position:inside}
+#hausuebung summary:hover{color:#224d31}
+#hausuebung .worksheet-answer{border-radius:8px;background:#edf3e7;padding:17px 19px;margin-bottom:1px}
+#hausuebung .worksheet-answer p{font-size:13px;line-height:1.7;margin-bottom:12px}
+#hausuebung .worksheet-answer p:last-child{margin-bottom:0}
+#hausuebung .worksheet-answer strong{font-weight:650;color:#335a3c}
+#hausuebung .worksheet-answer .small{font-size:11px;color:#71816a}
+@media(min-width:900px){#hausuebung .worksheet-question:last-child{grid-column:1/-1}#hausuebung .worksheet-question:last-child>p{max-width:900px}}
+@media(max-width:640px){#hausuebung{padding-top:22px}#hausuebung .worksheet-question{padding:21px}#hausuebung .worksheet-question h3{font-size:19px}#hausuebung .worksheet-answer{padding:15px}}
+@media print{#hausuebung .worksheet-question{break-inside:avoid;box-shadow:none;padding:14px;background:white}#hausuebung .worksheet-answer{background:white}#hausuebung details::details-content{content-visibility:visible}}

@@ -37,24 +37,6 @@
   $('view-3d').addEventListener('click', () => view('3d'));
   addEventListener('coilready', () => view('3d'));
   addEventListener('coilfailed', () => { view('2d'); $('view-3d').disabled = true; $('view-3d').title = 'WebGL ist auf diesem Gerät nicht verfügbar.'; });
-  const solved = new Set();
-  document.querySelectorAll('.exercise').forEach((exercise, index) => {
-    const input = exercise.querySelector('input');
-    const feedback = exercise.querySelector('.feedback');
-    input.addEventListener('input', () => { solved.delete(index); $('task-progress').textContent = `${solved.size} von 8`; feedback.textContent = ''; delete feedback.dataset.correct; });
-    exercise.querySelector('form').addEventListener('submit', event => {
-      event.preventDefault();
-      const unit = exercise.dataset.unit.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const pattern = new RegExp(`^\\s*([+-]?(?:\\d+(?:[.,]\\d*)?|[.,]\\d+))\\s*(?:${unit})?\\s*$`, 'i');
-      const match = input.value.match(pattern);
-      if (!match) { feedback.textContent = `Gib eine Zahl in ${exercise.dataset.unit} ein, zum Beispiel 1,5.`; feedback.dataset.correct = 'false'; return; }
-      const correct = Math.abs(Number(match[1].replace(',', '.')) - Number(exercise.dataset.answer)) < 0.00001;
-      feedback.dataset.correct = String(correct);
-      feedback.textContent = correct ? 'Richtig. Dein Ergebnis stimmt.' : 'Noch nicht ganz. Prüfe die Formel und die Einheiten, oder öffne den Tipp.';
-      if (correct) solved.add(index); else solved.delete(index);
-      $('task-progress').textContent = `${solved.size} von 8`;
-    });
-  });
   $('print').addEventListener('click', () => window.print());
   update();
 })();
