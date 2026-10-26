@@ -1,5 +1,7 @@
-// The air-coil reference is quantitative. Domain alignment is qualitative only:
-// no permeability, saturation field or universal iron amplification is invented.
+// Coil with a removable soft-iron core.
+// The air-coil reference is quantitative (long solenoid, N = 400, ℓ = 0,2 m).
+// Domain alignment and the iron field picture are qualitative only: no permeability,
+// saturation field or universal iron amplification is invented.
 export function calculate(state, time = 0) {
   const current = Number(state.current ?? .5);
   return {
@@ -11,145 +13,325 @@ export function calculate(state, time = 0) {
   };
 }
 
-export function createExperiment({ THREE, group }) {
-  const copper = new THREE.MeshStandardMaterial({color: 0xc8864b, metalness: .72, roughness: .24});
-  const steel = new THREE.MeshStandardMaterial({color: 0xa6b7b5, metalness: .68, roughness: .3, transparent: true});
-  const dark = new THREE.MeshStandardMaterial({color: 0x29453f, metalness: .24, roughness: .55});
-  const cream = new THREE.MeshStandardMaterial({color: 0xdacbb3, roughness: .64});
-  const mint = 0x9ee2bd;
-  const yAxis = new THREE.Vector3(0, 1, 0);
-  const xAxis = new THREE.Vector3(1, 0, 0);
-  const fmt = (value, decimals = 2) => value.toLocaleString('de-DE', {maximumFractionDigits: decimals});
+// Small deterministic PRNG so the domain pattern never flickers between reloads.
+function random(seed) {
+  let s = seed >>> 0;
+  return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+}
 
-  function mesh(geometry, material, x, y, z, parent = group) {
-    const object = new THREE.Mesh(geometry, material);
-    object.position.set(x, y, z); object.castShadow = true; object.receiveShadow = true;
-    parent.add(object); return object;
-  }
-  function textSprite(text, color = '#dcebe3', scale = 1) {
-    const bitmap = document.createElement('canvas');
-    const ctx = bitmap.getContext('2d');
-    ctx.font = '600 36px system-ui, sans-serif';
-    bitmap.width = Math.ceil(ctx.measureText(text).width + 36); bitmap.height = 80;
-    ctx.fillStyle = color; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.font = '600 36px system-ui, sans-serif'; ctx.fillText(text, bitmap.width / 2, 40);
-    const texture = new THREE.CanvasTexture(bitmap); texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: texture, depthTest: false}));
-    sprite.scale.set(bitmap.width / 80 * .5 * scale, .5 * scale, 1); return sprite;
-  }
-  function label(text, x, y, z, color, scale = 1) {
-    const sprite = textSprite(text, color, scale); sprite.position.set(x, y, z); group.add(sprite); return sprite;
-  }
-  function cylinder(radius, length, material, x, y, z) {
-    const object = mesh(new THREE.CylinderGeometry(radius, radius, length, 48), material, x, y, z);
-    object.rotation.z = Math.PI / 2; return object;
-  }
-  function tube(points, radius, material, parent = group) {
-    const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
-    const object = new THREE.Mesh(new THREE.TubeGeometry(curve, Math.max(40, points.length * 3), radius, 8, false), material);
-    parent.add(object); return object;
+export function createExperiment({ THREE, group, kit }) {
+  const { mats } = kit;
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const fmt = (value, decimals = 2) => (Math.abs(value) < 1e-9 ? 0 : value).toLocaleString('de-DE', { maximumFractionDigits: decimals });
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+  // ---------- geometry constants (scene units) ----------
+  const COIL_R = 0.78, COIL_L = 3.6, CORE_R = 0.5, CORE_L = 4.5;
+  const BASE_TOP = -1.2;
+  const CORE_OUT_X = -4.3; // centre of the core when pulled out to the left
+
+  // ---------- base, supports, bobbin ----------
+  kit.roundedBox([9.7, 0.22, 3.4], 0.1, mats.base, [-1.35, BASE_TOP - 0.11, 0]);
+  // thin cream inlay strip like a lab board
+  kit.roundedBox([9.3, 0.02, 3.0], 0.05, kit.mat(0x3a5850, 0.05, 0.7), [-1.35, BASE_TOP + 0.005, 0]);
+
+  const lathe = (profile, segments = 64) => {
+    const g = new THREE.LatheGeometry(profile.map(([r, y]) => new THREE.Vector2(r, y)), segments);
+    g.rotateZ(-Math.PI / 2); // lathe axis y -> x
+    return g;
+  };
+  const bobbinMat = kit.mat(0x2b3936, 0.05, 0.42, { transparent: true });
+  const bobbin = kit.mesh(lathe([[0.56, -1.86], [0.72, -1.86], [0.72, 1.86], [0.56, 1.86], [0.56, -1.86]]), bobbinMat);
+  const flanges = [-1.88, 1.88].map(x => {
+    const f = kit.mesh(lathe([[0.56, -0.05], [1.02, -0.05], [1.02, 0.05], [0.56, 0.05], [0.56, -0.05]]), bobbinMat);
+    f.position.x = x; return f;
+  });
+  for (const x of [-1.88, 1.88]) {
+    kit.roundedBox([0.36, 0.42, 1.25], 0.06, mats.ceramic, [x, BASE_TOP + 0.21, 0]);
   }
 
-  mesh(new THREE.BoxGeometry(6.35, .16, 1.75), dark, 0, -1.31, 0);
-  for (const x of [-1.85, 1.85]) {
-    mesh(new THREE.BoxGeometry(.3, .36, 1.1), cream, x, -1.05, 0);
-    const flange = cylinder(.91, .1, dark, x, 0, 0);
-    flange.material = dark;
-  }
-  const winding = [];
-  for (let index = 0; index <= 18 * 48; index++) {
-    const t = index / (18 * 48), angle = t * 18 * 2 * Math.PI;
-    winding.push([-1.8 + 3.6 * t, .76 * Math.cos(angle), .76 * Math.sin(angle)]);
-  }
-  tube(winding, .046, copper);
-  const leadMaterial = new THREE.MeshStandardMaterial({color: 0x4e8274, roughness: .45});
-  tube([[-1.8, .76, 0], [-2.2, .8, .15], [-2.6, -.8, .85], [-2.5, -1.2, .85]], .038, leadMaterial);
-  tube([[1.8, .76, 0], [2.15, .8, -.15], [2.55, -.8, .85], [2.45, -1.2, .85]], .038, leadMaterial);
-  for (const x of [-2.5, 2.45]) {
-    mesh(new THREE.CylinderGeometry(.11, .11, .13, 16), copper, x, -1.16, .85);
-  }
-  const core = cylinder(.49, 5.15, steel, 0, 0, 0);
-  const coreEnd = new THREE.MeshStandardMaterial({color: 0x759590, metalness: .68, roughness: .4, transparent: true});
-  const endCaps = [-2.58, 2.58].map(x => cylinder(.495, .035, coreEnd, x, 0, 0));
-  label('400 Windungen · Länge 20 cm', 0, -1.13, 1.15, '#afc9bc', .85);
-  const materialLabel = label('EISENKERN', 0, 2.17, 0, '#c8dcd3', .85);
-  const airLabel = label('LUFTSPULE', 0, 2.17, 0, '#c8dcd3', .85);
-  const domainLabel = label('Magnetische Bezirke · schematisch', 0, 1.82, 0, '#add3c1', .8);
+  // ---------- winding (symbolic 34 turns, labelled as 400) ----------
+  const TURNS = 34;
+  const copper = mats.copper.clone(); copper.transparent = true;
+  const coil = kit.coil({ radius: COIL_R, length: COIL_L, turns: TURNS, wireRadius: 0.048, material: copper, segmentsPerTurn: 28 });
+  const helix = coil.userData.curve;
+  // leads: both helix ends sit at (±L/2, R, 0)
+  const supplyPos = V(0, BASE_TOP, -1.38);
+  kit.roundedBox([1.25, 0.62, 0.55], 0.08, mats.plastic, [supplyPos.x, BASE_TOP + 0.31, supplyPos.z]);
+  kit.roundedBox([0.62, 0.22, 0.02], 0.03, kit.mat(0x9fb5a7, 0, 0.35), [supplyPos.x, BASE_TOP + 0.4, supplyPos.z + 0.28]);
+  const plusPos = V(-0.38, BASE_TOP + 0.14, supplyPos.z + 0.3);
+  const minusPos = V(0.38, BASE_TOP + 0.14, supplyPos.z + 0.3);
+  kit.cylinder(0.065, 0.12, mats.cableRed, [plusPos.x, plusPos.y, plusPos.z + 0.03]).rotation.x = Math.PI / 2;
+  kit.cylinder(0.065, 0.12, mats.cableBlack, [minusPos.x, minusPos.y, minusPos.z + 0.03]).rotation.x = Math.PI / 2;
+  const leadIn = kit.wire([[-COIL_L / 2, COIL_R, 0], [-COIL_L / 2 - 0.05, COIL_R + 0.12, -0.25], [-1.55, 1.05, -0.9], [-0.9, 0.25, -1.35], [plusPos.x, plusPos.y + 0.02, plusPos.z + 0.12]], 0.032, mats.cableRed);
+  const leadOut = kit.wire([[COIL_L / 2, COIL_R, 0], [COIL_L / 2 + 0.05, COIL_R + 0.12, -0.25], [1.55, 1.05, -0.9], [0.9, 0.25, -1.35], [minusPos.x, minusPos.y + 0.02, minusPos.z + 0.12]], 0.032, mats.cableBlack);
 
-  // Each path passes through the core from left to right and returns outside.
-  // Field arrows are stationary direction symbols, not moving particles.
-  const path = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-2.65, 0, 0), new THREE.Vector3(-1.5, 0, 0),
-    new THREE.Vector3(1.5, 0, 0), new THREE.Vector3(2.65, 0, 0),
-    new THREE.Vector3(3.15, .45, 0), new THREE.Vector3(2.3, 1.27, 0),
-    new THREE.Vector3(0, 1.47, 0), new THREE.Vector3(-2.3, 1.27, 0),
-    new THREE.Vector3(-3.15, .45, 0),
-  ], true, 'catmullrom', .3);
-  const paths = [];
-  for (let index = 0; index < 5; index++) {
-    const container = new THREE.Group(); container.rotation.x = index * Math.PI * 2 / 5;
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(path.getPoints(140)), new THREE.LineBasicMaterial({color: mint, transparent: true, opacity: .4}));
-    container.add(line);
-    const arrow = new THREE.Mesh(new THREE.ConeGeometry(.065, .23, 10), new THREE.MeshBasicMaterial({color: mint}));
-    arrow.position.copy(path.getPointAt(.67)); container.add(arrow);
-    group.add(container); paths.push({container, line, arrow});
-  }
-  const centerArrow = new THREE.ArrowHelper(xAxis, new THREE.Vector3(-.55, .01, .62), 1.1, mint, .18, .12);
-  centerArrow.line.material.depthTest = false; centerArrow.cone.material.depthTest = false;
-  group.add(centerArrow);
-  const north = label('N', 3.55, .2, 0, '#f4ae91', 1.6);
-  const south = label('S', -3.55, .2, 0, '#9bcce7', 1.6);
+  // Conventional current: + terminal -> red lead -> helix (t: 0 -> 1) -> black lead -> − terminal.
+  // The helix turns positively about +x, so I > 0 makes the field point to +x inside: north pole on the right.
+  const currentDots = kit.dots(kit.helixCurve({ radius: COIL_R + 0.06, length: COIL_L, turns: TURNS }), { count: 120, radius: 0.026, color: 0xffcf6e, emissive: 0.9 });
+  const leadDotsIn = kit.dots(new THREE.CatmullRomCurve3(leadIn.userData.curve.points.slice().reverse(), false, 'centripetal'), { count: 8, radius: 0.034, color: 0xffcf6e, emissive: 0.9 });
+  const leadDotsOut = kit.dots(leadOut.userData.curve, { count: 8, radius: 0.034, color: 0xffcf6e, emissive: 0.9 });
 
-  // A fixed distribution avoids flicker when the current is adjusted.
-  const domains = new THREE.Group(); group.add(domains);
-  const domainArrows = [];
-  for (let i = 0; i < 18; i++) {
-    const layer = Math.floor(i / 6), x = -.96 + (i % 6) * .385;
-    const initial = new THREE.Vector3(Math.cos(i * 2.4), Math.sin(i * 2.4), .3 * Math.sin(i * 1.7)).normalize();
-    const arrow = new THREE.ArrowHelper(initial, new THREE.Vector3(x, (layer - 1) * .24, .26), .3, 0xd8f4ce, .09, .065);
-    arrow.line.material.depthTest = false; arrow.cone.material.depthTest = false;
-    domains.add(arrow); domainArrows.push({arrow, initial});
+  // ---------- iron core (slides along the axis) ----------
+  const coreGroup = new THREE.Group(); group.add(coreGroup);
+  const ironMat = kit.mat(0x6a7174, 0.78, 0.42, { transparent: true });
+  const coreMesh = kit.mesh(new THREE.CylinderGeometry(CORE_R, CORE_R, CORE_L, 64, 1), ironMat, [0, 0, 0], coreGroup);
+  coreMesh.rotation.z = Math.PI / 2;
+  const capMat = kit.mat(0x8c9496, 0.85, 0.3, { transparent: true });
+  for (const x of [-CORE_L / 2, CORE_L / 2]) {
+    const cap = kit.mesh(new THREE.CylinderGeometry(CORE_R * 0.995, CORE_R * 0.995, 0.012, 64), capMat, [x, 0, 0], coreGroup);
+    cap.rotation.z = Math.PI / 2;
   }
-  const target = new THREE.Vector3(), direction = new THREE.Vector3();
+  // wooden cradle that receives the core when it is pulled out
+  const vShape = new THREE.Shape([[-0.45, 0], [0.45, 0], [0.45, 0.7], [0.25, 0.7], [0, 0.45], [-0.25, 0.7], [-0.45, 0.7]].map(([a, b]) => new THREE.Vector2(a, b)));
+  const vGeom = new THREE.ExtrudeGeometry(vShape, { depth: 0.3, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025, bevelSegments: 2 });
+  vGeom.translate(0, 0, -0.15); vGeom.rotateY(Math.PI / 2);
+  for (const x of [-5.75, -2.85]) kit.mesh(vGeom, mats.wood, [x, BASE_TOP, 0]);
+  const coreLabel = kit.label('Eisenkern', [-CORE_L / 2 + 0.05, -CORE_R - 0.32, 0.45], { parent: coreGroup, tone: 'dark', size: 's' });
+
+  // ---------- Weiss domains: instanced arrows inside the core ----------
+  const arrowGeom = new THREE.LatheGeometry([
+    [0, -0.12], [0.022, -0.12], [0.022, 0.025], [0.052, 0.025], [0, 0.125],
+  ].map(([r, y]) => new THREE.Vector2(r, y)), 10);
+  const domainMat = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.05, emissive: 0x0c2a1d, emissiveIntensity: 0.25 });
+  const rand = random(7);
+  const domainData = [];
+  for (let x = -CORE_L / 2 + 0.2; x <= CORE_L / 2 - 0.19; x += 0.27) {
+    for (let y = -0.33; y <= 0.34; y += 0.22) {
+      for (let z = -0.33; z <= 0.34; z += 0.22) {
+        if (y * y + z * z > 0.37 * 0.37) continue;
+        const jitter = V((rand() - 0.5) * 0.06, (rand() - 0.5) * 0.06, (rand() - 0.5) * 0.06);
+        // isotropic random start direction
+        const u = rand() * 2 - 1, phi = rand() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+        domainData.push({ pos: V(x, y, z).add(jitter), dir: V(u, s * Math.cos(phi), s * Math.sin(phi)), phase: rand() * 6.28, threshold: rand() });
+      }
+    }
+  }
+  const domains = new THREE.InstancedMesh(arrowGeom, domainMat, domainData.length);
+  domains.renderOrder = 3;
+  coreGroup.add(domains);
+  const domainLabel = kit.label('Weiss-Bezirke', [0.2, -CORE_R - 0.35, 0.55], { parent: coreGroup, tone: 'accent', size: 's' });
+  const colA = new THREE.Color(0x8fa69a), colB = new THREE.Color(0x2c8a5e), tmpCol = new THREE.Color();
+  const tmpObj = new THREE.Object3D(), yUp = V(0, 1, 0), tmpDir = V(0, 0, 0), targetDir = V(1, 0, 0);
+
+  // ---------- magnetic field: exact off-axis field of circular current loops ----------
+  // (complete elliptic integrals via AGM; constants dropped because only the shape matters)
+  function ellipticKE(m) {
+    let a = 1, b = Math.sqrt(1 - m), c2sum = m / 2, pow = 0.5;
+    for (let i = 0; i < 12; i++) {
+      const an = (a + b) / 2, bn = Math.sqrt(a * b), cn = (a - b) / 2;
+      pow *= 2; c2sum += pow * cn * cn;
+      a = an; b = bn;
+      if (cn < 1e-12) break;
+    }
+    const K = Math.PI / (2 * a);
+    return [K, K * (1 - c2sum)];
+  }
+  function loopField(radius, x0, rho, x, current, out) {
+    const z = x - x0;
+    const r2 = radius * radius + rho * rho + z * z;
+    const alpha2 = Math.max(r2 - 2 * radius * rho, 1e-4);
+    const beta2 = r2 + 2 * radius * rho, beta = Math.sqrt(beta2);
+    const m = Math.min(1 - alpha2 / beta2, 0.999999);
+    const [K, E] = ellipticKE(m);
+    out[0] += current * ((radius * radius - rho * rho - z * z) * E + alpha2 * K) / (2 * alpha2 * beta);
+    if (rho > 1e-6) out[1] += current * z * (r2 * E - alpha2 * K) / (2 * alpha2 * beta * rho);
+  }
+  const loops = (radius, x0, x1, n, current) => Array.from({ length: n }, (_, j) => [radius, x0 + (x1 - x0) * j / (n - 1), current]);
+  const coilLoops = loops(COIL_R, -COIL_L / 2, COIL_L / 2, 24, 1);
+  // A magnetised iron rod acts like a surface current on its mantle (Amperian model).
+  // This weighting selects a schematic field-line shape, not a permeability
+  // or a prediction of the strength of a particular iron core.
+  const coreLoops = loops(CORE_R, -CORE_L / 2, CORE_L / 2, 22, 5);
+  const makeField = (set) => (p) => {
+    const rho = Math.hypot(p.y, p.z), out = [0, 0];
+    for (const [r, x0, c] of set) loopField(r, x0, rho, p.x, c, out);
+    const k = rho > 1e-9 ? out[1] / rho : 0;
+    return V(out[0], p.y * k, p.z * k);
+  };
+  const fieldAir = makeField(coilLoops);
+  const fieldCore = makeField([...coilLoops, ...coreLoops]);
+
+  // Lines are seeded where they cross the mid-plane OUTSIDE the coil (radius r):
+  // small r gives the tight loops close to the coil, large r the wide outer loops.
+  function traceClosed(fieldFn, r) {
+    const start = V(0, r, 0);
+    const pts = kit.traceField(fieldFn, start, {
+      step: 0.04, maxSteps: 1100, bounds: 6.5,
+      stop: (p, i) => i > 40 && p.distanceTo(start) < 0.07,
+    });
+    const last = pts[pts.length - 1];
+    if (last.distanceTo(start) > 0.12) return null; // did not close inside the bounds
+    pts.pop();
+    return pts;
+  }
+  const rotate = (pts, phi) => pts.map(p => V(p.x, p.y * Math.cos(phi), p.y * Math.sin(phi)));
+  // Keep lines that run through the board from hiding below it: only use planes above the horizon.
+  function buildSet(fieldFn, radii, angles, color, radius) {
+    const lines = [];
+    for (const r of radii) {
+      const pts = traceClosed(fieldFn, r);
+      if (!pts) continue;
+      for (const phi of angles) {
+        const rotated = rotate(pts, phi);
+        if (rotated.some(p => p.y < BASE_TOP + 0.02)) continue;
+        lines.push(kit.flowLine(rotated, { closed: true, color, radius, opacity: 0.9, speed: 0.3, width: 0.32 }));
+      }
+    }
+    return lines;
+  }
+  const airAngles = [0, Math.PI * 0.5, Math.PI * 0.82, Math.PI * 0.18];
+  const coreAngles = [0, Math.PI * 0.5, Math.PI * 0.18, Math.PI * 0.82, Math.PI * 0.34, Math.PI * 0.66];
+  const airLines = buildSet(fieldAir, [1.12, 1.55, 2.3], airAngles, 0x178a55, 0.02);
+  const coreLines = buildSet(fieldCore, [1.08, 1.32, 1.65, 2.1, 2.8], coreAngles, 0x0f7d4b, 0.022);
+
+  // ---------- paper clips at the right pole ----------
+  function clipCurve() {
+    // classic paper clip: nested loops, 0.34 long, 0.11 wide
+    const w = 0.055, l = 0.17;
+    const pts = [[-w * 0.4, -l * 0.55], [-w * 0.4, l * 0.7], [0, l], [w, l * 0.82], [w, -l * 0.82], [0, -l], [-w, -l * 0.82], [-w, l * 0.55], [-w * 0.6, l * 0.75], [-w * 0.2, l * 0.55], [-w * 0.2, -l * 0.35]];
+    return pts.map(([a, b]) => [a, b, 0]);
+  }
+  const clipMat = kit.mat(0xc9cfd1, 0.95, 0.22);
+  const clips = [];
+  for (let i = 0; i < 4; i++) {
+    const holder = new THREE.Group(); group.add(holder); holder.scale.setScalar(1.45);
+    kit.wire(clipCurve(), 0.011, clipMat, holder);
+    // held against the pole face, long axis along the field lines; clip 3 hangs on clip 0
+    const face = [[0.24, 0.22, 0.12], [0.24, -0.18, 0.28], [0.24, -0.3, -0.2], [0.68, 0.16, 0.14]][i];
+    const hang = { pos: V(CORE_L / 2 + face[0], face[1], face[2]), rot: new THREE.Euler(0.35 * (i - 1.5), 0.25 * (i % 2 ? 1 : -1), -Math.PI / 2 + 0.12 * (i - 1.5)) };
+    const rest = { pos: V(2.95 + (i % 2) * 0.32, BASE_TOP + 0.03, 0.75 - i * 0.42), rot: new THREE.Euler(-Math.PI / 2, 0, 0.4 + i * 1.1) };
+    clips.push({ holder, hang, rest, threshold: 0.25 + i * 0.12 });
+  }
+  const qa = new THREE.Quaternion(), qb = new THREE.Quaternion();
+
+  // ---------- labels ----------
+  const north = kit.label('N', [2.75, 0.05, 0], { tone: 'n' });
+  const south = kit.label('S', [-2.75, 0.05, 0], { tone: 'south' });
+  const turnsLabel = kit.label('400 Windungen · ℓ = 20 cm', [0, -COIL_R - 0.15, 1.2], { tone: 'ghost', size: 's' });
+  const currentLabel = kit.label('Strom I', [0.9, COIL_R + 0.28, 0.75], { tone: 'copper', size: 's' });
+
+  // ---------- camera-dependent see-through (zoom in to look inside) ----------
+  const centre = V(0, 0, 0);
+  let closeness = 0;
+  coil.onBeforeRender = (renderer, scene, camera) => {
+    const d = camera.position.distanceTo(centre);
+    closeness = smooth(8.2, 5.2, d);
+  };
+
+  // ---------- state ----------
+  let coreProgress = null; // 1 = inserted, 0 = pulled out
+  let lastTime = null, lastWall = performance.now(), dotOffset = 0;
 
   return {
+    camera: { target: [-1.1, -0.05, 0], distance: 11.2, yaw: 0.42, pitch: 0.36, floor: BASE_TOP - 0.22, shadowSize: 7.5, fitAspect: 1.7 },
+    views: {
+      overview: { target: [-1.1, -0.05, 0], yaw: 0.42, pitch: 0.36, zoom: 1 },
+      inside: { target: [0.35, 0, 0], yaw: 0.62, pitch: 0.2, zoom: 0.4 },
+      field: { target: [0, 0.45, 0], yaw: 0.0, pitch: 0.1, zoom: 0.92 },
+    },
     update(state, time) {
       const result = calculate(state, time);
-      const hasCore = result.core;
-      const showDomains = hasCore && Boolean(state.domains);
-      core.visible = hasCore; endCaps.forEach(cap => {cap.visible = hasCore;});
-      steel.opacity = showDomains ? .25 : 1;
-      coreEnd.opacity = showDomains ? .3 : 1;
-      domains.visible = domainLabel.visible = showDomains;
-      materialLabel.visible = hasCore; airLabel.visible = !hasCore;
-      const active = result.sign !== 0;
-      north.visible = south.visible = centerArrow.visible = active;
-      north.position.x = result.sign < 0 ? -3.55 : 3.55;
-      south.position.x = -north.position.x;
-      centerArrow.position.x = result.sign < 0 ? .55 : -.55;
-      centerArrow.setDirection(target.set(result.sign || 1, 0, 0));
-      paths.forEach(({container, line, arrow}, index) => {
-        container.visible = active && (hasCore || index < 3);
-        line.material.opacity = .14 + .28 * Math.abs(result.current) + (hasCore ? .12 : 0);
-        arrow.quaternion.setFromUnitVectors(yAxis, path.getTangentAt(.67).multiplyScalar(result.sign || 1));
+      const wantCore = result.core;
+      const showDomains = Boolean(state.domains);
+      const I = result.current, absI = Math.abs(I), sign = result.sign;
+
+      // core slide: animate while the clock runs, snap when the model is paused
+      const now = performance.now();
+      const wallDt = Math.min(0.1, (now - lastWall) / 1000); lastWall = now;
+      const paused = lastTime !== null && time === lastTime;
+      const dt = lastTime === null ? 0 : Math.max(0, Math.min(0.1, time - lastTime));
+      lastTime = time;
+      const goal = wantCore ? 1 : 0;
+      if (coreProgress === null || paused) coreProgress = goal;
+      else {
+        const stepSize = Math.max(dt, wallDt) * 0.9;
+        coreProgress += Math.sign(goal - coreProgress) * Math.min(Math.abs(goal - coreProgress), stepSize);
+      }
+      const p = coreProgress * coreProgress * (3 - 2 * coreProgress);
+      coreGroup.position.x = (1 - p) * CORE_OUT_X;
+      const inserted = p; // fraction of the iron inside the coil (visual)
+
+      // see-through when zoomed in (or when domains should be visible)
+      // The domains toggle must reveal the interior even on a narrow screen,
+      // where fitting the apparatus places the camera farther away.
+      const reveal = showDomains ? Math.max(closeness, 0.85) : closeness;
+      ironMat.opacity = showDomains ? 1 - 0.78 * reveal : 1;
+      ironMat.depthWrite = ironMat.opacity > 0.98;
+      capMat.opacity = ironMat.opacity;
+      copper.opacity = 1 - 0.72 * reveal; copper.depthWrite = copper.opacity > 0.98;
+      bobbinMat.opacity = 1 - 0.85 * reveal; bobbinMat.depthWrite = bobbinMat.opacity > 0.98;
+
+      // domains: random at I = 0, aligned with saturation (tanh) as |I| grows — only where iron sits in the field
+      domains.visible = showDomains;
+      const align = result.alignment;
+      targetDir.set(sign || 1, 0, 0);
+      domainData.forEach((d, i) => {
+        // iron outside the coil feels much less field
+        const worldX = d.pos.x + coreGroup.position.x;
+        const inField = smooth(COIL_L / 2 + 0.9, COIL_L / 2 - 0.2, Math.abs(worldX));
+        const a = Math.min(1, align * (0.15 + 0.85 * inField) * (0.75 + 0.5 * d.threshold));
+        const wobble = (1 - a) * 0.22;
+        tmpDir.copy(d.dir);
+        tmpDir.x += Math.sin(time * 1.7 + d.phase) * wobble; tmpDir.y += Math.cos(time * 1.3 + d.phase) * wobble;
+        tmpDir.normalize().lerp(targetDir, a * a * (3 - 2 * a)).normalize();
+        if (tmpDir.lengthSq() < 1e-6) tmpDir.copy(targetDir);
+        tmpObj.position.copy(d.pos);
+        tmpObj.quaternion.setFromUnitVectors(yUp, tmpDir);
+        tmpObj.scale.setScalar(1.0);
+        tmpObj.updateMatrix();
+        domains.setMatrixAt(i, tmpObj.matrix);
+        domains.setColorAt(i, tmpCol.copy(colA).lerp(colB, a));
       });
-      target.set(result.sign || 1, 0, 0);
-      domainArrows.forEach(({arrow, initial}) => {
-        direction.copy(initial).lerp(target, result.alignment).normalize();
-        arrow.setDirection(direction);
+      domains.instanceMatrix.needsUpdate = true;
+      if (domains.instanceColor) domains.instanceColor.needsUpdate = true;
+      domainLabel.show(showDomains);
+
+      // field lines: air-coil picture fades into the iron-core picture
+      const active = absI > 0.001;
+      const speed = active ? sign * (0.18 + 0.32 * absI) : 0;
+      const dim = 1 - 0.7 * closeness;
+      airLines.forEach(l => l.set({ visible: active && (1 - p) > 0.02, strength: dim * (1 - p) * (0.55 + 0.6 * absI), speed }));
+      coreLines.forEach(l => l.set({ visible: active && p > 0.02, strength: dim * p * (0.7 + 0.9 * absI * (0.4 + 0.6 * align)), speed: speed * 1.15 }));
+
+      // current dots in winding and leads
+      dotOffset += dt * sign * (0.012 + 0.03 * absI);
+      currentDots.place(dotOffset);
+      leadDotsIn.place(dotOffset * 9);
+      leadDotsOut.place(dotOffset * 9);
+      for (const d of [currentDots, leadDotsIn, leadDotsOut]) d.mesh.visible = active;
+      currentLabel.show(active);
+
+      // poles follow the current direction (right-hand rule)
+      north.show(active); south.show(active);
+      const poleX = 2.05 + 0.65;
+      north.object.position.x = sign < 0 ? -poleX : poleX;
+      south.object.position.x = -north.object.position.x;
+
+      // Schematic attraction only: clip count is not a calibrated lifting force.
+      const holdField = absI * (0.12 + 0.88 * inserted) * (0.6 + 0.4 * align);
+      clips.forEach((c, i) => {
+        const k = smooth(c.threshold, c.threshold + 0.12, holdField);
+        c.holder.position.lerpVectors(c.rest.pos, c.hang.pos, k);
+        qa.setFromEuler(c.rest.rot); qb.setFromEuler(c.hang.rot);
+        c.holder.quaternion.slerpQuaternions(qa, qb, k);
       });
-      const note = !active
-        ? 'Kein Spulenstrom: Im vereinfachten Modell sind die Bezirke ungeordnet. Eine mögliche Restmagnetisierung des echten Eisenkerns ist hier nicht dargestellt.'
-        : hasCore
-          ? 'Der Eisenkern verstärkt und bündelt das Feld. Die Ausrichtung der Bezirke ist schematisch; eine feste Verstärkung oder einen Tesla-Wert für Eisen gibt dieses Modell nicht vor.'
-          : 'Auch ohne Eisenkern erzeugt die stromdurchflossene Spule ein Magnetfeld. Der Vergleichswert gilt näherungsweise für eine lange Luftspule.';
+      let note;
+      if (!active) note = wantCore
+        ? 'Kein Strom: Die Spule erzeugt kein Feld. Die Weiss-Bezirke im Eisen zeigen kreuz und quer – ihre Wirkungen heben sich nach außen auf. (Ein echter Kern kann einen kleinen Rest behalten; das Modell zeigt ihn nicht.)'
+        : 'Kein Strom, kein Spulenfeld. Stell die Stromstärke hoch, um das Feld der Luftspule zu sehen.';
+      else if (p < 0.5) note = `Luftspule: Der Strom allein erzeugt das Feld (rund ${fmt(Math.abs(result.airField) * 1000)} mT im Inneren einer langen Spule). Innen laufen die Feldlinien fast parallel, außen kehren sie von N nach S zurück. Die Büroklammern zeigen die Anziehung nur schematisch, keine berechnete Tragkraft.`;
+      else if (align < 0.85) note = 'Mit Eisenkern: Das Spulenfeld richtet die Weiss-Bezirke teilweise aus. Ihre Felder addieren sich zum Spulenfeld. Die dichteren Feldlinien und angezogenen Büroklammern zeigen die Verstärkung qualitativ; eine bestimmte Feldstärke oder Tragkraft lässt sich daraus nicht ablesen.';
+      else note = 'Die Pfeile nähern sich im Modell einer gemeinsamen Richtung. So wird Sättigung veranschaulicht: Der zusätzliche Beitrag des Eisens ist begrenzt. Bei welchem Strom ein echter Kern sättigt, hängt von Material und Form ab. Umpolen dreht Bezirke, Feldrichtung und Pole um.';
+
       return {
         metrics: [
-          {label: 'Stromstärke', value: `${fmt(result.current, 1)} A`},
-          {label: 'Luftspule zum Vergleich', value: `${fmt(result.airField * 1000)} mT`},
-          {label: 'Material im Inneren', value: hasCore ? 'Eisenkern' : 'Luft'},
+          { label: 'Stromstärke', value: `${fmt(I, 1)} A` },
+          { label: 'Luftspule zum Vergleich', value: `${fmt(result.airField * 1000)} mT` },
+          { label: 'Ausrichtung (schematisch)', value: p > 0.5 ? !active ? 'ungeordnet' : align < 0.85 ? 'teilweise ausgerichtet' : 'weitgehend ausgerichtet' : 'Kern herausgezogen' },
         ],
         note,
+        graph: null,
       };
     },
   };

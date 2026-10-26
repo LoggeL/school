@@ -1,5 +1,6 @@
-// A rotating coil in a uniform field. A = 0.02 m²; ideal, open-circuit generator.
-// The reduced number of drawn copper strands is symbolic, not the physical N.
+// Hand-cranked AC generator: a rectangular coil turns about a vertical axis (y)
+// in the homogeneous field between two pole shoes. A = 0.02 m²; ideal, open circuit.
+// The drawn winding pack is symbolic; its thickness grows with the chosen N.
 export function calculate(state, time) {
   const speed = Number(state.speed ?? 30);
   const turns = Number(state.turns ?? 100);
@@ -20,162 +21,214 @@ export function calculate(state, time) {
   };
 }
 
-export function createExperiment({ THREE, group }) {
-  const mat = (color, metalness = 0, roughness = 0.5) =>
-    new THREE.MeshStandardMaterial({ color, metalness, roughness });
-  const copper = mat(0xd9904f, 0.8, 0.27);
-  const steel = mat(0x84999b, 0.72, 0.32);
-  const graphite = mat(0x273d3c, 0.25, 0.65);
-  const ivory = mat(0xe6e3ce, 0.05, 0.56);
-  const red = mat(0xbb6256, 0.27, 0.38);
-  const blue = mat(0x56879b, 0.28, 0.38);
-  const wireMaterial = mat(0x292f2a, 0.05, 0.7);
+export function createExperiment({ THREE, group, kit }) {
+  const { mats, mesh, roundedBox, cylinder, wire, label, flowLine, arrow, meter, canvasTexture } = kit;
+  // Vertical rotation axis (y). Field along +x from the N pole shoe (left) to the S pole shoe (right).
+  const baseTop = -1.17;
+  const YC = 0.22;              // height of the coil centre
+  const HALF = 0.74;            // half side of the square coil
+  const SHOE_IN = 1.02;         // inner radius of the concave pole shoes
+  const SHOE_OUT = 1.42;
+  const SPAN = 0.78;            // half opening angle of a shoe (rad)
+  const DEPTH = 1.8;            // magnet depth along z
+  const magnetH = 2.15;
+  const yokeTop = baseTop + 0.38;
+  const magnetTop = yokeTop + magnetH;
 
-  function mesh(geometry, material, position, parent = group) {
-    const item = new THREE.Mesh(geometry, material);
-    item.position.set(...position);
-    item.castShadow = true;
-    item.receiveShadow = true;
-    parent.add(item);
-    return item;
-  }
-  const box = (size, material, position, parent = group) =>
-    mesh(new THREE.BoxGeometry(...size), material, position, parent);
-  function tube(points, radius, material, parent = group) {
-    const curve = new THREE.CatmullRomCurve3(points.map(point => new THREE.Vector3(...point)));
-    return mesh(new THREE.TubeGeometry(curve, 64, radius, 8, false), material, [0, 0, 0], parent);
-  }
-  function text(content, position, color = '#e6ead6', width = 1.7, parent = group) {
-    const bitmap = document.createElement('canvas');
-    bitmap.width = 512; bitmap.height = 128;
-    const ctx = bitmap.getContext('2d');
-    ctx.font = '500 42px system-ui';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = color; ctx.fillText(content, 256, 64);
-    const texture = new THREE.CanvasTexture(bitmap);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false }));
-    sprite.position.set(...position);
-    sprite.scale.set(width, width / 4, 1);
-    parent.add(sprite);
-    return sprite;
-  }
+  // ---------- base ----------
+  roundedBox([7.2, 0.3, 4.5], 0.12, mats.base, [0, -1.35, 0.6]);
+  roundedBox([6.9, 0.03, 4.2], 0.02, kit.mat(0x3b5b52, 0.05, 0.72), [0, -1.19, 0.6]);
 
-  box([6.6, 0.18, 2.6], graphite, [0, -1.35, 0]);
-  box([6.15, 0.055, 2.18], mat(0x4e6459, 0.1, 0.75), [0, -1.23, 0]);
-  for (const x of [-2.65, 2.65]) {
-    box([1, 2.23, 1.6], x < 0 ? red : blue, [x, -0.06, -0.08]);
-    box([0.08, 2.05, 1.4], steel, [x + (x < 0 ? 0.52 : -0.52), -0.06, -0.08]);
-    text(x < 0 ? 'N' : 'S', [x, 1.4, 0], x < 0 ? '#ffc8b1' : '#bbdff2', 1.5);
+  // ---------- magnet circuit: iron yoke, block magnets, concave pole shoes ----------
+  roundedBox([5.4, 0.38, DEPTH], 0.06, mats.ironDark, [0, baseTop + 0.19, 0]);
+  const shoeHeight = 2 * HALF + 0.36;
+  for (const side of [-1, 1]) {
+    roundedBox([0.9, magnetH, DEPTH], 0.07, side < 0 ? mats.magnetN : mats.magnetS, [side * 2.2, yokeTop + magnetH / 2, 0]);
+    const shape = new THREE.Shape();
+    const a0 = side < 0 ? Math.PI - SPAN : -SPAN, a1 = side < 0 ? Math.PI + SPAN : SPAN;
+    shape.absarc(0, 0, SHOE_OUT, a0, a1, false);
+    shape.absarc(0, 0, SHOE_IN, a1, a0, true);
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: shoeHeight, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025, bevelSegments: 2, curveSegments: 36 });
+    geometry.rotateX(-Math.PI / 2);
+    mesh(geometry, mats.iron, [0, YC - shoeHeight / 2, 0]);
+    // iron block connecting shoe and magnet
+    roundedBox([0.42, shoeHeight * 0.96, DEPTH * 0.62], 0.04, mats.iron, [side * 1.55, YC, 0]);
   }
-  text('Magnetfeld B', [-1.45, 1.76, -0.9], '#b9d9b9', 1.95);
+  label('N', [-2.2, magnetTop + 0.3, 0.3], { tone: 'n' });
+  label('S', [2.2, magnetTop + 0.3, 0.3], { tone: 'south' });
 
-  const fieldArrows = new THREE.Group();
-  group.add(fieldArrows);
-  for (const y of [-0.58, 0.63]) {
-    for (const z of [-0.83, 0.83]) {
-      const arrow = new THREE.ArrowHelper(
-        new THREE.Vector3(1, 0, 0), new THREE.Vector3(-2.02, y, z), 4.04, 0xb4d7a4, 0.18, 0.085,
-      );
-      arrow.line.material.transparent = arrow.cone.material.transparent = true;
-      fieldArrows.add(arrow);
+  // ---------- homogeneous field: lines from the N shoe to the S shoe ----------
+  const fieldLines = [];
+  for (const dy of [-0.56, -0.19, 0.19, 0.56]) {
+    for (const z of [-0.6, -0.2, 0.2, 0.6]) {
+      const x = Math.sqrt(SHOE_IN ** 2 - z ** 2) - 0.01;
+      fieldLines.push(flowLine([[-x, YC + dy, z], [0, YC + dy, z], [x, YC + dy, z]], { color: 0x23794f, radius: 0.014, speed: 0.4, repeat: 2, width: 0.34 }));
     }
   }
+  const fieldLabel = label('Magnetfeld B', [0.15, YC - HALF - 0.2, 1.05], { tone: 'accent', size: 's' });
 
+  // ---------- rotor: coil, axle, slip rings, crank ----------
   const rotor = new THREE.Group();
-  rotor.position.y = 0.16;
+  rotor.position.set(0, YC, 0);
   group.add(rotor);
-  const coilArea = mesh(new THREE.PlaneGeometry(1.04, 1.48), new THREE.MeshBasicMaterial({ color: 0xf8c97d, side: THREE.DoubleSide, transparent: true, opacity: 0.075, depthWrite: false }), [0, 0, 0], rotor);
-  coilArea.rotation.y = Math.PI / 2;
-  // At θ = 0 the coil is in the yz plane: its normal and B both point along +x.
-  // Rotation about +y therefore produces Φ = BA cos θ exactly as calculated above.
-  const strands = [];
-  for (let index = 0; index < 10; index++) {
-    const y = 0.77 + index * 0.023;
-    const z = 0.53 + index * 0.023;
-    const r = 0.11;
-    const curve = new THREE.CurvePath();
-    const v = (a, b) => new THREE.Vector3(0, a, b);
-    curve.add(new THREE.LineCurve3(v(y - r, z), v(-y + r, z)));
-    curve.add(new THREE.QuadraticBezierCurve3(v(-y + r, z), v(-y, z), v(-y, z - r)));
-    curve.add(new THREE.LineCurve3(v(-y, z - r), v(-y, -z + r)));
-    curve.add(new THREE.QuadraticBezierCurve3(v(-y, -z + r), v(-y, -z), v(-y + r, -z)));
-    curve.add(new THREE.LineCurve3(v(-y + r, -z), v(y - r, -z)));
-    curve.add(new THREE.QuadraticBezierCurve3(v(y - r, -z), v(y, -z), v(y, -z + r)));
-    curve.add(new THREE.LineCurve3(v(y, -z + r), v(y, z - r)));
-    curve.add(new THREE.QuadraticBezierCurve3(v(y, z - r), v(y, z), v(y - r, z)));
-    strands.push(mesh(new THREE.TubeGeometry(curve, 100, 0.026, 8, true), copper, [index * 0.012, 0, 0], rotor));
-  }
-  const axis = mesh(new THREE.CylinderGeometry(0.075, 0.075, 2.9, 20), steel, [0, 0.25, 0], rotor);
-  axis.receiveShadow = false;
-  box([0.16, 0.13, 1.15], ivory, [0, 0.69, 0], rotor);
-  box([0.16, 0.13, 1.15], ivory, [0, -0.69, 0], rotor);
-  box([0.95, 0.085, 0.085], steel, [0.42, 1.73, 0], rotor);
-  mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.33, 16), graphite, [0.85, 1.89, 0], rotor);
-  const normal = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1.36, 0xf8c97d, 0.2, 0.11);
-  rotor.add(normal);
-  text('Flächennormale n', [0.2, 2.52, 0.03], '#f8d79c', 2.1);
-  text('Drehbare Spule', [-1.02, -0.98, 1.27], '#f1c89c', 1.85);
-  // Two separate slip rings keep each coil terminal connected throughout rotation.
-  for (const y of [-0.88, -1.07]) {
-    const ring = mesh(new THREE.TorusGeometry(0.235, 0.055, 10, 32), copper, [0, y, 0], rotor);
-    ring.rotation.x = Math.PI / 2;
-    box([0.22, 0.075, 0.13], graphite, [0.35, y + rotor.position.y, 0]);
-  }
-  tube([[0, -0.72, 0.54], [0.12, -0.79, 0.34], [0.22, -0.88, 0]], 0.022, copper, rotor);
-  tube([[0, -0.72, -0.54], [-0.1, -0.9, -0.33], [-0.22, -1.07, 0]], 0.022, copper, rotor);
-  tube([[0.44, -0.72, 0], [0.77, -1.05, 0.42], [1.5, -1.12, 1.36], [2.2, -1.01, 1.45]], 0.024, wireMaterial);
-  tube([[0.44, -0.91, 0], [0.72, -1.14, 0.7], [1.66, -1.15, 1.7], [2.65, -1.01, 1.45]], 0.024, red);
 
-  const meterX = 2.45;
-  const meterY = -0.65;
-  box([1.3, 0.93, 0.38], graphite, [meterX, meterY, 1.35]);
-  const dial = document.createElement('canvas');
-  dial.width = 512; dial.height = 340;
-  const ctx = dial.getContext('2d');
-  ctx.fillStyle = '#f0efde'; ctx.fillRect(0, 0, 512, 340);
-  ctx.strokeStyle = '#74816c'; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.arc(256, 265, 205, Math.PI * 1.12, Math.PI * 1.88); ctx.stroke();
-  for (let i = -5; i <= 5; i++) {
-    const a = i * 0.22;
-    ctx.beginPath();
-    ctx.moveTo(256 + Math.sin(a) * 184, 265 - Math.cos(a) * 184);
-    ctx.lineTo(256 + Math.sin(a) * 206, 265 - Math.cos(a) * 206);
-    ctx.stroke();
+  // Rounded square in the rotor's y-z plane; its normal is the local +x axis.
+  const LEAD_GAP = 0.14;
+  function squarePath(h, r) {
+    const path = new THREE.CurvePath();
+    const v = (y, z) => new THREE.Vector3(0, y, z);
+    // Two distinct winding ends at the top lead to separate slip rings.
+    path.add(new THREE.LineCurve3(v(h, LEAD_GAP), v(h, h - r)));
+    path.add(new THREE.QuadraticBezierCurve3(v(h, h - r), v(h, h), v(h - r, h)));
+    path.add(new THREE.LineCurve3(v(h - r, h), v(-h + r, h)));
+    path.add(new THREE.QuadraticBezierCurve3(v(-h + r, h), v(-h, h), v(-h, h - r)));
+    path.add(new THREE.LineCurve3(v(-h, h - r), v(-h, -h + r)));
+    path.add(new THREE.QuadraticBezierCurve3(v(-h, -h + r), v(-h, -h), v(-h + r, -h)));
+    path.add(new THREE.LineCurve3(v(-h + r, -h), v(h - r, -h)));
+    path.add(new THREE.QuadraticBezierCurve3(v(h - r, -h), v(h, -h), v(h, -h + r)));
+    path.add(new THREE.LineCurve3(v(h, -h + r), v(h, -LEAD_GAP)));
+    return path;
   }
-  ctx.fillStyle = '#334a3e'; ctx.font = '32px system-ui'; ctx.textAlign = 'center';
-  ctx.fillText('−', 48, 202); ctx.fillText('0', 256, 44); ctx.fillText('+', 464, 202);
-  ctx.font = '500 36px system-ui'; ctx.fillText('V', 256, 327);
-  const dialTexture = new THREE.CanvasTexture(dial);
-  dialTexture.colorSpace = THREE.SRGBColorSpace;
-  mesh(new THREE.PlaneGeometry(1.18, 0.79), new THREE.MeshBasicMaterial({ map: dialTexture }), [meterX, meterY, 1.546]);
-  const needle = new THREE.Group();
-  needle.position.set(meterX, meterY - 0.22, 1.562);
-  group.add(needle);
-  box([0.018, 0.43, 0.012], mat(0xb5553e), [0, 0.2, 0], needle);
-  const pivot = mesh(new THREE.SphereGeometry(0.04, 12, 8), graphite, [0, 0, 0], needle);
-  pivot.scale.z = 0.4;
-  text('Induzierte Spannung', [2.42, 0.08, 1.49], '#d8e5d5', 1.9);
+  // Lengthwise strands make the bundle read as many parallel turns of enamelled wire.
+  const strandTexture = canvasTexture(32, 256, (ctx, W, H) => {
+    const rows = 16;
+    for (let i = 0; i < rows; i++) {
+      const y = (i / rows) * H, g = ctx.createLinearGradient(0, y, 0, y + H / rows);
+      g.addColorStop(0, '#6e3517'); g.addColorStop(0.3, '#f0b585'); g.addColorStop(0.55, '#cf8450'); g.addColorStop(1, '#6e3517');
+      ctx.fillStyle = g; ctx.fillRect(0, y, W, H / rows);
+    }
+  });
+  strandTexture.wrapS = strandTexture.wrapT = THREE.RepeatWrapping;
+  strandTexture.repeat.set(1, 3);
+  const bundleMaterial = new THREE.MeshPhysicalMaterial({ color: 0xffffff, map: strandTexture, metalness: 0.85, roughness: 0.34, clearcoat: 0.4, clearcoatRoughness: 0.3 });
+  const coilPath = squarePath(HALF, 0.13);
+  let bundle = null, bundleTurns = -1;
+  function buildBundle(turns) {
+    if (turns === bundleTurns) return;
+    bundleTurns = turns;
+    if (bundle) { rotor.remove(bundle); bundle.geometry.dispose(); }
+    const radius = 0.03 + 0.06 * Math.sqrt(turns / 200);
+    bundle = mesh(new THREE.TubeGeometry(coilPath, 200, radius, 12, false), bundleMaterial, [0, 0, 0], rotor);
+    bundle.scale.set(0.7, 1, 1); // flat winding pack instead of a round pipe
+  }
+  buildBundle(100);
 
+  // Ivory coil former: cross bars from the axle to the winding.
+  mesh(new THREE.BoxGeometry(0.05, 0.06, 2 * HALF - 0.04), mats.ceramic, [0, HALF - 0.02, 0], rotor);
+  mesh(new THREE.BoxGeometry(0.05, 0.06, 2 * HALF - 0.04), mats.ceramic, [0, -HALF + 0.02, 0], rotor);
+
+  // Flux window: tinted by the momentary flux Φ ∝ cos θ (green / orange = sign).
+  const fluxMaterial = new THREE.MeshBasicMaterial({ color: 0x3f9a6c, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false });
+  const fluxPlane = new THREE.Mesh(new THREE.PlaneGeometry(2 * HALF - 0.06, 2 * HALF - 0.06), fluxMaterial);
+  fluxPlane.rotation.y = Math.PI / 2; fluxPlane.renderOrder = 1;
+  rotor.add(fluxPlane);
+
+  arrow({ from: [0, 0.32, 0], dir: [1, 0, 0], length: 0.95, radius: 0.026, color: 0xe2a53b, parent: rotor, emissive: 0.3 });
+  label('Flächennormale n', [1.02, 0.5, 0], { parent: rotor, tone: 'copper', size: 's' });
+  label('Spule', [0, -HALF - 0.05, HALF + 0.12], { parent: rotor, tone: 'copper', size: 's' });
+
+  // Ideal open-circuit voltage measurement: no load current is drawn.
+  // Do not animate current particles in this scene.
+
+  // Axle, bearings, slip rings, crank.
+  const AXLE_TOP = magnetTop + 1.25;
+  const axleLength = AXLE_TOP - (yokeTop - 0.02);
+  mesh(new THREE.CylinderGeometry(0.055, 0.055, axleLength, 24), mats.steel, [0, (AXLE_TOP + yokeTop) / 2 - YC, 0], rotor);
+  const RING_Y = [magnetTop + 0.42 - YC, magnetTop + 0.72 - YC];
+  const ringShape = new THREE.Shape();
+  ringShape.absarc(0, 0, 0.19, 0, Math.PI * 2, false);
+  const bore = new THREE.Path();
+  bore.absarc(0, 0, 0.12, 0, Math.PI * 2, true);
+  ringShape.holes.push(bore);
+  const ringGeometry = new THREE.ExtrudeGeometry(ringShape, { depth: 0.12, bevelEnabled: false, curveSegments: 40 });
+  ringGeometry.rotateX(-Math.PI / 2).translate(0, -0.06, 0);
+  for (const y of RING_Y) {
+    // Insulating sleeves keep both copper rings electrically separate from the axle.
+    mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.2, 32), mats.plastic, [0, y, 0], rotor);
+    mesh(ringGeometry, mats.copper, [0, y, 0], rotor);
+  }
+  for (const y of [RING_Y[0] - 0.15, RING_Y[1] - 0.15, RING_Y[1] + 0.15]) mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.16, 32), mats.plastic, [0, y, 0], rotor);
+  // The positive path around +n runs from the black lead to the red lead.
+  // Therefore U = -N dΦ/dt is the red terminal's voltage relative to black.
+  // Insulated leads run outside the other ring to avoid shorting the two rings.
+  wire([[0, HALF, -LEAD_GAP], [0, HALF + 0.3, -0.25], [0, RING_Y[0] - 0.25, -0.25], [0, RING_Y[0], -0.19]], 0.016, mats.cableRed, rotor);
+  wire([[0, HALF, LEAD_GAP], [0, HALF + 0.3, 0.27], [0, RING_Y[0], 0.27], [0, RING_Y[1] - 0.12, 0.27], [0, RING_Y[1], 0.19]], 0.016, mats.cableBlack, rotor);
+  // Crank on top.
+  const crankY = AXLE_TOP - YC - 0.05;
+  mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.12, 24), mats.steel, [0, crankY, 0], rotor);
+  roundedBox([0.72, 0.08, 0.14], 0.035, mats.steel, [0.33, crankY, 0], rotor);
+  mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.42, 20), mats.wood, [0.64, crankY + 0.25, 0], rotor);
+
+  // Stationary: lower bearing on the yoke and an upper bridge resting on both magnets.
+  cylinder(0.16, 0.12, mats.ceramic, [0, yokeTop + 0.06, 0]);
+  roundedBox([5.2, 0.14, 0.5], 0.05, mats.wood, [0, magnetTop + 0.07, 0]);
+  cylinder(0.13, 0.12, mats.ceramic, [0, magnetTop + 0.2, 0]);
+
+  // Brushes on a small post on the S side (+x), pressing on the rings.
+  const brushTerminals = [];
+  RING_Y.forEach((y, i) => {
+    const wy = y + YC;
+    roundedBox([0.16, 0.1, 0.1], 0.025, kit.mat(0x2b2c2c, 0.2, 0.8), [0.26, wy, 0]);
+    roundedBox([0.36, 0.05, 0.06], 0.02, mats.steel, [0.5, wy, 0]);
+    cylinder(0.05, 0.08, i === 0 ? mats.cableRed : mats.cableBlack, [0.7, wy, 0], group, 16).rotation.z = Math.PI / 2;
+    brushTerminals.push([0.75, wy, 0]);
+  });
+  roundedBox([0.12, RING_Y[1] - RING_Y[0] + 0.45, 0.14], 0.03, mats.plastic, [0.78, (RING_Y[0] + RING_Y[1]) / 2 + YC - 0.03, 0]);
+  roundedBox([0.3, 0.1, 0.3], 0.03, mats.plastic, [0.78, magnetTop + 0.19, 0]);
+  label('Schleifringe', [-0.6, RING_Y[1] + YC + 0.05, 0.1], { tone: 'dark', size: 's' });
+
+  // ---------- meter on the front right, cables from the brush terminals ----------
+  const meterPos = [2.2, baseTop, 2.05];
+  const meterRot = -0.35;
+  const gauge = meter({ position: meterPos, rotationY: meterRot, size: 1.1, centerZero: true, unit: 'V' });
+  const [termA, termB] = gauge.terminals.map(point => point.toArray());
+  const [tA, tB] = brushTerminals;
+  wire([tA, [1.0, tA[1] + 0.05, 0.05], [2.0, magnetTop + 0.3, 0.12], [2.78, magnetTop - 0.2, 0.2], [2.85, baseTop + 0.6, 0.55], [2.9, baseTop + 0.04, 1.2], [termA[0] + 0.1, baseTop + 0.04, termA[2] + 0.35], termA], 0.026, mats.cableRed);
+  wire([tB, [1.0, tB[1] + 0.05, -0.05], [2.05, magnetTop + 0.4, -0.08], [2.85, magnetTop - 0.25, -0.05], [3.0, baseTop + 0.6, 0.35], [3.2, baseTop + 0.04, 1.3], [termB[0] + 0.3, baseTop + 0.04, termB[2] + 0.4], termB], 0.026, mats.cableBlack);
+  const rangeLabel = label('Messbereich ±5 V', [meterPos[0] + 0.2, baseTop + 0.02, meterPos[2] + 0.75], { tone: 'ghost', size: 's' });
+
+  // ---------- update ----------
   const fmt = (value, digits = 2) => (Math.abs(value) < 1e-8 ? 0 : value).toLocaleString('de-DE', { maximumFractionDigits: digits, minimumFractionDigits: digits });
+  const ranges = [1, 2, 5, 10, 20, 50, 100];
+  const positive = new THREE.Color(0x2f9a68), negative = new THREE.Color(0xd9822f);
+
   return {
+    camera: { target: [0, 0.25, 0.55], distance: 11.5, yaw: 0.5, pitch: 0.36, floor: -1.5, shadowSize: 6, fitAspect: 1.55 },
+    views: {
+      overview: { target: [0, 0.25, 0.55], yaw: 0.5, pitch: 0.36, zoom: 1 },
+      coil: { target: [0, YC, 0], yaw: 0.12, pitch: 0.5, zoom: 0.55 },
+      sliprings: { target: [0, magnetTop + 0.6, 0.3], yaw: 0.75, pitch: 0.28, zoom: 0.36 },
+      meter: { target: [meterPos[0] - 0.3, baseTop + 0.6, meterPos[2]], yaw: 0.05, pitch: 0.28, zoom: 0.42 },
+    },
     update(state, time) {
       const result = calculate(state, time);
       const turns = Number(state.turns ?? 100);
       const field = Number(state.field ?? 0.5);
+      buildBundle(turns);
       rotor.rotation.y = result.angle;
-      strands.forEach((strand, index) => { strand.visible = index < Math.max(1, Math.round(turns / 20)); });
-      fieldArrows.visible = field > 0;
-      for (const arrow of fieldArrows.children) {
-        arrow.line.material.opacity = arrow.cone.material.opacity = 0.15 + 0.7 * field;
-      }
-      needle.rotation.z = -1.1 * (result.peak ? result.voltage / result.peak : 0);
+
+      // Field: visible only with B > 0, brightness grows with B.
+      for (const line of fieldLines) line.set({ visible: field > 0, strength: 0.3 + 0.7 * field, speed: 0.45 });
+      fieldLabel.show(field > 0);
+
+      // Flux window tint and strength.
+      const cos = Math.cos(result.angle);
+      fluxMaterial.color.copy(cos >= 0 ? positive : negative);
+      fluxMaterial.opacity = field > 0 ? 0.06 + 0.42 * Math.abs(cos) * Math.min(1, 0.35 + field) : 0.04;
+
+      // Meter with automatic range.
+      const range = ranges.find(r => r >= result.peak * 1.02) ?? 100;
+      gauge.setNow(range ? result.voltage / range : 0);
+      rangeLabel.set(`Messbereich ±${range} V`);
+
       const phase = ((result.angle * 180 / Math.PI) % 360 + 360) % 360;
-      let note = `Drehwinkel θ: ${fmt(phase, 0)}°. Die Flussänderung erzeugt eine Spannung mit wechselndem Vorzeichen.`;
-      if (!result.frequency) note = 'Die Spule steht. Ihr magnetischer Fluss bleibt konstant, deshalb wird keine Spannung induziert.';
-      else if (!field) note = 'Die Spule dreht sich, aber ohne Magnetfeld ist der magnetische Fluss immer null. Die Spannung bleibt bei 0 V.';
-      else if (Math.abs(result.voltage) < result.peak * 0.13) note = `Bei ${fmt(phase, 0)}° ist der Fluss nahe einem Extremwert. Er ändert sich gerade kaum: Die Spannung ist nahe null.`;
-      else if (Math.abs(result.voltage) > result.peak * 0.95) note = `Bei ${fmt(phase, 0)}° ist der Fluss nahe null, ändert sich aber besonders schnell. Der Betrag der Spannung ist fast maximal.`;
+      const deg = fmt(phase, 0);
+      let note;
+      if (!result.frequency) note = 'Die Spule steht still. Der Fluss durch ihre Fläche bleibt gleich, deshalb wird keine Spannung induziert.';
+      else if (!field) note = 'Die Spule dreht sich, aber ohne Magnetfeld geht kein Fluss durch sie hindurch. Es gibt nichts, was sich ändern könnte: 0 V.';
+      else if (Math.abs(Math.sin(result.angle)) < 0.2) note = `θ = ${deg}°: Die Spulenfläche steht fast quer zum Feld, der Fluss ist ${cos > 0 ? 'nahe am positiven Maximum' : 'nahe am negativen Extremwert'}. Er ändert sich gerade langsam, die Spannung ist nahe null.`;
+      else if (Math.abs(Math.sin(result.angle)) > 0.94) note = `θ = ${deg}°: Die Fläche liegt fast parallel zu den Feldlinien, der Fluss ist nahe null. Er ändert sich gerade besonders schnell, der Betrag der Spannung ist nahe am Scheitelwert.`;
+      else note = `θ = ${deg}°: Der Betrag des Flusses durch die Spule wird gerade ${(Math.sin(result.angle) > 0) === (cos > 0) ? 'kleiner' : 'größer'}. Je schneller er sich ändert, desto größer die Spannung.`;
       return {
         metrics: [
           { label: 'Spannung jetzt', value: `${fmt(result.voltage)} V` },

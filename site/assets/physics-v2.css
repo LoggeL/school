@@ -81,3 +81,18 @@
 @media(max-width:800px){.physics-page .coil-related{grid-template-columns:repeat(2,minmax(0,1fr))}.physics-page .coil-challenges{gap:10px}}
 @media(max-width:640px){.physics-page .lesson-hero{padding:30px 0}.physics-page .lesson-hero h1{font-size:42px}.physics-page .lesson-hero .lead{font-size:16px}.physics-page .coil-big-idea{padding:20px 22px}.physics-page .coil-big-idea p{font-size:16px}.physics-page .coil-challenges{grid-template-columns:1fr;gap:8px}.physics-page .coil-challenges span{padding:12px 15px}.physics-page .coil-challenges b{display:inline-block;margin:0 10px 0 0}.physics-page .coil-related{grid-template-columns:1fr;gap:12px}.physics-page .coil-related a{padding:19px 22px 34px}.physics-page .calculation-depth{padding:0 18px}.physics-page .calculation-depth>summary{font-size:16px;padding:20px 0}.physics-page .calculation-depth>summary small{font-size:10px}.physics-page .calculation-depth .two-col{gap:16px}.physics-page .calculation-depth .panel{padding:18px}.physics-page .calculation-depth .formula{font-size:21px;padding:15px}}
 @media print{.physics-page .lesson-hero h1{font-size:28pt}.physics-page .coil-big-idea{background:white;padding:14px}.physics-page .coil-big-idea p{font-size:11pt}.physics-page .coil-challenges,.physics-page .coil-related{display:none}.physics-page .calculation-depth{background:white;border:1px solid #ddd;padding:12px}.physics-page .calculation-depth::details-content{content-visibility:visible}.physics-page .calculation-depth>summary{padding:4px 0;min-height:0}.physics-page .calculation-depth>summary small{margin-left:0}.physics-page .calculation-depth .two-col{display:block}.physics-page .calculation-depth .panel{margin-bottom:14px}.physics-page .exercise>.solution::details-content{content-visibility:visible}}
+/* v3 · light studio 3D viewport + crisp HTML labels (coil-3d.js) */
+.physics-page .sim-3d{background:radial-gradient(120% 90% at 50% 18%,#fbfbf6 0%,#eef2ea 55%,#dfe7dc 100%)}
+.physics-page .sim-3d canvas{position:relative;z-index:1;touch-action:none;cursor:grab}
+.physics-page .sim-3d canvas:active{cursor:grabbing}
+.physics-page .sim-3d .sim-hint{color:#4f6658;z-index:3}
+.physics-page .sim-3d .model-status{color:#4f6658;z-index:3}
+.physics-page .sim-3d .loading-3d{color:#4f6658}
+.sim-3d .em-labels{position:absolute!important;inset:0;pointer-events:none;z-index:2}
+.sim-3d .em-label{font:600 11.5px/1.25 system-ui,-apple-system,"Segoe UI",sans-serif;padding:4px 9px;border-radius:999px;white-space:nowrap;background:#fffffbe8;color:#24443a;border:1px solid #cfdccb;box-shadow:0 2px 8px #1f3a2f1a;user-select:none}
+.sim-3d .em-label-s{font-size:10.5px;padding:3px 8px}
+.sim-3d .em-label-copper{background:#fff4e8f2;color:#8a4a20;border-color:#ecc9a6}
+.sim-3d .em-label-n,.sim-3d .em-label-south{color:#fff;font-size:15px;padding:4px 10px;border-radius:7px}
+.sim-3d .em-label-n{background:#c8664f;border-color:#c8664f}
+.sim-3d .em-label-south{background:#4f7f95;border-color:#4f7f95}
+@media(max-width:640px){.sim-3d .em-label{font-size:10px;padding:3px 7px;max-width:130px;white-space:normal;text-align:center}.sim-3d .em-label-n,.sim-3d .em-label-south{font-size:12px}}

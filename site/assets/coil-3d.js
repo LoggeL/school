@@ -1,81 +1,95 @@
 import * as THREE from './vendor/three.module.js';
 import { GLTFLoader } from './vendor/GLTFLoader.js';
+import { OrbitControls } from './vendor/OrbitControls.js';
+import { RoomEnvironment } from './vendor/RoomEnvironment.js';
+import { CSS2DRenderer } from './vendor/CSS2DRenderer.js';
+import { createKit } from './em-kit.js?v=20261026-v3';
 
-const host = document.getElementById('model');
-try {
-  const renderer = new THREE.WebGLRenderer({antialias: true, alpha: false});
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
-  renderer.setClearColor(0x182e28);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  host.querySelector('.loading-3d').remove();
-  host.prepend(renderer.domElement);
-  const canvas = renderer.domElement;
-  canvas.tabIndex = 0;
-  canvas.setAttribute('role', 'img');
-  canvas.setAttribute('aria-label', 'Drehbares 3D-Modell einer Spule. Mit Pfeiltasten oder horizontalem Ziehen drehen.');
-
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x182e28, 16, 28);
-  const camera = new THREE.PerspectiveCamera(36, 1, .1, 60);
-  const assembly = new THREE.Group();
-  scene.add(assembly);
-
-  // A studio reflection map gives the copper a readable surface, without an external image.
-  const envCanvas = document.createElement('canvas');
-  envCanvas.width = 1024; envCanvas.height = 512;
-  const envContext = envCanvas.getContext('2d');
-  const gradient = envContext.createLinearGradient(0, 0, 0, 512);
-  gradient.addColorStop(0, '#aebcb1'); gradient.addColorStop(.4, '#65796d');
-  gradient.addColorStop(.6, '#263b30'); gradient.addColorStop(1, '#11231c');
-  envContext.fillStyle = gradient; envContext.fillRect(0, 0, 1024, 512);
-  envContext.fillStyle = '#fff4de'; envContext.fillRect(160, 48, 125, 155);
-  envContext.fillStyle = '#c1d5d1'; envContext.fillRect(720, 75, 75, 190);
-  const environment = new THREE.CanvasTexture(envCanvas);
-  environment.mapping = THREE.EquirectangularReflectionMapping;
-  environment.colorSpace = THREE.SRGBColorSpace;
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromEquirectangular(environment).texture;
-  environment.dispose(); pmrem.dispose();
-
-  scene.add(new THREE.HemisphereLight(0xe6edd6, 0x163025, 1.8));
-  const key = new THREE.DirectionalLight(0xffe2b3, 3.2);
-  key.position.set(-3, 6, 6); key.castShadow = true;
-  key.shadow.mapSize.set(1024, 1024);
-  Object.assign(key.shadow.camera, {left: -7, right: 7, top: 6, bottom: -6, near: .5, far: 20});
-  key.shadow.normalBias = .035; key.shadow.bias = -.0002;
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0xb5d6d1, 2.4);
-  rim.position.set(3, 2, -4); scene.add(rim);
-  const fill = new THREE.DirectionalLight(0xc9d4b9, .75);
-  fill.position.set(-5, .5, -1); scene.add(fill);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: 0x21392e, roughness: 1}));
-  ground.rotation.x = -Math.PI / 2; ground.position.y = -1.365; ground.receiveShadow = true; scene.add(ground);
-
-  const copper = new THREE.MeshStandardMaterial({color: 0xb87539, metalness: .83, roughness: .25, envMapIntensity: 1.5});
-  const dynamicCoil = new THREE.Mesh(new THREE.BufferGeometry(), copper);
+// Scene contract shared with the other chapters; the legacy coilchange UI
+// below remains the entry point for the original coil article.
+export function createExperiment({THREE, group, kit, loadApparatus = true, onGeometry}) {
+  const assembly = group;
+  // ---------- winding (procedural so the visible count follows N) ----------
+  const COIL_R = .73, COIL_L = 4.2, WIRE_R = .055;
+  const dynamicCoil = new THREE.Mesh(new THREE.BufferGeometry(), kit.mats.copper);
   dynamicCoil.castShadow = true; dynamicCoil.receiveShadow = true; assembly.add(dynamicCoil);
-  const fallbackCore = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, 5.1, 48), new THREE.MeshStandardMaterial({color: 0x718078, metalness: .75, roughness: .3}));
+  const fallbackCore = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, 5.1, 48), kit.mats.iron);
   fallbackCore.rotation.z = Math.PI / 2; fallbackCore.castShadow = true; assembly.add(fallbackCore);
-  const fallbackBase = new THREE.Mesh(new THREE.BoxGeometry(5.7, .18, 2), new THREE.MeshStandardMaterial({color: 0x354d3e, roughness: .7}));
-  fallbackBase.position.y = -1.15; fallbackBase.receiveShadow = true; fallbackBase.castShadow = true; assembly.add(fallbackBase);
+  const fallbackBase = kit.roundedBox([5.9, .3, 1.65], .08, kit.mats.ceramic, [0, -1.2, 0]);
 
-  let state = window.coilState || {current: .5, turns: 400, core: false, reverse: false, paused: false};
+  // Dots ride on the outside of the wire. Angle increasing along the helix is
+  // counter-clockwise seen from +x, so with forward motion the field inside
+  // points to +x (right-hand rule): the north pole is on the right.
+  let currentDots = null, dotOffset = 0;
+  function buildWinding(turns) {
+    const count = Math.max(4, Math.round(turns * .03));
+    const curve = kit.helixCurve({radius: COIL_R, length: COIL_L, turns: count});
+    dynamicCoil.geometry.dispose();
+    dynamicCoil.geometry = new THREE.TubeGeometry(curve, count * 64, WIRE_R, 10, false);
+    if (currentDots) { assembly.remove(currentDots.mesh); currentDots.mesh.geometry.dispose(); currentDots.material.dispose(); }
+    const outer = kit.helixCurve({radius: COIL_R + WIRE_R * .7, length: COIL_L, turns: count});
+    currentDots = kit.dots(outer, {count: count * 4, radius: .05, color: 0xffd36b, emissive: 1.4});
+  }
+
+  // ---------- field lines: traced solenoid field (Biot–Savart over rings) ----------
+  const RINGS = 28, SEGMENTS = 28;
+  const ringX = Array.from({length: RINGS}, (_, k) => -COIL_L / 2 + (k + .5) * COIL_L / RINGS);
+  const segs = [];
+  for (const x of ringX) for (let s = 0; s < SEGMENTS; s++) {
+    const a0 = s / SEGMENTS * Math.PI * 2, a1 = (s + 1) / SEGMENTS * Math.PI * 2, am = (a0 + a1) / 2;
+    segs.push({
+      p: new THREE.Vector3(x, COIL_R * Math.cos(am), COIL_R * Math.sin(am)),
+      dl: new THREE.Vector3(0, COIL_R * (Math.cos(a1) - Math.cos(a0)), COIL_R * (Math.sin(a1) - Math.sin(a0))),
+    });
+  }
+  const r = new THREE.Vector3(), c = new THREE.Vector3();
+  function solenoidField(p) {
+    const B = new THREE.Vector3();
+    for (const {p: q, dl} of segs) {
+      r.subVectors(p, q);
+      const d2 = Math.max(r.lengthSq(), .004);
+      c.crossVectors(dl, r).multiplyScalar(1 / (d2 * Math.sqrt(d2)));
+      B.add(c);
+    }
+    return B;
+  }
+  // Lines stay in meridian planes (axial symmetry): trace once, rotate copies.
+  const startRadii = [.58, .64, .69];
+  const traced = startRadii.map(rho => {
+    const start = new THREE.Vector3(0, rho, 0);
+    return kit.traceField(solenoidField, start, {step: .04, maxSteps: 1400, bounds: 6, stop: (p, i) => i > 30 && p.distanceTo(start) < .07});
+  });
+  const fieldLines = [];
+  const azimuths = [0, Math.PI / 4, Math.PI / 2, 3 * Math.PI / 4];
+  for (const az of azimuths) for (const side of [1, -1]) traced.forEach((points, i) => {
+    const q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), az + (side < 0 ? Math.PI : 0));
+    const rotated = points.map(p => p.clone().applyQuaternion(q));
+    const closed = rotated.at(-1).distanceTo(rotated[0]) < .12;
+    const line = kit.flowLine(rotated, {color: 0x1f7a52, radius: .019, closed, speed: .3, opacity: 2.1, width: .35});
+    line.mesh.userData.inner = i === 0;
+    line.radiusIndex = i; line.azIndex = azimuths.indexOf(az);
+    fieldLines.push(line);
+  });
+
+  const north = kit.label('N', [3.25, -.05, 0], {tone: 'n'});
+  const south = kit.label('S', [-3.25, -.05, 0], {tone: 'south'});
+  const coreLabel = kit.label('Eisenkern', [0, .95, .5], {tone: 'dark', size: 's'});
+  const currentLabel = kit.label('technische Stromrichtung', [1.4, -.95, .95], {tone: 'copper', size: 's'});
+
+  // ---------- GLB apparatus ----------
+  const bobbinGlass = new THREE.MeshPhysicalMaterial({color: 0xf3efe4, roughness: .35, metalness: 0, transparent: true, opacity: .38, depthWrite: false, side: THREE.DoubleSide});
+  let state = {current: .5, turns: 400, core: false, reverse: false, paused: false};
+  let lastTime = null;
   let previousTurns = 0;
-  let blenderCoil, coreAssembly, mixer, insertion, insertionDuration = 0;
+  let coreAssembly, mixer, insertion, insertionDuration = 0;
   let modelLoaded = false, coreTarget = false, coreTransitioning = false;
-  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+  const terminals = {};
 
-  // The Blender-authored InsertCore animation is played in both directions.
-  // Pausing or reduced motion resolves a newly selected core state immediately.
   function syncCore(force = false) {
     if (!coreAssembly || !insertion) return;
     const changed = coreTarget !== state.core;
     coreTarget = state.core;
-    if (force || motionPreference.matches || (changed && state.paused)) {
+    if (force || (changed && state.paused)) {
       coreTransitioning = false;
       coreAssembly.visible = state.core;
       insertion.paused = true;
@@ -93,21 +107,30 @@ try {
     }
   }
 
-  new GLTFLoader().load('/assets/models/solenoid-v2.glb', gltf => {
-    const physicalModel = gltf.scene;
-    physicalModel.traverse(node => {
+  if (loadApparatus) new GLTFLoader().load('/assets/models/solenoid-v2.glb', gltf => {
+    const model = gltf.scene;
+    model.traverse(node => {
       if (!node.isMesh) return;
       node.castShadow = true; node.receiveShadow = true;
-      if (node.material) node.material.envMapIntensity = 1.25;
+      const name = (node.name + ' ' + (node.parent?.name || '')).toLowerCase();
+      if (node.name === 'TerminalCapLeft') terminals.left = node;
+      if (node.name === 'TerminalCapRight') terminals.right = node;
+      if (name.includes('ironcore') || name.includes('coreedge')) node.material = kit.mats.iron;
+      else if (name.includes('bobbin') || name.includes('flange')) node.material = bobbinGlass; // see the field inside
+      else if (name.includes('support')) node.material = kit.mats.ceramic;
+      else if (name.includes('base')) node.material = kit.mats.base;
+      else if (name.includes('lead')) node.material = kit.mats.copper;
+      else if (node.material) node.material.envMapIntensity = 1;
     });
-    blenderCoil = physicalModel.getObjectByName('Coil');
-    coreAssembly = physicalModel.getObjectByName('IronCoreAssembly');
-    assembly.add(physicalModel);
+    const blenderCoil = model.getObjectByName('Coil');
+    if (blenderCoil) blenderCoil.visible = false; // replaced by the procedural winding that follows N
+    coreAssembly = model.getObjectByName('IronCoreAssembly');
+    assembly.add(model);
     modelLoaded = true;
     fallbackBase.visible = false; fallbackCore.visible = false;
     const clip = THREE.AnimationClip.findByName(gltf.animations, 'InsertCore');
     if (coreAssembly && clip) {
-      mixer = new THREE.AnimationMixer(physicalModel);
+      mixer = new THREE.AnimationMixer(model);
       insertion = mixer.clipAction(clip);
       insertionDuration = clip.duration;
       insertion.setLoop(THREE.LoopOnce, 1);
@@ -119,127 +142,194 @@ try {
       coreAssembly.position.x = 0;
       coreAssembly.visible = state.core;
     }
-    update(state);
-    host.dataset.geometry = 'blender';
-  }, undefined, () => {
-    // The procedural version is still fully usable if the static model cannot load.
-    host.dataset.geometry = 'fallback';
-  });
+    update(state, lastTime ?? 0);
+    onGeometry?.('blender');
+  }, undefined, () => { onGeometry?.('fallback'); });
 
-  const fieldPath = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-2.6, 0, 0), new THREE.Vector3(-1.4, 0, 0),
-    new THREE.Vector3(1.4, 0, 0), new THREE.Vector3(2.6, 0, 0),
-    new THREE.Vector3(3.15, .8, 0), new THREE.Vector3(2.1, 1.55, 0),
-    new THREE.Vector3(0, 1.8, 0), new THREE.Vector3(-2.1, 1.55, 0),
-    new THREE.Vector3(-3.15, .8, 0)
-  ], true, 'catmullrom', .3);
-  const tracks = [];
-  const dotGeometry = new THREE.SphereGeometry(.034, 8, 6);
-  const dotMaterial = new THREE.MeshBasicMaterial({color: 0xc5dfac});
-  const arrowGeometry = new THREE.ConeGeometry(.038, .13, 7);
-  const arrowMaterial = new THREE.MeshBasicMaterial({color: 0xa6c693, transparent: true, opacity: .8});
-  for (let j = 0; j < 6; j++) {
-    const group = new THREE.Group(); group.rotation.x = j * Math.PI / 3;
-    const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(fieldPath.getPoints(220)), new THREE.LineBasicMaterial({color: 0x8aac7c, transparent: true, opacity: .3}));
-    group.add(line);
-    const dots = [];
-    for (let k = 0; k < 4; k++) { const dot = new THREE.Mesh(dotGeometry, dotMaterial); group.add(dot); dots.push(dot); }
-    const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
-    arrow.position.copy(fieldPath.getPointAt(.65)); group.add(arrow);
-    assembly.add(group); tracks.push({group, line, dots, arrow});
-  }
-  function label(text, color, x) {
-    const bitmap = document.createElement('canvas'); bitmap.width = 128; bitmap.height = 128;
-    const ctx = bitmap.getContext('2d');
-    ctx.fillStyle = '#1e342de6'; ctx.beginPath(); ctx.arc(64, 64, 40, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = color; ctx.globalAlpha = .35; ctx.lineWidth = 1.5; ctx.stroke(); ctx.globalAlpha = 1;
-    ctx.fillStyle = color; ctx.font = '500 39px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 64, 65);
-    const texture = new THREE.CanvasTexture(bitmap); texture.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map: texture, depthTest: false}));
-    sprite.scale.set(.85, .85, 1); sprite.position.set(x, .05, 0); assembly.add(sprite); return sprite;
-  }
-  const north = label('N', '#efbe8c', 3.65), south = label('S', '#a5cfca', -3.65);
-  function update(next) {
-    state = next;
+  // ---------- state → scene ----------
+  function update(next, time = 0) {
+    const dt = lastTime === null ? 0 : Math.max(0, Math.min(.05, time - lastTime));
+    const stopped = next.paused ?? (lastTime !== null && time === lastTime);
+    lastTime = time;
+    state = {...next, paused: stopped};
     fallbackCore.visible = !modelLoaded && state.core;
     if (coreAssembly && !insertion) coreAssembly.visible = state.core;
     syncCore();
-    if (previousTurns !== state.turns) {
-      const count = Math.round(state.turns * .03), points = [];
-      for (let i = 0; i <= count * 60; i++) {
-        const t = i / (count * 60), angle = t * count * Math.PI * 2;
-        points.push(new THREE.Vector3(-2.1 + t * 4.2, .73 * Math.cos(angle), .73 * Math.sin(angle)));
-      }
-      dynamicCoil.geometry.dispose();
-      dynamicCoil.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), count * 60, .055, 10, false);
-      previousTurns = state.turns;
-    }
-    if (blenderCoil) blenderCoil.visible = state.turns === 400;
-    dynamicCoil.visible = !blenderCoil || state.turns !== 400;
-    north.position.x = state.reverse ? -3.65 : 3.65; south.position.x = -north.position.x;
-    north.visible = south.visible = state.current > 0;
-    tracks.forEach(track => {
-      track.group.visible = state.current > 0;
-      track.line.material.opacity = Math.min(.62, .16 + state.current * state.turns / 1800 + (state.core ? .1 : 0));
-      const tangent = fieldPath.getTangentAt(.65).multiplyScalar(state.reverse ? -1 : 1);
-      track.arrow.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), tangent);
+    if (previousTurns !== state.turns) { buildWinding(state.turns); previousTurns = state.turns; }
+    const on = state.current > 0;
+    const dir = state.reverse ? -1 : 1;
+    if (terminals.left) terminals.left.material = state.reverse ? kit.mats.cableBlack : kit.mats.cableRed;
+    if (terminals.right) terminals.right.material = state.reverse ? kit.mats.cableRed : kit.mats.cableBlack;
+    // Relative strength: B ∝ N · I (air coil), qualitative boost with the core.
+    const s = state.current * state.turns / 400;
+    const strength = Math.min(1, .3 + .45 * s) * (state.core ? 1 : .8);
+    fieldLines.forEach(line => {
+      // Air coil: fewer drawn lines (lower field-line density); core: all of them.
+      const shown = on && (state.core || line.radiusIndex !== 0) && (state.core || line.azIndex % 2 === 0);
+      line.set({visible: shown, strength, speed: dir * (.15 + .35 * Math.min(1.5, s)) * (state.core ? 1.3 : 1)});
     });
-    canvas.setAttribute('aria-label', document.getElementById('model-description').textContent + ' Mit Pfeiltasten oder Ziehen drehen.');
+    north.object.position.x = 3.25 * dir; south.object.position.x = -3.25 * dir;
+    north.show(on); south.show(on);
+    coreLabel.show(state.core);
+    currentLabel.show(on);
+    if (currentDots) currentDots.mesh.visible = on;
+    if (!state.paused && dt > 0) {
+      if (mixer) mixer.update(dt);
+      if (currentDots && on) {
+        dotOffset += dir * dt * (.006 + .012 * state.current) * 12 / Math.max(6, state.turns * .03);
+        currentDots.place(dotOffset);
+      }
+    }
+    const note = on
+      ? `Innen zeigt das Feld nach ${state.reverse ? 'links' : 'rechts'}, dort ist N. Außen läuft es von N nach S zurück. Goldene Punkte zeigen die technische Stromrichtung. Die dargestellte Windungszahl ist symbolisch.${state.core ? ' Die Verstärkung durch den Eisenkern wird qualitativ gezeigt.' : ''}`
+      : 'Kein Strom: Im Modell verschwindet das Spulenfeld.';
+    return {metrics: [
+      {label: 'Stromstärke', value: `${Number(state.current).toLocaleString('de-DE')} A`},
+      {label: 'Windungen', value: String(state.turns)},
+      {label: 'Feldvergleich', value: !on ? 'kein Spulenfeld' : state.core ? 'stärker mit Kern' : `${(state.current * state.turns / 200).toLocaleString('de-DE')}‐fach`},
+    ], note, graph: null};
   }
-  addEventListener('coilchange', event => update(event.detail)); update(state);
-  motionPreference.addEventListener('change', () => syncCore(true));
+  update(state, 0);
+  return {
+    update,
+    camera: {target: [0, -.15, 0], distance: 11.8, yaw: .32, pitch: .3, floor: -1.35, fitAspect: 1.6},
+    views: {
+      overview: {target: [0, -.15, 0], yaw: .32, pitch: .3, zoom: 1},
+      coil: {target: [0, 0, 0], yaw: .5, pitch: .25, zoom: .7},
+      field: {target: [0, .35, 0], yaw: 0, pitch: .12, zoom: 1},
+    },
+  };
+}
 
-  let yaw = .24, pitch = .27, drag = null, cameraDistance = 10.8;
-  function orient() {
-    camera.position.set(cameraDistance * Math.sin(yaw) * Math.cos(pitch), cameraDistance * Math.sin(pitch), cameraDistance * Math.cos(yaw) * Math.cos(pitch));
-    camera.lookAt(0, -.2, 0);
+// Coil chapter 3D model: Blender apparatus (GLB) + procedural winding, traced
+// solenoid field lines and moving dots for the technical current direction.
+const host = typeof document !== 'undefined' ? document.getElementById('model') : null;
+if (host) try {
+  const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  host.querySelector('.loading-3d')?.remove();
+  host.prepend(renderer.domElement);
+  const canvas = renderer.domElement;
+  canvas.tabIndex = 0;
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', 'Drehbares 3D-Modell einer Spule. Ziehen oder Pfeiltasten: drehen. Mausrad oder Pinch: zoomen.');
+
+  const labels = new CSS2DRenderer();
+  labels.domElement.className = 'em-labels';
+  host.append(labels.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(34, 1, .05, 80);
+  const assembly = new THREE.Group();
+  scene.add(assembly);
+  const kit = createKit(THREE, assembly);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+  scene.environmentIntensity = .9;
+  pmrem.dispose();
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xcfd9cf, .55));
+  const key = new THREE.DirectionalLight(0xfff1de, 2.4);
+  key.position.set(-4, 9, 6); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, {left: -7, right: 7, top: 7, bottom: -7, near: .5, far: 30});
+  key.shadow.radius = 4; key.shadow.normalBias = .02; key.shadow.bias = -.0004;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xdcefff, .7);
+  fill.position.set(6, 3, -5); scene.add(fill);
+
+  // Cream studio floor fading into the CSS background, plus a soft shadow catcher.
+  const FLOOR = -1.35;
+  const floorTexture = kit.canvasTexture(512, 512, (g) => {
+    const r = g.createRadialGradient(256, 256, 30, 256, 256, 256);
+    r.addColorStop(0, 'rgba(236,240,230,1)'); r.addColorStop(.55, 'rgba(232,237,226,.85)'); r.addColorStop(1, 'rgba(232,237,226,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 512, 512);
+  });
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(16, 64), new THREE.MeshBasicMaterial({map: floorTexture, transparent: true, depthWrite: false}));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR - .003; scene.add(floor);
+  const shadow = new THREE.Mesh(new THREE.CircleGeometry(11, 64), new THREE.ShadowMaterial({opacity: .16}));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = FLOOR; shadow.receiveShadow = true; scene.add(shadow);
+
+  const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+  let state = window.coilState || {current: .5, turns: 400, core: false, reverse: false, paused: motionPreference.matches};
+  let modelTime = 0;
+  const experiment = createExperiment({THREE, group: assembly, kit, onGeometry: value => { host.dataset.geometry = value; }});
+  const update = () => {
+    const result = experiment.update(state, modelTime);
+    const description = result.note + ' Ziehen oder Pfeiltasten: drehen.';
+    if (canvas.getAttribute('aria-label') !== description) canvas.setAttribute('aria-label', description);
+  };
+  addEventListener('coilchange', event => { state = event.detail; update(); });
+  motionPreference.addEventListener('change', () => {
+    if (motionPreference.matches) {
+      const pause = document.getElementById('pause');
+      pause.checked = true; pause.dispatchEvent(new Event('input', {bubbles: true}));
+    }
+  });
+  update();
+
+  // ---------- camera ----------
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = .09;
+  controls.enablePan = false;
+  controls.minPolarAngle = .15; controls.maxPolarAngle = Math.PI / 2 - .04;
+  controls.rotateSpeed = .7; controls.zoomSpeed = .8;
+
+  const TARGET = new THREE.Vector3(0, -.15, 0);
+  let baseDistance = experiment.camera.distance;
+  function place(yaw = .32, pitch = .3) {
+    camera.position.set(TARGET.x + baseDistance * Math.sin(yaw) * Math.cos(pitch), TARGET.y + baseDistance * Math.sin(pitch), TARGET.z + baseDistance * Math.cos(yaw) * Math.cos(pitch));
+    controls.target.copy(TARGET); controls.update();
   }
-  orient();
-  canvas.addEventListener('pointerdown', event => { drag = {x: event.clientX, y: event.clientY}; canvas.setPointerCapture(event.pointerId); });
-  canvas.addEventListener('pointermove', event => {
-    if (!drag) return;
-    yaw -= (event.clientX - drag.x) * .008;
-    pitch = Math.max(-.25, Math.min(1.1, pitch + (event.clientY - drag.y) * .006));
-    drag = {x: event.clientX, y: event.clientY}; orient();
-  });
-  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) canvas.addEventListener(type, () => { drag = null; });
   canvas.addEventListener('keydown', event => {
-    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home'].includes(event.key)) return;
+    if (event.key === 'Home') { event.preventDefault(); place(); return; }
+    const turn = {ArrowLeft: [-.12, 0], ArrowRight: [.12, 0], ArrowUp: [0, -.08], ArrowDown: [0, .08]}[event.key];
+    if (!turn) return;
     event.preventDefault();
-    if (event.key === 'ArrowLeft') yaw -= .12;
-    if (event.key === 'ArrowRight') yaw += .12;
-    if (event.key === 'ArrowUp') pitch = Math.min(1.1, pitch + .12);
-    if (event.key === 'ArrowDown') pitch = Math.max(-.25, pitch - .12);
-    if (event.key === 'Home') { yaw = .24; pitch = .27; }
-    orient();
+    const spherical = new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+    spherical.theta += turn[0];
+    spherical.phi = Math.min(controls.maxPolarAngle, Math.max(controls.minPolarAngle, spherical.phi + turn[1]));
+    camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(spherical));
+    controls.update();
   });
+
   function resize() {
     if (host.hidden) return;
     const {width, height} = host.getBoundingClientRect();
-    if (width && height) {
-      renderer.setSize(width, height, false); camera.aspect = width / height;
-      cameraDistance = Math.max(10.8, 4.55 / (Math.tan(Math.PI / 10) * camera.aspect));
-      orient(); camera.updateProjectionMatrix();
-    }
+    if (!width || !height) return;
+    renderer.setSize(width, height, false); labels.setSize(width, height);
+    camera.aspect = width / height;
+    baseDistance = experiment.camera.distance * Math.max(1, 1.6 / camera.aspect);
+    controls.minDistance = baseDistance * .45; controls.maxDistance = baseDistance * 1.7;
+    camera.updateProjectionMatrix(); place();
   }
   new ResizeObserver(resize).observe(host); addEventListener('coilresize', resize);
   let visible = true;
   new IntersectionObserver(entries => { visible = entries[0].isIntersecting; }).observe(host);
-  let last = 0, phase = 0;
+
+  let last = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     const delta = Math.min((now - last) / 1000, .05); last = now;
     if (!visible || document.hidden || host.hidden) return;
-    if (!state.paused && !motionPreference.matches) {
-      phase += (state.reverse ? -1 : 1) * delta * (.035 + .065 * state.current);
-      if (mixer) mixer.update(delta);
+    if (!state.paused) {
+      modelTime += delta;
     }
-    tracks.forEach(track => track.dots.forEach((dot, i) => dot.position.copy(fieldPath.getPointAt(((phase + i / 4) % 1 + 1) % 1))));
-    renderer.render(scene, camera);
+    update();
+    kit.tick(modelTime);
+    controls.update();
+    renderer.render(scene, camera); labels.render(scene, camera); kit.layoutLabels(host);
   }
   canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); dispatchEvent(new Event('coilfailed')); });
   requestAnimationFrame(frame); dispatchEvent(new Event('coilready')); resize();
 } catch (error) {
-  console.warn('3D-Modell nicht verfügbar. Das Schnittbild bleibt nutzbar.');
+  console.warn('3D-Modell nicht verfügbar. Das Schnittbild bleibt nutzbar.', error);
   dispatchEvent(new Event('coilfailed'));
 }

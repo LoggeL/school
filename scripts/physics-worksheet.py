@@ -19,7 +19,7 @@ for i, (title, prompt, result, reason) in enumerate(questions, 1):
 </details></article>''')
 
 worksheet_html = f'''<section class="lesson-section" id="hausuebung" aria-labelledby="worksheet-heading">
-<span class="section-number">Selbsttest · Ohne Rechnen</span><h2 id="worksheet-heading">Erst überlegen. Dann nachsehen.</h2>
+<span class="section-number">05 · Selbsttest · Ohne Rechnen</span><h2 id="worksheet-heading">Erst überlegen. Dann nachsehen.</h2>
 <p class="section-intro">Erkläre dir die Antwort zuerst in eigenen Worten. Öffne danach die Lösung direkt unter der Frage und vergleiche deine Begründung.</p>
 <div class="exercise-grid">{''.join(cards)}</div>
 </section>'''

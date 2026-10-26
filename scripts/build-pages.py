@@ -55,6 +55,17 @@ subjects = [
     ]}
 ]
 
+# Raster covers generated for the physics chapters replace the interim SVGs once present.
+PHYSICS_COVERS = {'induktion.svg': 'induktion-v3.webp', 'generator.svg': 'generator-v3.webp', 'magnetfeld-eisenkern.svg': 'eisenkern-v3.webp', 'transformator.svg': 'transformator-v3.webp', 'hochspannungsleitungen.svg': 'hochspannung-v3.webp'}
+for _subject in subjects:
+    for _lesson in _subject['lessons']:
+        _cover = PHYSICS_COVERS.get(_lesson['image'])
+        if _cover and (SITE / 'assets' / 'images' / _cover).exists():
+            _lesson['image'] = _cover
+        if _lesson['href'].startswith('/physik/') and _lesson['href'] != '/physik/spule-elektromagnet/':
+            _lesson['meta'] = 'Schritt für Schritt erklärt · 3D-Labor · Selbsttest'
+
+
 subject_links = ''
 subject_sections = ''
 for subject in subjects:
@@ -77,7 +88,7 @@ home = f'''<main id="main" class="home"><div class="wrap">
 <div class="subject-catalogue">{subject_sections}</div>
 <section class="teaching-section" id="unterricht" aria-labelledby="teaching-heading"><div class="teaching-intro"><p class="eyebrow">Für den Unterricht</p><h2 id="teaching-heading">Gut vorbereitet<br>in die nächste Stunde.</h2><p>Stundenpläne, Arbeitsblätter und Praxisimpulse findest du direkt bei den passenden Fächern.</p></div><div class="teaching-links"><a href="/nachhilfe-quadratische-gleichungen/"><span><small>Mathematik</small><strong>90 Minuten Nachhilfe</strong></span><span aria-hidden="true">↗</span></a><a href="/bildbeschreibung-klasse5/"><span><small>Deutsch · Klasse 5</small><strong>Bildbeschreibung unterrichten</strong></span><span aria-hidden="true">↗</span></a><a href="/bewegungserziehung-uw1/"><span><small>Pädagogik</small><strong>Bewegung in der Praxis</strong></span><span aria-hidden="true">↗</span></a></div></section>
 </div></main>'''
-(SITE/'index.html').write_text(page('school · Deine Fächer. Anschaulich erklärt.', home, '<script src="/assets/home.js?v=20261022-visual2" defer></script>').replace('</head>', '<link rel="stylesheet" href="/assets/electromagnetism.css?v=20261026-1"></head>'))
+(SITE/'index.html').write_text(page('school · Deine Fächer. Anschaulich erklärt.', home, '<script src="/assets/home.js?v=20261022-visual2" defer></script>').replace('</head>', '<link rel="stylesheet" href="/assets/electromagnetism.css?v=20261026-v3"></head>'))
 (SITE/'assets/favicon.svg').write_text(svg('<rect width="64" height="64" rx="14" fill="#235849"/><text x="22" y="46" fill="#fff" font-size="50" font-family="Georgia" font-style="italic">s</text>', '0 0 64 64', 'school'))
 (SITE/'404.html').write_text(page('Seite nicht gefunden · school', '<main id="main" class="wrap lesson-hero"><p class="eyebrow">404</p><h1>Hier fehlt eine Seite.</h1><p class="lead">Über die Fächerübersicht findest du alle Lerninhalte.</p><a class="button" href="/#faecher">Zur Fächerübersicht</a></main>'))
 

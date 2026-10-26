@@ -1,0 +1,82 @@
+{
+  "assets": [
+    {
+      "file": "generator-v3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: German school physics chapter cover, landscape 3:2.\nCreate a physically correct hand-cranked classroom alternating-current generator as premium editorial 3D product illustration. Geometry is essential: two large magnet pole blocks face each other across a gap from LEFT to RIGHT. Left pole terracotta, right pole slate blue. A rectangular multi-turn copper coil sits centrally in this gap. The horizontal rotation axle runs FRONT TO BACK through the center of the coil, perpendicular (90 degrees) to the left-to-right magnetic field direction. Show this geometry clearly from an elevated three-quarter front view. The coil must visibly be free to rotate in the gap about this front-back axis, without touching the poles. The axle is supported by front and rear bearings on the base, not by the side magnets. Two separate copper slip rings with graphite brushes are on the FRONT extension of the axle, and a wooden crank handle attaches at its front end. Two continuous cables lead from the stationary brushes to a small analog meter at front-left.\nMaterials and style: photographic material detail, brushed copper wire, matte graphite iron, pale ceramic bearing insulation, soft natural daylight, soft contact shadows, warm cream seamless background #f8f8f2, a hint of fine graph paper beneath the object, forest green and muted sage accents, magnet poles in muted terracotta #cb805b and slate blue #658e9d. Landscape 3:2 composition, centered apparatus fills two thirds of image, clean margins for cropping.\nConstraints: no text, letters, numbers, formulas, logos, watermark, lightning, visible field lines, neon or toy plastic appearance. Meter has only unnumbered ticks and needle. Continuous connected wires. Closed copper turns, no loose or broken loops. The left-right pole axis and front-back rotation axle MUST be perpendicular. Do not place the axle across the left and right pole faces.",
+      "source": "/Users/logge/.codex/generated_images/01a179fe-bf32-79c3-9d01-227057a0e3d3/exec-8de3368d-30c1-440e-bee6-754ce12b5972.png",
+      "name": "generator-v3",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/generator-v3.png",
+      "webp": "site/assets/images/generator-v3.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "webpQuality": 82,
+      "visualReview": "Textfrei; Drehachse rechtwinklig zur Polachse, getrennte Schleifringe, kontinuierliche Anschlussleitungen."
+    },
+    {
+      "file": "induktion-v3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: landscape 3:2 cover illustration for a German school learning website, 1536x1024.\nPrimary request: The classic induction experiment: a hand (only fingers and wrist, natural skin, neat sleeve cuff) pushing a two-colored bar magnet (terracotta half, slate blue half) into the opening of a horizontal copper coil on a pale ceramic stand. Two cables connect the coil ends to an analog galvanometer with a center-zero needle that is visibly deflected to one side. Slight motion feel, sharp focus on the magnet entering the coil.\nStyle/medium: premium editorial 3D product illustration, photographic material detail, brushed copper wire, matte graphite iron, pale ceramic, soft natural daylight, soft contact shadows, warm cream seamless background #f8f8f2 with a hint of fine graph paper under the object, forest green and muted sage accents, magnet poles in muted terracotta (#cb805b) and slate blue (#658e9d).\nComposition/framing: Landscape 3:2, object centered, fills about two thirds, generous clean margins for cropping. Show the open coil bore and the magnet correctly aligned with its axis.\nConstraints: no text, no letters, no numerals, no formulas, no logos, no watermark, no lightning, no glowing field lines, no neon, no toy plastic look, physically plausible continuous wires. The meter has an unnumbered symmetric scale of small tick marks and a needle angled visibly away from its central mark. Exactly two continuous insulated leads connect the two distinct coil terminals to two meter terminals. The bar magnet enters the hollow coil bore, not through its copper winding.",
+      "source": "/Users/logge/.codex/generated_images/01a179ff-54e3-7a62-b043-fc5d3ac5a908/exec-581d8e9b-e658-4907-b954-9f2079c699c7.png",
+      "name": "induktion-v3",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/induktion-v3.png",
+      "webp": "site/assets/images/induktion-v3.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "webpQuality": 82,
+      "visualReview": "Textfrei; Magnet entlang der offenen Spulenachse, zwei Anschlussleitungen und sichtbar ausgelenkter Zeiger."
+    },
+    {
+      "file": "eisenkern-v3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: 1536×1024 landscape 3:2 cover illustration for a German school learning website.\nPrimary request: An electromagnet in action: a vertical copper coil wound tightly around a dark iron core, held in a simple lab stand clamp, the lower iron end attracting and holding a small cluster of steel paper clips that hang in a chain below it, a few more clips lying on the graph paper. Two cables lead from the two distinct coil terminals to a small dark lab power supply box out of focus at the edge (no readable display).\nStyle/medium: premium editorial 3D product illustration, photographic material detail, brushed copper wire, matte graphite iron, pale ceramic, soft natural daylight, soft contact shadows.\nScene/backdrop: warm cream seamless background #f8f8f2 with a hint of fine graph paper under the object, forest green and muted sage accents.\nComposition/framing: Landscape 3:2, object centered, fills about two thirds, generous clean margins for cropping.\nConstraints: Physically plausible single continuous tightly wound insulated copper coil and two continuous connecting cables forming a closed powered circuit, iron core clearly extends below winding, clips touch the exposed iron end and each other. No text, no letters, no numerals, no formulas, no logos, no watermark, no lightning, no glowing field lines, no neon, no toy plastic look.",
+      "source": "/Users/logge/.codex/generated_images/01a179ff-9fdc-7e22-99f4-e8c3797ff3a4/exec-d70c9273-64dd-4947-95fb-98a15270d217.png",
+      "name": "eisenkern-v3",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/eisenkern-v3.png",
+      "webp": "site/assets/images/eisenkern-v3.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "webpQuality": 82,
+      "visualReview": "Textfrei; zusammenhängende Spulenwicklung, zwei Anschlüsse zur Quelle, freier Eisenkern hält Büroklammern."
+    },
+    {
+      "file": "transformator-v3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: chapter cover for a German school learning website, landscape 3:2\nPrimary request: A classroom demonstration transformer: a closed rectangular laminated iron core (visible thin stacked sheets, U-core plus top yoke) with two separate coils on its two legs: left primary coil with many fine copper turns, right secondary coil with fewer, thicker copper turns. The secondary coil is wired by two continuous insulated cables to a small glowing incandescent bulb in a ceramic socket, forming a closed circuit. The primary has two continuous supply cables leading off the image to its AC source.\nStyle/medium: premium editorial 3D product illustration, photographic material detail, brushed copper wire, matte graphite iron, pale ceramic.\nScene/backdrop: warm cream seamless background #f8f8f2 with a hint of fine graph paper under the object.\nComposition/framing: three-quarter view, landscape 3:2, object centered, fills about two thirds, generous clean margins for cropping.\nLighting/mood: soft natural daylight, soft contact shadows.\nColor palette: forest green and muted sage accents.\nConstraints: physically plausible continuous wires and distinct separate insulated windings on a closed iron core. Both core legs and the top and bottom connecting yokes must be visible. No text, no letters, no numerals, no formulas, no logos, no watermark, no lightning, no glowing field lines, no neon, no toy plastic look.",
+      "source": "/Users/logge/.codex/generated_images/01a17a00-1325-7b63-a872-0bb2a95954d1/exec-c65cefce-0065-4f27-ba54-14b5ac2b2d62.png",
+      "name": "transformator-v3",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/transformator-v3.png",
+      "webp": "site/assets/images/transformator-v3.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "webpQuality": 82,
+      "visualReview": "Textfrei; geschlossener laminierter Kern, getrennte Wicklungen mit unterschiedlicher Windungszahl, Sekundärkreis mit Lampe."
+    },
+    {
+      "file": "hochspannung-v3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: high-voltage transmission chapter cover for a German school learning website.\nEdit target: the supplied generated diorama. Preserve its cream background, lighting, terrain, three pylons, substation, houses and text-free photographic model aesthetic.\nChange only the electrical transmission equipment to a physically plausible arrangement: each of the three lattice pylons must have THREE crossarms, each crossarm with one long insulator string at each end. Exactly SIX continuous phase conductors run along these three levels, one conductor attached to each insulator string, forming two three-phase circuits. A single ground/shield wire joins the very tops of the pylons. Do not merge phase wires or leave any hanging loose. All six phase conductors should terminate at proper insulators in substations. Replace the tiny pole transformer at the village edge with a compact fenced receiving substation, and route its low-voltage supply underground toward the houses. Maintain slight realistic catenary sag.\nConstraints: no text, letters, numerals, logos, watermark, lightning, glowing field lines, neon. Landscape 3:2, 1536x1024.",
+      "source": "/Users/logge/.codex/generated_images/01a179fe-5748-76a0-b2ec-9f82c206fad6/exec-3735d4b9-9fc2-4170-88a1-85475fe1d5dc.png",
+      "generationMode": "built-in image_gen",
+      "initialPrompt": "Use case: scientific-educational\nAsset type: high-voltage transmission chapter cover for a German school learning website, landscape 3:2, 1536x1024.\nPrimary request: A refined miniature diorama (tilt-shift feel, cream studio surface): gentle sage-green hills with a high-voltage overhead power line of exactly three steel lattice pylons with long insulator strings and slightly sagging continuous conductors, a small transformer substation on the left start, a small village of simple houses on the right end. The power line leads between substations and the village is supplied by a small distribution transformer at its edge. Calm daylight, model-railway craftsmanship, not cartoon.\nStyle/medium: premium editorial 3D product illustration, photographic material detail, brushed copper wire, matte graphite iron, pale ceramic, soft natural daylight, soft contact shadows, warm cream seamless background #f8f8f2 with a hint of fine graph paper under the object, forest green and muted sage accents.\nComposition/framing: landscape 3:2, objects centered, fill about two thirds, generous clean margins for cropping.\nConstraints: no text, no letters, no numerals, no formulas, no logos, no watermark, no lightning, no glowing field lines, no neon, no toy plastic look. Physically plausible continuous wires supported by insulators at each pylon, no disconnected wires.",
+      "editSource": "/Users/logge/.codex/generated_images/01a179fe-5748-76a0-b2ec-9f82c206fad6/exec-1e42df9e-8a26-4392-8199-03327c2f984b.png",
+      "name": "hochspannung-v3",
+      "mode": "built-in image_gen",
+      "output": "site/assets/images/hochspannung-v3.png",
+      "webp": "site/assets/images/hochspannung-v3.webp",
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "webpQuality": 82,
+      "visualReview": "Textfrei; drei Gittermasten mit je drei Querträgern und sechs Phasenleitern, Erdseil, zwei Umspannwerke."
+    }
+  ]
+}
