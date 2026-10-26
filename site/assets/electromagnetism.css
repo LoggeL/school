@@ -27,7 +27,7 @@
 .em-zoom{z-index:3}.em-zoom button{background:#ffffffe6;color:#24443a;border:1px solid #cad8c6}
 .em-loading{color:#4f6658}
 @media(max-width:900px){.em-viewport{height:440px}}
-@media(max-width:640px){.em-viewport{height:340px}.em-label{font-size:10px;padding:3px 7px}.em-label-n,.em-label-south,.em-label-s-pole{font-size:12px}}
+@media(max-width:640px){.em-viewport{height:340px}.em-label{font-size:10px;padding:3px 7px;max-width:130px;white-space:normal;text-align:center}.em-label-n,.em-label-south,.em-label-s-pole{font-size:12px}}
 /* v3 · explanation-first article layout */
 .em-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:center}
 .em-hero:not(:has(.em-hero-figure)){grid-template-columns:1fr}

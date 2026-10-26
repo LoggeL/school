@@ -12,6 +12,7 @@ const pause = document.getElementById('em-pause');
 const step = document.getElementById('em-step');
 let renderer, experiment, elapsed = 0, paused = motion.matches, visible = true;
 let camera, scene, resize, draw, resetView, showView, kitTick;
+let requestedView = 'overview';
 const VERSION = document.querySelector('script[src*="electromagnetism.js"]')?.src.split('v=')[1] || '1';
 
 function readState() {
@@ -29,6 +30,7 @@ function syncControls() {
 
 function fallback(message) {
   if (renderer) renderer.domElement.hidden = true;
+  host.querySelectorAll('.em-labels, .em-zoom, .em-canvas-hint').forEach(element => { element.hidden = true; });
   let text = host.querySelector('.em-loading');
   if (!text) { text = document.createElement('p'); text.className = 'em-loading'; host.append(text); }
   text.textContent = message;
@@ -99,7 +101,10 @@ document.querySelectorAll('[data-preset], [data-view]').forEach(button => button
     }
     state = readState(); elapsed = 0; clearGraph();
   }
-  if (button.dataset.view) showView?.(button.dataset.view);
+  if (button.dataset.view) {
+    requestedView = button.dataset.view;
+    showView?.(requestedView);
+  }
   if (!controls.contains(button)) {
     if (paused && !motion.matches) paused = false;
     document.getElementById('experiment')?.scrollIntoView({behavior: motion.matches ? 'auto' : 'smooth', block: 'start'});
@@ -191,18 +196,34 @@ try {
     controls3d.target.set(...view.target);
     let baseDistance = view.distance;
     const placeCamera = (v = view, distance = baseDistance) => {
+      // Flush any drag inertia before applying an exact teaching view.
+      controls3d.enableDamping = false; controls3d.update();
       const t = new THREE.Vector3(...(v.target || view.target));
       const yaw = v.yaw ?? view.yaw, pitch = v.pitch ?? view.pitch;
       const d = distance * (v.zoom ?? 1);
       camera.position.set(t.x + d * Math.sin(yaw) * Math.cos(pitch), t.y + d * Math.sin(pitch), t.z + d * Math.cos(yaw) * Math.cos(pitch));
-      controls3d.target.copy(t); controls3d.update();
+      controls3d.target.copy(t); controls3d.update(); controls3d.enableDamping = true;
     };
-    resetView = () => placeCamera();
+    resetView = () => { requestedView = 'overview'; host.dataset.view = requestedView; placeCamera(); };
     // Camera presets that the article can trigger ("Im Modell zeigen").
-    showView = (name) => { const v = experiment.views?.[name]; if (v) placeCamera({...view, ...v}); };
-    controls3d.addEventListener('change', () => { if (paused) draw?.(); });
+    showView = (name) => {
+      const v = experiment.views?.[name];
+      if (v) { requestedView = name; host.dataset.view = name; placeCamera({...view, ...v}); }
+    };
     canvas.addEventListener('keydown', event => {
       if (event.key === 'Home') { event.preventDefault(); resetView(); }
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        const offset = camera.position.clone().sub(controls3d.target);
+        const spherical = new THREE.Spherical().setFromVector3(offset);
+        if (event.key === 'ArrowLeft') spherical.theta -= .08;
+        if (event.key === 'ArrowRight') spherical.theta += .08;
+        if (event.key === 'ArrowUp') spherical.phi -= .08;
+        if (event.key === 'ArrowDown') spherical.phi += .08;
+        spherical.phi = Math.max(controls3d.minPolarAngle, Math.min(controls3d.maxPolarAngle, spherical.phi));
+        camera.position.copy(controls3d.target).add(offset.setFromSpherical(spherical));
+        controls3d.update();
+      }
       if (event.key === '+' || event.key === '=' || event.key === '-') {
         event.preventDefault();
         const dir = camera.position.clone().sub(controls3d.target);
@@ -211,8 +232,6 @@ try {
         camera.position.copy(controls3d.target).add(dir.setLength(len)); controls3d.update();
       }
     });
-    controls3d.listenToKeyEvents(canvas);
-    controls3d.keyRotateSpeed = 1.2;
 
     const hint = document.createElement('p'); hint.className = 'em-canvas-hint';
     hint.textContent = 'Ziehen: drehen · Mausrad/Pinch: zoomen'; host.append(hint);
@@ -234,14 +253,21 @@ try {
       renderer.setSize(width, height, false); labels.setSize(width, height);
       camera.aspect = width / height;
       // Keep the whole apparatus in frame on narrow screens.
+      const previousDistance = baseDistance;
       baseDistance = view.distance * Math.max(1, (view.fitAspect ?? 1.55) / camera.aspect);
-      controls3d.minDistance = baseDistance * .45; controls3d.maxDistance = baseDistance * 1.8;
-      camera.updateProjectionMatrix(); placeCamera(); draw?.();
+      controls3d.minDistance = baseDistance * .18; controls3d.maxDistance = baseDistance * 1.8;
+      camera.updateProjectionMatrix();
+      if (!host.dataset.view) showView(requestedView);
+      else {
+        const offset = camera.position.clone().sub(controls3d.target).multiplyScalar(baseDistance / previousDistance);
+        camera.position.copy(controls3d.target).add(offset); controls3d.update();
+      }
+      draw?.();
     };
     draw = () => {
       if (host.dataset.status !== 'ready') return;
       controls3d.update();
-      renderer.render(scene, camera); labels.render(scene, camera);
+      renderer.render(scene, camera); labels.render(scene, camera); kit.layoutLabels(host);
     };
     kitTick = (t) => kit.tick(t);
     new ResizeObserver(resize).observe(host); resize();

@@ -57,8 +57,8 @@ export function createExperiment({THREE, group, kit}) {
   const polarity = new THREE.Group(); magnet.add(polarity);
   kit.roundedBox([MAGNET_HALF - 0.01, 0.42, 0.42], 0.05, mats.magnetN, [MAGNET_HALF / 2, 0, 0], polarity);
   kit.roundedBox([MAGNET_HALF - 0.01, 0.42, 0.42], 0.05, mats.magnetS, [-MAGNET_HALF / 2, 0, 0], polarity);
-  const north = kit.label('N', [MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'n'});
-  const south = kit.label('S', [-MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'south'});
+  kit.label('N', [MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'n'});
+  kit.label('S', [-MAGNET_HALF * 0.5, 0.4, 0], {parent: polarity, tone: 'south'});
 
   // Real dipole field lines (two-pole model), traced once in the magnet frame.
   const field = kit.barMagnetField(V(0, 0, 0), MAGNET_HALF * 0.82, V(1, 0, 0), 1);
@@ -124,20 +124,19 @@ export function createExperiment({THREE, group, kit}) {
     kit.roundedBox([0.16, AXIS_Y - TABLE_Y - COIL_R - 0.02, 0.5], 0.04, mats.ceramic, [x, -(AXIS_Y - TABLE_Y + COIL_R) / 2 - 0.02, 0], coilHolder);
     kit.roundedBox([0.4, 0.06, 0.7], 0.03, mats.ceramic, [x, TABLE_Y - AXIS_Y + 0.03, 0], coilHolder);
   }
-  let coilMesh = null, current = null, shownTurns = -1, visibleTurns = 0, layers = 1;
+  let coilMesh = null, current = null, shownTurns = -1;
   function rebuildCoil(turns) {
-    if (coilMesh) { coilHolder.remove(...coilMesh); coilMesh.forEach(m => m.geometry.dispose()); }
-    if (current) { coilHolder.remove(current.mesh); current.mesh.geometry.dispose(); }
-    // The drawn number of turns is proportional to N (not equal to it); more N also adds a second layer.
-    visibleTurns = Math.round(10 + turns / 22);
-    layers = turns > 250 ? 2 : 1;
-    coilMesh = [];
-    for (let layer = 0; layer < layers; layer++) {
-      const m = kit.coil({radius: COIL_R + layer * 0.06, length: COIL_LEN, turns: visibleTurns, wireRadius: 0.027, parent: coilHolder, material: layer ? mats.copperDark : mats.copper});
-      coilMesh.push(m);
+    if (coilMesh) { coilHolder.remove(coilMesh); coilMesh.geometry.dispose(); }
+    if (current) {
+      coilHolder.remove(current.mesh);
+      current.mesh.geometry.dispose(); current.material.dispose();
     }
-    const outer = coilMesh[coilMesh.length - 1];
-    current = kit.dots(outer.userData.curve, {count: visibleTurns * 3 + 1, radius: 0.034, color: 0xf6c35a, parent: coilHolder, emissive: 0.9});
+    // One continuous, symbolic winding connects both terminals. More N makes it
+    // denser; the wire radius stays below half the pitch so turns never intersect.
+    const visibleTurns = Math.round(10 + turns / 22);
+    const wireRadius = Math.min(0.027, COIL_LEN / visibleTurns * 0.42);
+    coilMesh = kit.coil({radius: COIL_R, length: COIL_LEN, turns: visibleTurns, wireRadius, parent: coilHolder});
+    current = kit.dots(coilMesh.userData.curve, {count: visibleTurns * 3 + 1, radius: 0.034, color: 0xf6c35a, parent: coilHolder, emissive: 0.9});
     shownTurns = turns;
   }
   // Flux indicator inside the coil: a disc whose tint shows |Φ|.
@@ -155,15 +154,18 @@ export function createExperiment({THREE, group, kit}) {
   const inducedPole = kit.label('', [-(COIL_LEN / 2 + 0.1), COIL_R + 0.2, 0.2], {parent: coilHolder, tone: 'n'});
 
   // ---------- meter and cables ----------
-  const meter = kit.meter({position: [1.65, TABLE_Y, 1.25], rotationY: -0.18, size: 1.05, centerZero: true, unit: 'U'});
+  const meter = kit.meter({position: [1.65, TABLE_Y, 1.25], rotationY: -0.18, size: 1.05, centerZero: true, unit: 'V'});
   meter.group.updateMatrixWorld(true);
   const size = 1.05, w = 1.25 * size, d = 0.42 * size;
   const terminal = (x) => meter.group.localToWorld(V(x, 0.04 * size, d / 2 + 0.08 * size));
   const tLeft = terminal(-w * 0.3), tRight = terminal(w * 0.3);
   const leadStart = V(COIL_X - COIL_LEN / 2, AXIS_Y + COIL_R, 0);
   const leadEnd = V(COIL_X + COIL_LEN / 2, AXIS_Y + COIL_R, 0);
-  kit.wire([[leadStart.x, leadStart.y, 0], [leadStart.x - 0.15, leadStart.y + 0.18, 0.3], [leadStart.x - 0.35, TABLE_Y + 0.35, 0.85], [tLeft.x - 0.1, TABLE_Y + 0.05, tLeft.z + 0.3], [tLeft.x, tLeft.y + 0.04, tLeft.z + 0.05]], 0.022, mats.cableRed);
-  kit.wire([[leadEnd.x, leadEnd.y, 0], [leadEnd.x + 0.15, leadEnd.y + 0.18, 0.3], [leadEnd.x + 0.4, TABLE_Y + 0.35, 0.85], [tRight.x + 0.1, TABLE_Y + 0.05, tRight.z + 0.3], [tRight.x, tRight.y + 0.04, tRight.z + 0.05]], 0.022, mats.cableBlack);
+  // Positive induced voltage drives conventional current from the left end
+  // through the helix to the right end. The right end therefore connects to
+  // the red (+) meter terminal; the return lead connects to black (−).
+  kit.wire([[leadStart.x, leadStart.y, 0], [leadStart.x - 0.15, leadStart.y + 0.18, 0.3], [leadStart.x - 0.35, TABLE_Y + 0.35, 0.85], [tRight.x + 0.15, TABLE_Y + 0.09, tRight.z + 0.35], tRight.toArray()], 0.022, mats.cableBlack);
+  kit.wire([[leadEnd.x, leadEnd.y, 0], [leadEnd.x + 0.15, leadEnd.y + 0.18, 0.3], [leadEnd.x + 0.4, TABLE_Y + 0.35, 0.85], [tLeft.x - 0.15, TABLE_Y + 0.05, tLeft.z + 0.2], tLeft.toArray()], 0.022, mats.cableRed);
 
   let lastTime = 0, offset = 0;
   return {
@@ -185,10 +187,10 @@ export function createExperiment({THREE, group, kit}) {
       polarity.rotation.y = state.reverse ? Math.PI : 0;
       // More field lines for a stronger magnet (density ~ field strength).
       const ranks = strength <= 0.5 ? 0 : strength <= 0.75 ? 1 : strength <= 1.25 ? 2 : 3;
-      for (const line of lines) line.set({visible: line.rank <= ranks, strength: 0.75 + 0.15 * Math.min(strength, 2)});
+      for (const line of lines) line.set({visible: strength > 0 && line.rank <= ranks, strength: 0.75 + 0.15 * Math.min(strength, 2)});
 
       const u = result.scale ? result.voltage / result.scale : 0;
-      meter.set(u);
+      meter.setNow(u);
 
       // Conventional current along the winding. Positive U ⇒ current runs along the helix
       // direction, which by the right-hand rule makes a field along +x inside the coil.
@@ -198,10 +200,12 @@ export function createExperiment({THREE, group, kit}) {
 
       const fluxMax = FLUX_SCALE * 2 * 0.6;
       const fluxFill = Math.min(1, Math.abs(result.flux) / fluxMax);
-      fluxDisc.material.opacity = 0.06 + 0.45 * fluxFill;
+      fluxDisc.material.opacity = strength > 0 ? 0.06 + 0.45 * fluxFill : 0;
       const fluxLen = 0.32 + 0.95 * fluxFill, fluxDir = Math.sign(result.flux) || 1;
       magnetArrow.set([fluxDir, 0, 0], fluxLen);
       magnetArrow.group.position.x = -fluxDir * fluxLen / 2;
+      magnetArrow.group.visible = strength > 0;
+      fluxLabel.show(strength > 0);
       const induced = Math.min(1, Math.abs(u));
       const inducedDir = -Math.sign(result.fluxRate);
       const active = induced > 0.06;
@@ -221,14 +225,15 @@ export function createExperiment({THREE, group, kit}) {
         inducedPole.set(pole);
         inducedPole.element.className = `em-label em-label-${pole === 'N' ? 'n' : 'south'} em-label-m`;
       }
-      if (active) inducedLabel.set(result.velocity > 0 ? 'Gegenfeld: stößt ab' : 'Gegenfeld: zieht zurück');
+      if (active) inducedLabel.set(result.velocity > 0 ? 'Induziertes Feld: stößt ab' : 'Induziertes Feld: zieht zurück');
 
       const facing = state.reverse ? 'Südpol' : 'Nordpol';
       let note;
-      if (speed === 0) note = `Der Magnet steht still vor der Spule. Sein Feld durchsetzt die Spule, aber der Fluss ändert sich nicht. Deshalb ist U = 0.`;
+      if (strength === 0) note = 'Ohne Magnetfeld gibt es keinen magnetischen Fluss durch die Spule. Auch bei Bewegung bleibt U = 0.';
+      else if (speed === 0) note = `Der Magnet steht still vor der Spule. Sein Feld durchsetzt die Spule, aber der Fluss ändert sich nicht. Deshalb ist U = 0.`;
       else if (Math.abs(result.velocity) < 0.06 * speed * 1.4) note = 'Umkehrpunkt: Der Magnet ist kurz in Ruhe. Der Fluss ändert sich in diesem Moment nicht, also ist U fast null.';
-      else if (result.velocity > 0) note = `Der ${facing} nähert sich: Der Fluss durch die Spule wächst. Die Spule baut an ihrer Öffnung einen gleichnamigen Pol auf (${state.reverse ? 'S' : 'N'}) und bremst damit die Annäherung (Lenz).`;
-      else note = `Der ${facing} entfernt sich: Der Fluss nimmt ab. Jetzt entsteht an der Öffnung der ungleichnamige Pol (${state.reverse ? 'N' : 'S'}). Er zieht den Magneten zurück, die Spannung wechselt ihr Vorzeichen.`;
+      else if (result.velocity > 0) note = `Der ${facing} nähert sich: Der Betrag des Flusses durch die Spule wächst. Die Spule baut an ihrer Öffnung einen gleichnamigen Pol auf (${state.reverse ? 'S' : 'N'}) und bremst damit die Annäherung (Lenz).`;
+      else note = `Der ${facing} entfernt sich: Der Betrag des Flusses nimmt ab. Jetzt entsteht an der Öffnung der ungleichnamige Pol (${state.reverse ? 'N' : 'S'}). Er zieht den Magneten zurück, die Spannung wechselt ihr Vorzeichen.`;
       return {
         metrics: [
           {label: 'Induktionsspannung', value: `${format(result.voltage * 1000, 0)} mV`},

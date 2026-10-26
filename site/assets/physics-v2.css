@@ -95,4 +95,4 @@
 .sim-3d .em-label-n,.sim-3d .em-label-south{color:#fff;font-size:15px;padding:4px 10px;border-radius:7px}
 .sim-3d .em-label-n{background:#c8664f;border-color:#c8664f}
 .sim-3d .em-label-south{background:#4f7f95;border-color:#4f7f95}
-@media(max-width:640px){.sim-3d .em-label{font-size:10px;padding:3px 7px}.sim-3d .em-label-n,.sim-3d .em-label-south{font-size:12px}}
+@media(max-width:640px){.sim-3d .em-label{font-size:10px;padding:3px 7px;max-width:130px;white-space:normal;text-align:center}.sim-3d .em-label-n,.sim-3d .em-label-south{font-size:12px}}

@@ -91,7 +91,7 @@ LESSONS = [
 ],
 'formula': '''<div class="em-formula">Φ = B · A · cos θ<br>U(t) = N · B · A · ω · sin(ωt)<br>Û = N · B · A · ω  mit  ω = 2π · f</div>
 <dl class="em-vars"><div><dt>Φ</dt><dd>magnetischer Fluss in Weber (Wb)</dd></div><div><dt>B</dt><dd>magnetische Flussdichte in Tesla (T)</dd></div><div><dt>A</dt><dd>Fläche einer Windung in m²</dd></div><div><dt>θ</dt><dd>Winkel zwischen Feld und Flächennormale</dd></div><div><dt>N</dt><dd>Windungszahl</dd></div><div><dt>ω, f</dt><dd>Winkelgeschwindigkeit in 1/s, Frequenz in Hz (Umdrehungen pro Sekunde)</dd></div><div><dt>Û</dt><dd>Spitzenwert der Spannung in Volt</dd></div></dl>
-<p>Die Sinusform folgt direkt aus dem Induktionsgesetz: Die Spannung ist die Änderungsrate des Flusses, und die Änderungsrate von cos ist sin. Der Effektivwert, den ein normales Messgerät für Wechselspannung anzeigt, beträgt Û / √2.</p>''',
+<p>Die Sinusform folgt direkt aus dem Induktionsgesetz: Die Ableitung des Kosinus ist der negative Sinus. Zusammen mit dem Minuszeichen in U = −N · dΦ/dt ergibt sich die oben gezeigte Sinusspannung. Der Effektivwert, den ein normales Messgerät für Wechselspannung anzeigt, beträgt Û / √2.</p>''',
 'example': ('Ein kleiner Modellgenerator', '<p>Gegeben: N = 100, B = 0,5 T, A = 0,02 m², Drehzahl 30 U/min.</p><div class="em-formula">f = 30 / 60 s = 0,5 Hz<br>ω = 2π · 0,5 Hz ≈ 3,14 1/s<br>Û = 100 · 0,5 T · 0,02 m² · 3,14 1/s ≈ 3,14 V</div><p>Bei 60 U/min verdoppeln sich ω und damit der Spitzenwert auf etwa 6,28 V. Genau das zeigt auch das 3D-Labor.</p>'),
 'myths': [
     ('„Der Magnet liefert die Energie.“', 'Der Magnet stellt nur das Feld bereit. Die elektrische Energie stammt aus der Arbeit des Antriebs. Belastet man den Generator, wird er schwerer zu drehen.'),
@@ -198,7 +198,7 @@ LESSONS = [
 'tasks':[
     ('Stelle den Strom auf 0. Wie sehen die Bezirke aus?', {'current': 0, 'core': True, 'domains': True}, 'Ungeordnet. Ohne Spulenfeld gibt es keine Vorzugsrichtung. Im Modell bleibt kein Restmagnetismus zurück, in echtem Eisen kann ein kleiner Rest bleiben.'),
     ('Nimm den Kern heraus und setze ihn wieder ein. Was ändert sich am Feldlinienbild?', {'current': .5, 'core': False, 'domains': True}, 'Ohne Kern ist das Feld deutlich schwächer, aber nicht weg: Die Spule allein erzeugt es schon.'),
-    ('Erhöhe den Strom schrittweise bis 1 A.', {'current': 1, 'core': True, 'domains': True}, 'Die Ausrichtung nimmt erst schnell, dann immer langsamer zu. Das ist der Beginn der Sättigung.'),
+    ('Erhöhe den Strom schrittweise bis 1 A.', {'current': 1, 'core': True, 'domains': True}, 'Die Ausrichtung nimmt erst schnell, dann immer langsamer zu. Im Modell veranschaulicht das die Sättigung. Bei welchem Strom ein echter Kern sättigt, hängt von Material und Form ab.'),
 ],
 'formula':'''<div class="em-formula">B<sub>Luft</sub> ≈ μ₀ · N · I / ℓ<br>B<sub>Kern</sub> ≈ μ<sub>r</sub> · μ₀ · N · I / ℓ</div>
 <dl class="em-vars"><div><dt>B</dt><dd>magnetische Flussdichte im Inneren in Tesla</dd></div><div><dt>μ₀</dt><dd>magnetische Feldkonstante ≈ 1,257 · 10⁻⁶ T·m/A</dd></div><div><dt>N, I, ℓ</dt><dd>Windungszahl, Stromstärke in A, Spulenlänge in m</dd></div><div><dt>μ<sub>r</sub></dt><dd>Permeabilitätszahl des Kerns, für Eisen etwa einige Hundert bis Tausende</dd></div></dl>
@@ -332,9 +332,9 @@ LESSONS = [
 ],
 'questions':[
     ('Warum transportiert man große Leistungen mit hoher Spannung?','Bei gleicher Leistung ist der Strom kleiner. Ein kleiner Strom erwärmt die Leitungen viel weniger, weil der Verlust mit I² wächst.'),
-    ('Du verdoppelst nur die Spannung. Was passiert mit Strom und Wärmeverlust?','Der Strom halbiert sich, der Verlust sinkt auf ein Viertel.'),
+    ('Du verdoppelst bei gleicher Sendeleistung die Spannung. Was passiert mit Strom und Wärmeverlust?','Der Strom halbiert sich, der Verlust sinkt bei gleichem Leitungswiderstand auf ein Viertel.'),
     ('Wo bleibt die Energie, die unterwegs verloren geht?','Sie wird als Wärme an die Umgebung abgegeben. Sie ist nicht weg, aber für den Verbraucher nicht mehr nutzbar.'),
-    ('Wozu stehen Transformatoren vor und nach der Fernleitung?','Vorher erhöhen sie die Spannung für eine verlustarme Übertragung. Danach senken sie sie wieder auf ungefährliche, nutzbare Werte.'),
+    ('Wozu stehen Transformatoren vor und nach der Fernleitung?','Vorher erhöhen sie die Spannung für eine verlustarme Übertragung. Danach senken sie sie wieder auf die für Haushalt und Geräte benötigten Spannungen.'),
     ('Warum baut man nicht mit beliebig hoher Spannung?','Die Isolation wird aufwendiger, Abstände, Masten und Isolatoren werden größer und teurer. Irgendwann überwiegen diese Kosten die Einsparung.'),
 ],
 'summary':['In Leitungen geht die Leistung P<sub>V</sub> = I² · R als Wärme verloren.','Bei gleicher Leistung bedeutet höhere Spannung kleineren Strom: I = P / U.','Halber Strom ergibt ein Viertel der Verluste. Deshalb lohnt sich Hochspannung so sehr.','Transformatoren erhöhen die Spannung vor der Fernleitung und senken sie danach wieder.'],

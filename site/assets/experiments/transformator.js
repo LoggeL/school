@@ -83,22 +83,36 @@ export function createExperiment({ THREE, group, kit }) {
     const x = legX[side];
     const visible = Math.max(8, Math.round(n / 10));
     const layers = Math.ceil(visible / perLayer);
-    let left = visible, radius = COIL.r0;
+    let left = visible, radius = COIL.r0, endY = coilBottom;
     for (let layer = 0; layer < layers; layer++) {
       const turns = Math.min(perLayer, left);
       const length = layers === 1 ? COIL.length : COIL.length * turns / perLayer;
       radius = COIL.r0 + layer * COIL.layerStep;
-      const item = kit.coil({ radius, length, turns, wireRadius: COIL.wire, axis: 'y', material: surface, position: [x, coilBottom + length / 2, 0], segmentsPerTurn: 28 });
+      const ascending = layer % 2 === 0;
+      const startY = ascending ? coilBottom : coilTop;
+      const helix = kit.helixCurve({ radius, length, turns, axis: 'y' });
+      const curve = new (class extends THREE.Curve {
+        getPoint(t, target = new THREE.Vector3()) {
+          helix.getPoint(t, target);
+          // The return layer travels down the bobbin but keeps the same winding sense.
+          if (!ascending) target.y *= -1;
+          return target;
+        }
+      })();
+      if (layer > 0) {
+        windings[side].push(kit.wire([[x, startY, radius - COIL.layerStep], [x, startY, radius]], COIL.wire, surface));
+      }
+      const centerY = startY + (ascending ? 1 : -1) * length / 2;
+      const item = kit.mesh(new THREE.TubeGeometry(curve, turns * 28, COIL.wire, 7, false), surface, [x, centerY, 0]);
       item.rotation.y = -Math.PI / 2; // start and end of each layer face the viewer (+z)
       windings[side].push(item);
+      endY = startY + (ascending ? length : -length);
       left -= turns;
     }
     // leads: last layer end to right post, first layer start brought up the front to left post
-    const lastLength = layers === 1 ? COIL.length : COIL.length * (visible - perLayer * (layers - 1)) / perLayer;
-    const endY = coilBottom + lastLength;
     const [postA, postB] = posts[side];
     const out = radius + COIL.wire;
-    const leadEnd = kit.wire([[x, endY, out - 0.01], [x + 0.06, Math.max(endY + 0.08, coilTop + 0.02), out + 0.03], [postB.x, coilTop + 0.12, postB.z + 0.02], [postB.x, postB.y + 0.02, postB.z]], 0.022, surface);
+    const leadEnd = kit.wire([[x, endY, radius], [x + 0.06, Math.max(endY + 0.08, coilTop + 0.02), out + 0.03], [postB.x, coilTop + 0.12, postB.z + 0.02], [postB.x, postB.y + 0.02, postB.z]], 0.022, surface);
     const leadStart = kit.wire([[x, coilBottom, COIL.r0], [x - 0.04, coilBottom + 0.02, out + 0.05], [x - 0.1, COIL.center, out + 0.07], [x - 0.15, coilTop + 0.02, out + 0.06], [postA.x, coilTop + 0.12, postA.z + 0.03], [postA.x, postA.y + 0.02, postA.z]], 0.022, surface);
     windings[side].push(leadEnd, leadStart);
   }
@@ -153,7 +167,7 @@ export function createExperiment({ THREE, group, kit }) {
   // primaryOut runs post→source, so positive current (source + → coil) moves backwards along it.
   const primaryDir = [-1, -1];
   // secondaryBack runs lamp→coil, secondaryOut coil→lamp: positive current leaves the coil at sB.
-  const secondaryDir = [-1, -1];
+  const secondaryDir = [1, 1];
 
   // ---------- magnetic flux inside the core ----------
   function loop(offset, z) {
@@ -178,7 +192,7 @@ export function createExperiment({ THREE, group, kit }) {
   const fluxArrows = [
     { from: [-0.35, (winTop + top) / 2, depth / 2 + 0.03], dir: [1, 0, 0] },
     { from: [0.35, bottom + leg / 2, depth / 2 + 0.03], dir: [-1, 0, 0] },
-  ].map(a => ({ ...a, api: kit.arrow({ from: a.from, dir: a.dir, length: 0.7, radius: 0.035, color: 0x1f7a52, emissive: 0.15 }) }));
+  ].map(a => ({ ...a, api: kit.arrow({ from: a.from, dir: a.dir, length: 0.7, radius: 0.035, color: 0x1f7a52, opacity: 0.99, emissive: 0.15 }) }));
 
   // ---------- labels ----------
   const primaryLabel = kit.label('Primärspule N₁ = 400', [legX[0] - 0.45, coilTop + 0.78, 0], { tone: 'copper' });
@@ -189,8 +203,7 @@ export function createExperiment({ THREE, group, kit }) {
   kit.label('Spannungsquelle', [-3.6, -1.22, 1.0], { size: 's' });
   const lampLabel = kit.label('Lampe · 20 Ω', [lampX, 0.42, lampZ], { size: 's' });
 
-  let built = '', lastTime = 0, labelKey = '';
-  let dotOffsetP = 0, dotOffsetS = 0;
+  let built = '', labelKey = '';
 
   return {
     camera: { target: [0, 0.2, 0.1], distance: 11.6, yaw: 0.32, pitch: 0.3, floor: -1.5, shadowSize: 6.5, fitAspect: 1.6 },
@@ -219,35 +232,30 @@ export function createExperiment({ THREE, group, kit }) {
         fluxLabel.set(state.dc ? 'Fluss Φ konstant' : 'magnetischer Fluss Φ');
       }
 
-      let dt = time - lastTime; lastTime = time;
-      if (!(dt > 0 && dt < 0.5)) dt = 0;
-
       // Flux: direction and strength follow Φ(t); in DC it is constant (no change → no induction).
-      const flux = values.flux;
-      for (const line of fluxLines) line.set({ speed: state.dc ? 0 : 0.55 * flux, strength: state.dc ? 0.95 : 0.35 + 0.65 * Math.abs(flux) });
+      const flux = input > 0 ? values.flux : 0;
+      for (const line of fluxLines) line.set({ speed: state.dc ? 0 : 0.55 * flux, strength: Math.abs(flux) });
       for (const a of fluxArrows) {
         const sign = flux < 0 ? -1 : 1;
-        a.api.set(a.dir.map(c => c * sign), 0.25 + 0.45 * Math.abs(flux));
-        a.api.material.opacity = 1;
+        a.api.set(a.dir.map(c => c * sign), 0.7 * Math.abs(flux));
+        a.api.material.opacity = Math.abs(flux);
       }
 
-      // Currents (RMS ratio shown by speed, sign by the instantaneous value).
+      // Load currents: the primary and secondary ampere-turns oppose each other.
+      // The ideal calculation omits magnetising current. In DC the primary current is unknown.
+      // Integrating sin analytically also keeps pause, step and reset deterministic.
       const phase = 2 * Math.PI * 0.35 * time;
       const i2 = values.current, i1 = values.primaryCurrent ?? 0;
       const imax = Math.max(i1, i2, 1e-6);
-      if (state.dc) {
-        dotOffsetP += dt * 0.22;
-      } else {
-        dotOffsetP += dt * 0.4 * Math.sin(phase) * (i1 / imax);
-        dotOffsetS += dt * 0.4 * Math.sin(phase) * (i2 / imax);
-      }
+      const displacement = 0.4 * (1 - Math.cos(phase)) / (2 * Math.PI * 0.35);
+      const dotOffsetP = displacement * i1 / imax, dotOffsetS = displacement * i2 / imax;
       primaryDots.forEach((d, k) => d.place(primaryDir[k] * dotOffsetP));
       secondaryDots.forEach((d, k) => { d.place(secondaryDir[k] * dotOffsetS); d.mesh.visible = !state.dc && i2 > 1e-6; });
-      primaryDots.forEach(d => { d.mesh.visible = state.dc || i1 > 1e-6; });
+      primaryDots.forEach(d => { d.mesh.visible = !state.dc && i1 > 1e-6; });
 
       // Lamp: brightness from the (RMS) power, logarithmic so small and large loads both read.
       const glow = state.dc ? 0 : Math.min(1, Math.log10(1 + values.power) / Math.log10(51));
-      filament.emissiveIntensity = 0.2 + glow * 6;
+      filament.emissiveIntensity = glow * 6;
       filament.color.setHex(glow > 0.02 ? 0xffd9a0 : 0x8a7a66);
       glass.emissiveIntensity = glow * 0.55;
       glass.opacity = 0.22 + glow * 0.25;
@@ -256,18 +264,18 @@ export function createExperiment({ THREE, group, kit }) {
       lampLight.intensity = glow * 6;
 
       let note;
-      if (state.dc) {
-        note = 'Gleichspannung: Nach dem Einschalten bleibt der Fluss im Kern konstant. Ohne Flussänderung wird in der Sekundärspule nichts induziert – U₂ = 0 V, die Lampe bleibt dunkel.';
-      } else if (input === 0) {
+      if (input === 0) {
         note = 'Ohne Eingangsspannung gibt es keinen wechselnden Fluss und damit keine Sekundärspannung.';
+      } else if (state.dc) {
+        note = 'Gleichspannung: Nach dem Einschalten bleibt der Fluss im Kern konstant. Ohne Flussänderung gilt U₂ = 0 V, die Lampe bleibt dunkel. Der Primärstrom wird hier nicht berechnet; eine echte Wicklung kann dabei überhitzen.';
       } else {
         const moment = Math.abs(flux) > 0.92
-          ? 'Gerade ist der Fluss fast maximal, ändert sich aber kaum – U₂ geht durch null.'
+          ? 'Gerade ist der Betrag des Flusses fast maximal. Er ändert sich kaum, U₂ geht durch null.'
           : Math.abs(flux) < 0.3
-            ? 'Gerade wechselt der Fluss seine Richtung und ändert sich am schnellsten – U₂ ist fast maximal.'
+            ? 'Gerade wechselt der Fluss seine Richtung und ändert sich am schnellsten. Der Betrag von U₂ ist fast maximal.'
             : 'Der Fluss im Kern ändert sich ständig. Diese Änderung induziert U₂ in der Sekundärspule.';
         const kind = values.ratio > 1.001 ? 'hochtransformiert' : values.ratio < 0.999 ? 'heruntertransformiert' : 'unverändert übertragen';
-        note = `N₂/N₁ = ${secondary}/${primary} = ${fmt(values.ratio, 2)}: Die Spannung wird ${kind} (${fmt(input)} V → ${fmt(values.voltage, 2)} V). Der Strom ändert sich umgekehrt: I₁ = ${fmt(i1, 3)} A, I₂ = ${fmt(i2, 3)} A. ${moment}`;
+        note = `N₂/N₁ = ${secondary}/${primary} = ${fmt(values.ratio, 2)}: Die Spannung wird ${kind} (${fmt(input)} V → ${fmt(values.voltage, 2)} V). Die Punkte zeigen die technischen Lastströme: I₁ = ${fmt(i1, 3)} A, I₂ = ${fmt(i2, 3)} A (Effektivwerte). Der Magnetisierungsstrom wird im idealen Modell vernachlässigt. ${moment}`;
       }
 
       return {

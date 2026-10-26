@@ -295,7 +295,8 @@ export function createExperiment({ THREE, group, kit }) {
   // earth wire on the peaks (thin, not part of the circuit)
   kit.wire(routePoints(peaks[0], peaks.slice(1, -1), peaks.at(-1), 0.16).filter((_, i) => i % 2 === 0).map(p => [p.x, p.y, p.z]), 0.007, kit.mat(0x9aa3a4, 0.7, 0.4));
 
-  // current direction: Hinleiter towards the village, Rückleiter back
+  // Slowed alternating conventional current. At every instant the two
+  // conductors carry opposite currents; their direction reverses together.
   const currentFront = kit.flowLine(curves.front, { color: 0xfff1c4, radius: 0.027, opacity: 0.42, repeat: 16, speed: 0.4, width: 0.3 });
   const currentBack = kit.flowLine(curves.back, { color: 0xfff1c4, radius: 0.027, opacity: 0.42, repeat: 16, speed: -0.4, width: 0.3 });
 
@@ -345,7 +346,7 @@ export function createExperiment({ THREE, group, kit }) {
   // ---------- labels ----------
   const plantLabel = kit.label('Kraftwerk · hochtransformieren', [-4.8, 1.3, 0], { tone: 'dark' });
   const lineLabel = kit.label('Leitung: Hin- und Rückleiter', [0, PYLON_TOP + TOP + 0.95, 0], { tone: 'dark' });
-  const subLabel = kit.label('Umspannwerk · Verbraucher', [4.75, 0.85, 0], { tone: 'dark' });
+  kit.label('Umspannwerk · heruntertransformieren', [4.75, 0.85, 0], { tone: 'dark' });
   const arrivalLabel = kit.label('kommt an: 9,90 MW', [5.35, -0.05, 0.9], { tone: 'accent', size: 's' });
   const midFront = curves.front.getPointAt(0.5);
   const currentLabel = kit.label('I = 100 A', [midFront.x - 0.75, midFront.y + 0.42, midFront.z + 0.1], { tone: 'accent' });
@@ -362,15 +363,17 @@ export function createExperiment({ THREE, group, kit }) {
   let current = { lossFraction: 0, efficiency: 1, powerScale: 0.5, flowSpeed: 0.4, received: 0, state: 'ok' };
 
   function placePackets(time) {
-    const { efficiency, powerScale, state } = current;
+    const { efficiency, powerScale } = current;
     const r = 0.035 + 0.045 * Math.sqrt(powerScale);
     const speed = 0.06;
     for (let i = 0; i < PACKETS; i++) {
       const u = ((i / PACKETS + time * speed) % 1 + 1) % 1;
       const p = energyCurve.getPointAt(u);
       // remaining share of the energy at this point along the line
-      const remaining = state === 'ok' ? 1 - (1 - efficiency) * u : Math.max(0, 1 - u * 1.1);
-      tmp.position.copy(p); tmp.scale.setScalar(r * (0.45 + 0.55 * remaining));
+      const remaining = Math.max(0, 1 - (1 - efficiency) * u);
+      // Packet volume represents the remaining share, so zero arriving power
+      // does not leave a glowing packet at the receiving end.
+      tmp.position.copy(p); tmp.scale.setScalar(r * Math.cbrt(remaining));
       tmp.updateMatrix(); packetMesh.setMatrixAt(i, tmp.matrix);
       color.setRGB(1, 0.83, 0.42).multiplyScalar(0.25 + 0.75 * remaining);
       packetMesh.setColorAt(i, color);
@@ -401,7 +404,7 @@ export function createExperiment({ THREE, group, kit }) {
     views: {
       overview: { target: [0, 0.15, 0], yaw: 0.2, pitch: 0.42, zoom: 1 },
       line: { target: [0, 0.75, 0.55], yaw: 0.42, pitch: 0.16, zoom: 0.36 },
-      substation: { target: [-4.9, -0.45, 0], yaw: 0.62, pitch: 0.36, zoom: 0.42 },
+      substation: { target: [4.85, -0.45, 0], yaw: -0.62, pitch: 0.36, zoom: 0.42 },
       village: { target: [5.45, -0.6, 0], yaw: -0.55, pitch: 0.4, zoom: 0.42 },
     },
     update(state, time) {
@@ -409,16 +412,19 @@ export function createExperiment({ THREE, group, kit }) {
       const maxPower = 20e6;
       const lossFraction = values.sending ? values.loss / values.sending : 0;
       const status = values.impossible ? 'impossible' : values.shortCircuit ? 'short' : 'ok';
-      // warmth follows the share of energy lost in the wires (perceptual, saturates at 30 %)
-      const heat = status === 'ok' ? clamp(Math.sqrt(lossFraction / 0.3)) : 1;
-      const flowSpeed = 0.12 + 0.55 * clamp(Math.log10(Math.max(values.current, 1) / 2.5) / Math.log10(800));
+      // Warmth follows absolute I²R loss, not its fraction of sending power.
+      // The colour scale is illustrative and saturates at 3 MW.
+      const heat = status === 'impossible' ? 0 : clamp(Math.sqrt(values.loss / 3e6));
+      const amplitude = 0.12 + 0.55 * clamp(Math.log10(Math.max(values.current, 1) / 2.5) / Math.log10(800));
+      const flowSpeed = status === 'impossible' ? 0 : amplitude * Math.sin(time * Math.PI / 2);
       current = { lossFraction, efficiency: Math.max(0, values.efficiency), powerScale: values.sending / maxPower, flowSpeed, received: values.received, state: status, heat };
 
       conductorMaterial.color.copy(cool).lerp(hot, heat * 0.75);
       conductorMaterial.emissiveIntensity = 1.6 * heat * heat;
-      currentFront.set({ speed: flowSpeed });
-      currentBack.set({ speed: -flowSpeed });
-      packetMesh.visible = values.sending > 0;
+      currentFront.set({ speed: flowSpeed, visible: !values.impossible });
+      currentBack.set({ speed: -flowSpeed, visible: !values.impossible });
+      packetMesh.visible = values.sending > 0 && !values.impossible;
+      heatMesh.visible = !values.impossible;
 
       // village lights ∝ received power
       const lit = status === 'ok' ? Math.round(windows.length * clamp(values.received / maxPower)) : 0;
@@ -427,13 +433,13 @@ export function createExperiment({ THREE, group, kit }) {
       windowOn.emissiveIntensity = 0.7 + 0.9 * current.efficiency;
       lampHeads.forEach(l => { l.material = lit > 2 ? windowOn : windowOff; });
 
-      currentLabel.set(`I = ${number(values.current, values.current < 100 ? 1 : 0)} A`);
-      lossLabel.set(status === 'ok' ? `Wärme: ${watts(values.loss)} (${number(lossFraction * 100, lossFraction < 0.1 ? 2 : 1)} %)` : 'Wärme: zu groß');
+      currentLabel.set(`${values.impossible ? 'rechnerisch ' : ''}I = ${number(values.current, values.current < 100 ? 1 : 0)} A`);
+      lossLabel.set(values.impossible ? 'Kein passiver Betriebszustand' : `Wärme: ${watts(values.loss)} (${number(lossFraction * 100, lossFraction < 0.1 ? 2 : 1)} %)`);
       if (status === 'impossible') { warnLabel.set('⚠ Nicht möglich: Verlust wäre größer als die Sendeleistung'); warnLabel.show(true); }
       else if (status === 'short') { warnLabel.set('⚠ Grenzfall: Die ganze Leistung wird zu Wärme'); warnLabel.show(true); }
       else warnLabel.show(false);
       plantLabel.set(`Kraftwerk · hochtransformieren auf ${number(values.voltage / 1000, 0)} kV`);
-      arrivalLabel.set(status === 'ok' ? `kommt an: ${watts(values.received)}` : 'kommt an: 0 W');
+      arrivalLabel.set(values.impossible ? 'Betrieb nicht möglich' : status === 'short' ? 'kommt an: 0 W' : `kommt an: ${watts(values.received)}`);
       lineLabel.set(`Leitung: Hin- und Rückleiter · R = ${number(values.resistance, 0)} Ω`);
 
 
@@ -446,10 +452,11 @@ export function createExperiment({ THREE, group, kit }) {
         const doubled = calculate({ ...state, voltage: Number(state.voltage) * 2 });
         note = `Bei ${number(values.voltage / 1000, 0)} kV fließen ${number(values.current, 1)} A. ${number(lossFraction * 100, lossFraction < 0.1 ? 2 : 1)} % der Leistung (${watts(values.loss)}) werden in den Leitern zu Wärme, ${watts(values.received)} kommen an. Doppelte Spannung hieße: halber Strom und nur ein Viertel Verlust (${watts(doubled.loss)}).`;
       }
+      note += ' Spannung und Strom sind Effektivwerte, die Leistungen zeitliche Mittelwerte im Zweileitermodell. Die hellen Strommarkierungen wechseln verlangsamt die Richtung; gelbe Punkte zeigen den Energiefluss zum Dorf. Farbe, Punktgröße und Tempo sind schematisch.';
       return {
         metrics: [
-          { label: 'Strom in der Leitung', value: `${number(values.current, 1)} A` },
-          { label: 'Leitungsverlust', value: status === 'ok' ? `${watts(values.loss)}` : 'zu groß' },
+          { label: values.impossible ? 'Strom rechnerisch' : 'Strom in der Leitung (effektiv)', value: `${number(values.current, 1)} A` },
+          { label: values.impossible ? 'Leitungsverlust rechnerisch' : 'Leitungsverlust', value: watts(values.loss) },
           { label: 'Leistung am Verbraucher', value: status === 'impossible' ? 'nicht möglich' : watts(Math.max(0, values.received)) },
         ],
         note,

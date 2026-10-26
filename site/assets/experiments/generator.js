@@ -1,4 +1,4 @@
-// Hand-cranked AC generator: a rectangular coil turns about a horizontal axis (z)
+// Hand-cranked AC generator: a rectangular coil turns about a vertical axis (y)
 // in the homogeneous field between two pole shoes. A = 0.02 m²; ideal, open circuit.
 // The drawn winding pack is symbolic; its thickness grows with the chosen N.
 export function calculate(state, time) {
@@ -22,7 +22,7 @@ export function calculate(state, time) {
 }
 
 export function createExperiment({ THREE, group, kit }) {
-  const { mats, mesh, roundedBox, cylinder, wire, label, flowLine, arrow, dots, meter, canvasTexture } = kit;
+  const { mats, mesh, roundedBox, cylinder, wire, label, flowLine, arrow, meter, canvasTexture } = kit;
   // Vertical rotation axis (y). Field along +x from the N pole shoe (left) to the S pole shoe (right).
   const baseTop = -1.17;
   const YC = 0.22;              // height of the coil centre
@@ -73,17 +73,20 @@ export function createExperiment({ THREE, group, kit }) {
   group.add(rotor);
 
   // Rounded square in the rotor's y-z plane; its normal is the local +x axis.
+  const LEAD_GAP = 0.14;
   function squarePath(h, r) {
     const path = new THREE.CurvePath();
     const v = (y, z) => new THREE.Vector3(0, y, z);
+    // Two distinct winding ends at the top lead to separate slip rings.
+    path.add(new THREE.LineCurve3(v(h, LEAD_GAP), v(h, h - r)));
+    path.add(new THREE.QuadraticBezierCurve3(v(h, h - r), v(h, h), v(h - r, h)));
     path.add(new THREE.LineCurve3(v(h - r, h), v(-h + r, h)));
     path.add(new THREE.QuadraticBezierCurve3(v(-h + r, h), v(-h, h), v(-h, h - r)));
     path.add(new THREE.LineCurve3(v(-h, h - r), v(-h, -h + r)));
     path.add(new THREE.QuadraticBezierCurve3(v(-h, -h + r), v(-h, -h), v(-h + r, -h)));
     path.add(new THREE.LineCurve3(v(-h + r, -h), v(h - r, -h)));
     path.add(new THREE.QuadraticBezierCurve3(v(h - r, -h), v(h, -h), v(h, -h + r)));
-    path.add(new THREE.LineCurve3(v(h, -h + r), v(h, h - r)));
-    path.add(new THREE.QuadraticBezierCurve3(v(h, h - r), v(h, h), v(h - r, h)));
+    path.add(new THREE.LineCurve3(v(h, -h + r), v(h, -LEAD_GAP)));
     return path;
   }
   // Lengthwise strands make the bundle read as many parallel turns of enamelled wire.
@@ -105,7 +108,7 @@ export function createExperiment({ THREE, group, kit }) {
     bundleTurns = turns;
     if (bundle) { rotor.remove(bundle); bundle.geometry.dispose(); }
     const radius = 0.03 + 0.06 * Math.sqrt(turns / 200);
-    bundle = mesh(new THREE.TubeGeometry(coilPath, 200, radius, 12, true), bundleMaterial, [0, 0, 0], rotor);
+    bundle = mesh(new THREE.TubeGeometry(coilPath, 200, radius, 12, false), bundleMaterial, [0, 0, 0], rotor);
     bundle.scale.set(0.7, 1, 1); // flat winding pack instead of a round pipe
   }
   buildBundle(100);
@@ -120,23 +123,36 @@ export function createExperiment({ THREE, group, kit }) {
   fluxPlane.rotation.y = Math.PI / 2; fluxPlane.renderOrder = 1;
   rotor.add(fluxPlane);
 
-  const normalArrow = arrow({ from: [0, 0.32, 0], dir: [1, 0, 0], length: 0.95, radius: 0.026, color: 0xe2a53b, parent: rotor, emissive: 0.3 });
+  arrow({ from: [0, 0.32, 0], dir: [1, 0, 0], length: 0.95, radius: 0.026, color: 0xe2a53b, parent: rotor, emissive: 0.3 });
   label('Flächennormale n', [1.02, 0.5, 0], { parent: rotor, tone: 'copper', size: 's' });
   label('Spule', [0, -HALF - 0.05, HALF + 0.12], { parent: rotor, tone: 'copper', size: 's' });
 
-  // Current dots along the winding; direction and pace follow the voltage.
-  const currentDots = dots(squarePath(HALF, 0.13), { count: 26, radius: 0.04, color: 0xffd36b, parent: rotor, emissive: 0.9 });
+  // Ideal open-circuit voltage measurement: no load current is drawn.
+  // Do not animate current particles in this scene.
 
   // Axle, bearings, slip rings, crank.
   const AXLE_TOP = magnetTop + 1.25;
   const axleLength = AXLE_TOP - (yokeTop - 0.02);
   mesh(new THREE.CylinderGeometry(0.055, 0.055, axleLength, 24), mats.steel, [0, (AXLE_TOP + yokeTop) / 2 - YC, 0], rotor);
   const RING_Y = [magnetTop + 0.42 - YC, magnetTop + 0.72 - YC];
-  for (const y of RING_Y) mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.12, 40), mats.copper, [0, y, 0], rotor);
+  const ringShape = new THREE.Shape();
+  ringShape.absarc(0, 0, 0.19, 0, Math.PI * 2, false);
+  const bore = new THREE.Path();
+  bore.absarc(0, 0, 0.12, 0, Math.PI * 2, true);
+  ringShape.holes.push(bore);
+  const ringGeometry = new THREE.ExtrudeGeometry(ringShape, { depth: 0.12, bevelEnabled: false, curveSegments: 40 });
+  ringGeometry.rotateX(-Math.PI / 2).translate(0, -0.06, 0);
+  for (const y of RING_Y) {
+    // Insulating sleeves keep both copper rings electrically separate from the axle.
+    mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.2, 32), mats.plastic, [0, y, 0], rotor);
+    mesh(ringGeometry, mats.copper, [0, y, 0], rotor);
+  }
   for (const y of [RING_Y[0] - 0.15, RING_Y[1] - 0.15, RING_Y[1] + 0.15]) mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.16, 32), mats.plastic, [0, y, 0], rotor);
-  // Leads from both coil ends up along the axle to their own ring.
-  wire([[0, HALF, 0.09], [0, HALF + 0.3, 0.075], [0, RING_Y[0] - 0.3, 0.075], [0, RING_Y[0], 0.19]], 0.016, mats.copperDark, rotor);
-  wire([[0, HALF, -0.09], [0, HALF + 0.3, -0.075], [0, RING_Y[1] - 0.3, -0.075], [0, RING_Y[1] - 0.08, -0.11], [0, RING_Y[1], -0.19]], 0.016, mats.copperDark, rotor);
+  // The positive path around +n runs from the black lead to the red lead.
+  // Therefore U = -N dΦ/dt is the red terminal's voltage relative to black.
+  // Insulated leads run outside the other ring to avoid shorting the two rings.
+  wire([[0, HALF, -LEAD_GAP], [0, HALF + 0.3, -0.25], [0, RING_Y[0] - 0.25, -0.25], [0, RING_Y[0], -0.19]], 0.016, mats.cableRed, rotor);
+  wire([[0, HALF, LEAD_GAP], [0, HALF + 0.3, 0.27], [0, RING_Y[0], 0.27], [0, RING_Y[1] - 0.12, 0.27], [0, RING_Y[1], 0.19]], 0.016, mats.cableBlack, rotor);
   // Crank on top.
   const crankY = AXLE_TOP - YC - 0.05;
   mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.12, 24), mats.steel, [0, crankY, 0], rotor);
@@ -160,19 +176,12 @@ export function createExperiment({ THREE, group, kit }) {
   roundedBox([0.12, RING_Y[1] - RING_Y[0] + 0.45, 0.14], 0.03, mats.plastic, [0.78, (RING_Y[0] + RING_Y[1]) / 2 + YC - 0.03, 0]);
   roundedBox([0.3, 0.1, 0.3], 0.03, mats.plastic, [0.78, magnetTop + 0.19, 0]);
   label('Schleifringe', [-0.6, RING_Y[1] + YC + 0.05, 0.1], { tone: 'dark', size: 's' });
-  void normalArrow;
 
   // ---------- meter on the front right, cables from the brush terminals ----------
   const meterPos = [2.2, baseTop, 2.05];
   const meterRot = -0.35;
   const gauge = meter({ position: meterPos, rotationY: meterRot, size: 1.1, centerZero: true, unit: 'V' });
-  const local = (x, y, z) => {
-    const c = Math.cos(meterRot), s = Math.sin(meterRot);
-    return [meterPos[0] + c * x + s * z, meterPos[1] + y, meterPos[2] - s * x + c * z];
-  };
-  const mw = 1.25 * 1.1, md = 0.42 * 1.1;
-  const termA = local(-mw * 0.3, 0.1, md / 2 + 0.088);
-  const termB = local(mw * 0.3, 0.1, md / 2 + 0.088);
+  const [termA, termB] = gauge.terminals.map(point => point.toArray());
   const [tA, tB] = brushTerminals;
   wire([tA, [1.0, tA[1] + 0.05, 0.05], [2.0, magnetTop + 0.3, 0.12], [2.78, magnetTop - 0.2, 0.2], [2.85, baseTop + 0.6, 0.55], [2.9, baseTop + 0.04, 1.2], [termA[0] + 0.1, baseTop + 0.04, termA[2] + 0.35], termA], 0.026, mats.cableRed);
   wire([tB, [1.0, tB[1] + 0.05, -0.05], [2.05, magnetTop + 0.4, -0.08], [2.85, magnetTop - 0.25, -0.05], [3.0, baseTop + 0.6, 0.35], [3.2, baseTop + 0.04, 1.3], [termB[0] + 0.3, baseTop + 0.04, termB[2] + 0.4], termB], 0.026, mats.cableBlack);
@@ -182,7 +191,6 @@ export function createExperiment({ THREE, group, kit }) {
   const fmt = (value, digits = 2) => (Math.abs(value) < 1e-8 ? 0 : value).toLocaleString('de-DE', { maximumFractionDigits: digits, minimumFractionDigits: digits });
   const ranges = [1, 2, 5, 10, 20, 50, 100];
   const positive = new THREE.Color(0x2f9a68), negative = new THREE.Color(0xd9822f);
-  let lastTime = null, dotOffset = 0;
 
   return {
     camera: { target: [0, 0.25, 0.55], distance: 11.5, yaw: 0.5, pitch: 0.36, floor: -1.5, shadowSize: 6, fitAspect: 1.55 },
@@ -208,29 +216,19 @@ export function createExperiment({ THREE, group, kit }) {
       fluxMaterial.color.copy(cos >= 0 ? positive : negative);
       fluxMaterial.opacity = field > 0 ? 0.06 + 0.42 * Math.abs(cos) * Math.min(1, 0.35 + field) : 0.04;
 
-      // Current dots: pace ∝ voltage (closed circuit through the meter).
-      const dt = lastTime === null ? 0 : Math.max(0, Math.min(0.1, time - lastTime));
-      lastTime = time;
-      const rel = result.peak > 0 ? result.voltage / Math.max(result.peak, 1e-9) : 0;
-      const magnitude = Math.min(1, Math.abs(result.voltage) / 6);
-      dotOffset += Math.sign(rel) * (0.15 + 0.5 * magnitude) * Math.abs(rel) * dt;
-      currentDots.place(dotOffset);
-      currentDots.mesh.visible = result.peak > 1e-6;
-      currentDots.material.emissiveIntensity = 0.3 + 0.9 * Math.abs(rel);
-
       // Meter with automatic range.
       const range = ranges.find(r => r >= result.peak * 1.02) ?? 100;
-      gauge.set(range ? result.voltage / range : 0);
+      gauge.setNow(range ? result.voltage / range : 0);
       rangeLabel.set(`Messbereich ±${range} V`);
 
       const phase = ((result.angle * 180 / Math.PI) % 360 + 360) % 360;
       const deg = fmt(phase, 0);
       let note;
-      if (!result.frequency) note = 'Die Spule steht still. Der Fluss durch ihre Fläche bleibt gleich – deshalb wird keine Spannung induziert.';
+      if (!result.frequency) note = 'Die Spule steht still. Der Fluss durch ihre Fläche bleibt gleich, deshalb wird keine Spannung induziert.';
       else if (!field) note = 'Die Spule dreht sich, aber ohne Magnetfeld geht kein Fluss durch sie hindurch. Es gibt nichts, was sich ändern könnte: 0 V.';
-      else if (Math.abs(Math.sin(result.angle)) < 0.2) note = `θ = ${deg}°: Die Spulenfläche steht quer zum Feld, der Fluss ist ${cos > 0 ? 'maximal' : 'maximal (umgekehrt)'}. Er ändert sich gerade kaum – die Spannung ist fast null.`;
-      else if (Math.abs(Math.sin(result.angle)) > 0.94) note = `θ = ${deg}°: Die Fläche liegt parallel zu den Feldlinien, der Fluss ist null. Genau jetzt ändert er sich am schnellsten – die Spannung ist am größten.`;
-      else note = `θ = ${deg}°: Der Fluss durch die Spule wird gerade ${(Math.sin(result.angle) > 0) === (cos > 0) ? 'schwächer' : 'stärker'}. Je schneller er sich ändert, desto größer die Spannung.`;
+      else if (Math.abs(Math.sin(result.angle)) < 0.2) note = `θ = ${deg}°: Die Spulenfläche steht fast quer zum Feld, der Fluss ist ${cos > 0 ? 'nahe am positiven Maximum' : 'nahe am negativen Extremwert'}. Er ändert sich gerade langsam, die Spannung ist nahe null.`;
+      else if (Math.abs(Math.sin(result.angle)) > 0.94) note = `θ = ${deg}°: Die Fläche liegt fast parallel zu den Feldlinien, der Fluss ist nahe null. Er ändert sich gerade besonders schnell, der Betrag der Spannung ist nahe am Scheitelwert.`;
+      else note = `θ = ${deg}°: Der Betrag des Flusses durch die Spule wird gerade ${(Math.sin(result.angle) > 0) === (cos > 0) ? 'kleiner' : 'größer'}. Je schneller er sich ändert, desto größer die Spannung.`;
       return {
         metrics: [
           { label: 'Spannung jetzt', value: `${fmt(result.voltage)} V` },

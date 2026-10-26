@@ -12,7 +12,7 @@ Production serves `site/` directly with nginx. No application server, database, 
 
 ## Content
 
-- Physics: coils and electromagnets, induction, generators, iron cores, transformers and high-voltage transmission. Each chapter has a rotatable 3D experiment, conceptual self-tests with individually hidden answers, and optional calculations. No typed answers or scoring are required. The original coil self-test remains at `#hausuebung`, with its content in `scripts/physics-worksheet.py`.
+- Physics: coils and electromagnets, induction, generators, iron cores, transformers and high-voltage transmission. The five additional chapters start with a guiding question and a short answer, then explain the principle step by step. Buttons in the explanation set the experiment controls and camera. The 3D lab adds observation tasks, followed by formulas, a worked example, common misconceptions, five conceptual questions, three calculations and a recap. Answers start collapsed; no typed answers or scoring are required. The coil chapter follows the order basic idea, iron core, lab, optional calculations and self-test. Its original self-test remains at `#hausuebung`, with its content in `scripts/physics-worksheet.py`.
 - Mathematics: quadratic equations and a 90-minute tutoring plan.
 - German: picture description for grade 5, including its worksheets and games.
 - Pedagogy: movement education.
@@ -22,7 +22,7 @@ The source photo is not published. Its technical values are transcribed as N = 4
 
 ## Visual assets
 
-The homepage has five subject sections with direct links to eleven teaching units. Its original six editorial cover illustrations were generated with the built-in image_gen tool. Original PNGs and optimized WebP versions live in `site/assets/images/`; verbatim prompts and provenance are recorded in `art-source/*prompt*.json`. Five additional physics covers are editable SVG illustrations. Covers are illustrative, while interactive field directions remain explicit, deterministic diagrams.
+The homepage has five subject sections with direct links to eleven teaching units. Its original six editorial cover illustrations and the five new physics covers were generated with the built-in image_gen tool. Original PNGs and optimized WebP versions live in `site/assets/images/`; verbatim prompts and provenance are recorded in `art-source/*prompt*.json`. The new files are `generator-v3`, `induktion-v3`, `eisenkern-v3`, `transformator-v3` and `hochspannung-v3`, each at 1536 × 1024 pixels with WebP quality 82. Their prompts and visual review notes are in `art-source/physics-v3-prompts.json`. The homepage and chapter heroes use these WebP covers. Editable SVG principle diagrams remain as accessible static explanations. Covers are illustrative; the interactive models define field and current directions in code.
 
 The physics apparatus was modeled in Blender 5.2.1 and exported as `site/assets/models/solenoid-v2.glb`. The editable scene, reproducible generation script, preview render, validation and mesh/animation contract are in `art-source/`. The GLB includes the `InsertCore` animation; the browser uses the same local Three.js version and vendored GLTFLoader. Field markers are schematic and do not represent physical particles. Original learning routes and all eight calculation exercises remain available.
 
@@ -41,11 +41,21 @@ python3 scripts/test-electromagnetism-pages.py
 node scripts/test-electromagnetism.mjs
 ```
 
+With Playwright and its Chromium browser installed, run the browser regression suite against the local server:
+
+```sh
+BASE_URL=http://127.0.0.1:8768 node scripts/test-electromagnetism-browser.mjs
+```
+
+It checks all six chapters at 1440 and 390 pixels, including WebGL and GLB loading, explanation presets, camera views, keyboard controls, pause/reset, range limits, page width and label collisions. Screenshots and a JSON report go to `work/browser-tests/`. `SCREENSHOT_DIR`, `PLAYWRIGHT_MODULE` and `BROWSER_EXECUTABLE` can override the output and installed browser paths; `TOPICS` limits a rerun to comma-separated chapter slugs.
+
 The import adds a return link and rewrites links to the former GitHub Pages host. The original repository is not modified. The unfinished, untracked Wasserlabor is not included.
 
 Deploy through the GitHub-backed `school` application on the existing Dokploy host. The Dockerfile only copies static files into nginx. Unknown paths return a real 404; deep links resolve to directory indexes.
 
 
-The additional experiments are procedural Three.js scenes in `site/assets/experiments/`, sharing `electromagnetism.js` for rendering, keyboard/pointer controls, pause/step/reset and live graphs. Reduced-motion settings start the experiments paused. WebGL failure exposes each chapter's static diagram while keeping the model readouts usable. Text and native disclosure answers remain available without JavaScript.
+The additional experiments are procedural Three.js scenes in `site/assets/experiments/`, sharing `electromagnetism.js` for studio lighting, orbit controls, HTML labels, camera presets, pause/step/reset and live graphs. `em-kit.js` provides materials, continuous wires and coils, arrows, directional field lines, current markers, labels and analog meters. OrbitControls, RoomEnvironment and CSS2DRenderer are vendored with Three.js. Arrow keys rotate the focused model; plus/minus zoom and Home restores the overview. Camera framing adapts to narrow screens and preserves the selected perspective on resize. Reduced-motion settings start the experiments paused. WebGL failure exposes each chapter's static diagram while keeping the model readouts usable. Text and native disclosure answers remain available without JavaScript.
+
+Scene modules expose `createExperiment({THREE, group, kit})`, an `update(state, time)` result with metrics, a note and an optional graph, plus camera defaults and named views. `calculate` remains independent of rendering. Article view names are: generator `overview`, `coil`, `sliprings`, `meter`; induction `overview`, `field`, `coil`, `meter`; iron core `overview`, `inside`, `field`; transformer `overview`, `core`, `secondary`; transmission `overview`, `line`, `substation`, `village`.
 
 Models have explicit limits: generator flux and voltage obey Faraday's law; induction uses a smooth illustrative flux profile and its exact derivative; the core's domain alignment is qualitative, with only the air-coil comparison quantified; transformer values are ideal RMS values, with stationary DC distinguished from switching transients. Transmission uses a two-conductor resistive equivalent with sending-end power, not a three-phase grid formula. Impossible passive-load settings are labeled instead of displaying negative delivered power as a real operating state.

@@ -5,6 +5,7 @@ import { CSS2DObject } from './vendor/CSS2DRenderer.js';
 export function createKit(THREE, group) {
   const flows = [];
   const tickers = [];
+  const labels = [];
 
   // ---------- materials ----------
   const physical = (params) => new THREE.MeshPhysicalMaterial(params);
@@ -216,7 +217,40 @@ export function createKit(THREE, group) {
     const object = new CSS2DObject(element);
     object.position.set(...position);
     parent.add(object);
+    const priority = ({n: 4, south: 4, 's-pole': 4, accent: 3, copper: 2, ghost: 0})[tone] ?? 1;
+    labels.push({element, priority});
     return { object, element, set(t) { if (element.textContent !== t) element.textContent = t; }, show(v) { object.visible = v; element.style.display = v ? '' : 'none'; } };
+  }
+
+  // CSS2DRenderer projects anchors but does not keep text inside the viewport
+  // or avoid collisions. Prefer poles and live values when space is limited.
+  function layoutLabels(host) {
+    const bounds = host.getBoundingClientRect(), inset = 8, gap = 4;
+    for (const {element} of labels) {
+      element.style.marginLeft = element.style.marginTop = '0px';
+      element.style.visibility = '';
+    }
+    const projected = labels.map(label => ({...label, rect: label.element.getBoundingClientRect()}));
+    const occupied = [];
+    for (const {element, priority, rect} of projected.sort((a, b) => b.priority - a.priority)) {
+      if (!rect.width || !rect.height) continue;
+      const cx = (rect.left + rect.right) / 2, cy = (rect.top + rect.bottom) / 2;
+      if (cx < bounds.left || cx > bounds.right || cy < bounds.top || cy > bounds.bottom) {
+        element.style.visibility = 'hidden'; continue;
+      }
+      const x = Math.max(bounds.left + inset, Math.min(rect.left, bounds.right - inset - rect.width));
+      let placed = false;
+      for (const dy of [0, -rect.height - gap, rect.height + gap, -2 * (rect.height + gap), 2 * (rect.height + gap)]) {
+        const y = rect.top + dy;
+        if (y < bounds.top + inset || y + rect.height > bounds.bottom - inset) continue;
+        const candidate = {left: x, right: x + rect.width, top: y, bottom: y + rect.height};
+        if (occupied.some(other => candidate.left < other.right + gap && candidate.right > other.left - gap && candidate.top < other.bottom + gap && candidate.bottom > other.top - gap)) continue;
+        element.style.marginLeft = `${x - rect.left}px`;
+        element.style.marginTop = `${dy}px`;
+        occupied.push(candidate); placed = true; break;
+      }
+      if (!placed) element.style.visibility = 'hidden';
+    }
   }
 
   // ---------- canvas texture helper ----------
@@ -283,9 +317,9 @@ export function createKit(THREE, group) {
   function tick(time) {
     let dt = time - lastTime; lastTime = time;
     if (!(dt > 0 && dt < 0.5)) dt = 0;
-    for (const flow of flows) { flow.phase = (flow.phase || 0) + dt * flow.speed; flow.material.uniforms.uTime.value = flow.phase; flow.material.uniforms.uSpeed.value = flow.speed; }
+    for (const flow of flows) { flow.phase = time === 0 ? 0 : (flow.phase || 0) + dt * flow.speed; flow.material.uniforms.uTime.value = flow.phase; flow.material.uniforms.uSpeed.value = flow.speed; }
     for (const fn of tickers) fn(time);
   }
 
-  return { THREE, group, mats, mat, add, mesh, roundedBox, box, cylinder, wire, coil, helixCurve, arrow, flowLine, flowMaterial, traceField, barMagnetField, dots, label, canvasTexture, meter, plinth, tick, onTick: fn => tickers.push(fn) };
+  return { THREE, group, mats, mat, add, mesh, roundedBox, box, cylinder, wire, coil, helixCurve, arrow, flowLine, flowMaterial, traceField, barMagnetField, dots, label, layoutLabels, canvasTexture, meter, plinth, tick, onTick: fn => tickers.push(fn) };
 }

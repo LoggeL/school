@@ -140,6 +140,8 @@ export function createExperiment({ THREE, group, kit }) {
   const loops = (radius, x0, x1, n, current) => Array.from({ length: n }, (_, j) => [radius, x0 + (x1 - x0) * j / (n - 1), current]);
   const coilLoops = loops(COIL_R, -COIL_L / 2, COIL_L / 2, 24, 1);
   // A magnetised iron rod acts like a surface current on its mantle (Amperian model).
+  // This weighting selects a schematic field-line shape, not a permeability
+  // or a prediction of the strength of a particular iron core.
   const coreLoops = loops(CORE_R, -CORE_L / 2, CORE_L / 2, 22, 5);
   const makeField = (set) => (p) => {
     const rho = Math.hypot(p.y, p.z), out = [0, 0];
@@ -251,12 +253,14 @@ export function createExperiment({ THREE, group, kit }) {
       const inserted = p; // fraction of the iron inside the coil (visual)
 
       // see-through when zoomed in (or when domains should be visible)
-      const reveal = showDomains ? Math.max(closeness, 0.35) : 0;
+      // The domains toggle must reveal the interior even on a narrow screen,
+      // where fitting the apparatus places the camera farther away.
+      const reveal = showDomains ? Math.max(closeness, 0.85) : closeness;
       ironMat.opacity = showDomains ? 1 - 0.78 * reveal : 1;
       ironMat.depthWrite = ironMat.opacity > 0.98;
       capMat.opacity = ironMat.opacity;
-      copper.opacity = 1 - 0.72 * closeness; copper.depthWrite = copper.opacity > 0.98;
-      bobbinMat.opacity = 1 - 0.85 * closeness; bobbinMat.depthWrite = bobbinMat.opacity > 0.98;
+      copper.opacity = 1 - 0.72 * reveal; copper.depthWrite = copper.opacity > 0.98;
+      bobbinMat.opacity = 1 - 0.85 * reveal; bobbinMat.depthWrite = bobbinMat.opacity > 0.98;
 
       // domains: random at I = 0, aligned with saturation (tanh) as |I| grows — only where iron sits in the field
       domains.visible = showDomains;
@@ -281,7 +285,7 @@ export function createExperiment({ THREE, group, kit }) {
       });
       domains.instanceMatrix.needsUpdate = true;
       if (domains.instanceColor) domains.instanceColor.needsUpdate = true;
-      domainLabel.show(showDomains && closeness > 0.35);
+      domainLabel.show(showDomains);
 
       // field lines: air-coil picture fades into the iron-core picture
       const active = absI > 0.001;
@@ -304,7 +308,7 @@ export function createExperiment({ THREE, group, kit }) {
       north.object.position.x = sign < 0 ? -poleX : poleX;
       south.object.position.x = -north.object.position.x;
 
-      // paper clips: only a strong field (iron core and enough current) can hold them
+      // Schematic attraction only: clip count is not a calibrated lifting force.
       const holdField = absI * (0.12 + 0.88 * inserted) * (0.6 + 0.4 * align);
       clips.forEach((c, i) => {
         const k = smooth(c.threshold, c.threshold + 0.12, holdField);
@@ -312,23 +316,22 @@ export function createExperiment({ THREE, group, kit }) {
         qa.setFromEuler(c.rest.rot); qb.setFromEuler(c.hang.rot);
         c.holder.quaternion.slerpQuaternions(qa, qb, k);
       });
-      const clipsHeld = clips.filter((c, i) => holdField > c.threshold + 0.06).length;
-
       let note;
       if (!active) note = wantCore
         ? 'Kein Strom: Die Spule erzeugt kein Feld. Die Weiss-Bezirke im Eisen zeigen kreuz und quer – ihre Wirkungen heben sich nach außen auf. (Ein echter Kern kann einen kleinen Rest behalten; das Modell zeigt ihn nicht.)'
         : 'Kein Strom, kein Spulenfeld. Stell die Stromstärke hoch, um das Feld der Luftspule zu sehen.';
-      else if (p < 0.5) note = `Luftspule: Der Strom allein erzeugt das Feld (rund ${fmt(Math.abs(result.airField) * 1000)} mT im Inneren). Innen laufen die Feldlinien fast parallel, außen kehren sie von N nach S zurück. Das reicht nicht, um die Büroklammern zu halten.`;
-      else if (align < 0.85) note = `Mit Eisenkern: Das Spulenfeld richtet die Weiss-Bezirke teilweise aus. Ihre Felder addieren sich zu dem der Spule – die Feldlinien werden dichter, der Kern hält ${clipsHeld === 1 ? 'eine Büroklammer' : `${clipsHeld} Büroklammern`}.`;
-      else note = `Fast alle Bezirke zeigen in Feldrichtung – das Eisen ist nahezu gesättigt. Mehr Strom verstärkt den Beitrag des Eisens jetzt kaum noch. Umpolen dreht Bezirke, Feldlinien und Pole gemeinsam um.`;
+      else if (p < 0.5) note = `Luftspule: Der Strom allein erzeugt das Feld (rund ${fmt(Math.abs(result.airField) * 1000)} mT im Inneren einer langen Spule). Innen laufen die Feldlinien fast parallel, außen kehren sie von N nach S zurück. Die Büroklammern zeigen die Anziehung nur schematisch, keine berechnete Tragkraft.`;
+      else if (align < 0.85) note = 'Mit Eisenkern: Das Spulenfeld richtet die Weiss-Bezirke teilweise aus. Ihre Felder addieren sich zum Spulenfeld. Die dichteren Feldlinien und angezogenen Büroklammern zeigen die Verstärkung qualitativ; eine bestimmte Feldstärke oder Tragkraft lässt sich daraus nicht ablesen.';
+      else note = 'Die Pfeile nähern sich im Modell einer gemeinsamen Richtung. So wird Sättigung veranschaulicht: Der zusätzliche Beitrag des Eisens ist begrenzt. Bei welchem Strom ein echter Kern sättigt, hängt von Material und Form ab. Umpolen dreht Bezirke, Feldrichtung und Pole um.';
 
       return {
         metrics: [
           { label: 'Stromstärke', value: `${fmt(I, 1)} A` },
           { label: 'Luftspule zum Vergleich', value: `${fmt(result.airField * 1000)} mT` },
-          { label: 'Bezirke ausgerichtet (Modell)', value: p > 0.5 ? `${fmt(Math.round(align * 100), 0)} %` : 'kein Eisen' },
+          { label: 'Ausrichtung (schematisch)', value: p > 0.5 ? !active ? 'ungeordnet' : align < 0.85 ? 'teilweise ausgerichtet' : 'weitgehend ausgerichtet' : 'Kern herausgezogen' },
         ],
         note,
+        graph: null,
       };
     },
   };
