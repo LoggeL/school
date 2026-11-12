@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8f6ef">
+<title>Schnittpunkte zweier Parabeln · 90 Minuten Nachhilfe</title>
+<meta name="description" content="Eine Nachhilfestunde für Klasse 9. Mit zwei Heftbeispielen, einem interaktiven Graphen und einem druckbaren Arbeitsblatt.">
+<style>
+:root { color-scheme:light; --paper:#f8f6ef; --ink:#202e32; --muted:#515f60; --rule:#cdd2c7; --teal:#006961; --orange:#a14320; --wash:#e8efea; --serif:Georgia,Cambria,serif; font:16px/1.55 system-ui,sans-serif; color:var(--ink); background:var(--paper); }
+* { box-sizing:border-box; }
+body, figure, h1, h2, h3, p, ol { margin:0; }
+a { color:var(--teal); text-underline-offset:.22em; }
+button, summary { cursor:pointer; }
+button { color:inherit; font:inherit; }
+:focus-visible { outline:3px solid var(--teal); outline-offset:4px; }
+[hidden], .print-only, .writing { display:none !important; }
+.wrap { max-width:1140px; margin:auto; padding-inline:clamp(18px,5vw,64px); }
+.top { border-bottom:1px solid var(--rule); }
+.top .wrap { min-height:63px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.brand { color:var(--ink); text-decoration:none; font-weight:650; }
+.brand b { font:italic bold 1.45rem var(--serif); margin-right:.55rem; }
+.top button, .clock button { border:1px solid var(--rule); border-radius:6px; background:white; padding:.45rem .8rem; font-size:.88rem; font-weight:600; }
+.hero { display:grid; grid-template-columns:1.1fr 1fr; align-items:center; gap:clamp(20px,5vw,64px); padding-block:clamp(32px,5vw,66px); }
+.kicker, .time { color:var(--teal); font-size:.73rem; font-weight:730; letter-spacing:.1em; text-transform:uppercase; }
+h1, h2, h3 { font-family:var(--serif); font-weight:500; line-height:1.12; }
+h1 { margin:.75rem 0 1.1rem; font-size:clamp(2.4rem,5.4vw,4.45rem); letter-spacing:-.045em; }
+h1 em { color:var(--teal); font-weight:inherit; }
+.lead { font-size:1.13rem; max-width:39ch; }
+.material { font-size:.91rem; color:var(--muted); margin-top:1.3rem; }
+.plot { border:1px solid var(--rule); border-radius:12px; background:#fffefa; padding:14px 16px; min-width:0; }
+.plot svg { display:block; width:100%; height:auto; }
+.plot .legend, .plot-controls { display:flex; flex-wrap:wrap; gap:.45rem 1rem; align-items:center; }
+.plot .legend { font-size:.85rem; }
+.legend span::before { content:""; display:inline-block; vertical-align:middle; width:17px; margin-right:5px; border-top:3px solid var(--teal); }
+.legend span:last-child::before { border-top:3px dashed var(--orange); }
+.plot-controls { margin-top:.55rem; border-top:1px solid var(--rule); padding-top:.65rem; font-size:.9rem; }
+.choices { display:inline-flex; gap:4px; }
+.choices button { min-width:34px; min-height:32px; border:1px solid var(--rule); background:#fff; border-radius:4px; }
+.choices button[aria-pressed=true] { color:white; background:var(--teal); border-color:var(--teal); }
+.readout { font-variant-numeric:tabular-nums; color:var(--muted); }
+.layout { border-top:1px solid var(--rule); display:grid; grid-template-columns:minmax(170px,.33fr) 1fr; gap:clamp(24px,5vw,66px); padding-block:32px 64px; align-items:start; }
+aside { position:sticky; top:18px; }
+aside h2 { font-size:1.5rem; }
+nav { display:grid; margin-block:12px 20px; }
+nav a { display:flex; align-items:baseline; gap:.75rem; padding:6px 4px; font-size:.89rem; color:var(--ink); text-decoration:none; border-bottom:1px solid var(--rule); }
+nav a:hover, nav a[aria-current=step] { color:var(--teal); background:var(--wash); }
+nav small { min-width:3ch; font-variant-numeric:tabular-nums; color:var(--muted); }
+.clock { display:flex; flex-wrap:wrap; gap:7px; align-items:center; }
+.clock output { font-variant-numeric:tabular-nums; font-size:1.15rem; font-weight:700; }
+#timer-state { width:100%; font-size:.83rem; color:var(--muted); }
+article { min-width:0; }
+section { scroll-margin-top:20px; }
+article section { padding:25px 0; border-bottom:1px solid var(--rule); }
+article section:first-child { padding-top:0; }
+h3 { font-size:clamp(1.55rem,3.2vw,2.1rem); margin:.35rem 0 .8rem; letter-spacing:-.028em; }
+section p + p, section details, .funcs { margin-top:.65rem; }
+.funcs { display:flex; flex-wrap:wrap; gap:4px 22px; background:var(--wash); padding:.75rem 1rem; margin-bottom:.75rem; border-left:3px solid var(--teal); }
+.funcs span, .math { font:1.08rem/1.42 var(--serif); }
+details { border:1px solid var(--rule); border-radius:6px; background:#fffefa; }
+summary { font-size:.91rem; font-weight:650; padding:.55rem .8rem; color:var(--teal); }
+.answer { padding:0 .9rem .85rem; }
+.answer ol { padding-left:1.35rem; }
+.answer li + li { margin-top:.35rem; }
+.tutor { color:var(--muted); font-size:.92rem; }
+@media (max-width:760px) {
+  .hero { grid-template-columns:1fr; gap:24px; }
+  .plot { width:min(100%,460px); }
+  .layout { grid-template-columns:1fr; padding-top:22px; gap:28px; }
+  aside { position:static; }
+  nav { grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:18px; }
+}
+@media (max-width:480px) {
+  .top .wrap { min-height:58px; }
+  .brand { font-size:.85rem; }
+  .brand b { margin-right:.2rem; }
+  .top button { padding:.4rem .55rem; font-size:.8rem; }
+}
+@media print {
+  @page { size:A4; margin:14mm 16mm; }
+  :root { color:#192729; background:white; font:10.5pt/1.35 Arial,sans-serif; }
+  .top, .hero, aside, .screen, .time, details, section:not(.task) { display:none !important; }
+  .print-only, .writing { display:block !important; }
+  .wrap, .layout, article { display:block; border:0; margin:0; padding:0; max-width:none; }
+  .print-head { border-bottom:1.5pt solid #296c64; padding-bottom:3mm; }
+  .print-head h2 { font-size:23pt; margin:1.5mm 0; }
+  .print-head > div { display:flex; justify-content:space-between; font-size:9pt; color:#3e5252; }
+  article section.task { padding:3.5mm 0 1mm; break-inside:avoid; border:0; }
+  h3 { font-size:15pt; margin:0 0 1.8mm; }
+  .funcs { background:white; padding:0; border:0; gap:12mm; margin:1mm 0; }
+  .funcs span { font-size:11.5pt; }
+  .writing i { display:block; height:7mm; border-bottom:.5pt solid #acb5b2; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="/#mathematik"><b>school</b> Mathematik</a>
+  <button id="print" hidden>Arbeitsblatt drucken</button>
+</div></header>
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <p class="kicker">Mathematik · Klasse 9 · 90 Minuten</p>
+      <h1>Schnittpunkte<br><em>zweier Parabeln</em></h1>
+      <p class="lead">An welcher Stelle haben beide Parabeln dieselbe Höhe? Lies den Punkt am Graphen ab und finde ihn anschließend durch Rechnen.</p>
+      <p class="material">Für die Stunde brauchst du Heft, Stift und die Aufgaben auf dieser Seite oder als Ausdruck.</p>
+    </div>
+    <figure class="plot" aria-label="Die Parabeln aus Heftbeispiel A">
+      <figcaption class="legend"><span>f(x) = x² + 4x − 1</span><span>g(x) = x² − 2x + 5</span></figcaption>
+      <svg viewBox="0 0 360 202" role="img" aria-labelledby="graph-title graph-desc">
+        <title id="graph-title">Die Parabeln f und g</title>
+        <desc id="graph-desc">Links von x = 1 liegt f unter g, rechts davon liegt f über g. Bei x = 1 haben beide den Wert 4.</desc>
+        <defs>
+          <clipPath id="window"><rect x="30" y="12" width="300" height="182"/></clipPath>
+          <pattern id="grid" patternUnits="userSpaceOnUse" x="30" y="18" width="60" height="32"><path d="M0 32V0H60" fill="none" stroke="#d8e0d9" stroke-width="1.2"/></pattern>
+        </defs>
+        <rect x="30" y="12" width="300" height="182" fill="url(#grid)"/>
+        <path d="M30 146H339m-5 -3 5 3 -5 3 M150 194V7m-3 5 3 -5 3 5" stroke="#526764" stroke-width="1.25" fill="none"/>
+        <g font-size="10" fill="#465956" font-family="system-ui,sans-serif">
+          <g text-anchor="middle"><text x="30" y="159">−2</text><text x="90" y="159">−1</text><text x="140" y="157">0</text><text x="210" y="159">1</text><text x="270" y="159">2</text><text x="330" y="159">3</text></g>
+          <g text-anchor="end"><text x="144" y="181">−4</text><text x="144" y="117">4</text><text x="144" y="85">8</text><text x="144" y="53">12</text><text x="144" y="21">16</text></g>
+          <text x="344" y="149">x</text><text x="156" y="12">y</text>
+        </g>
+        <g clip-path="url(#window)" fill="none" stroke-width="2.7">
+          <path d="M30 186Q180 186 330 -14" stroke="#006961"/>
+          <path d="M30 42Q180 162 330 82" stroke="#a14320" stroke-dasharray="6 3"/>
+          <path id="probe" stroke="#657478" stroke-width="1.2" stroke-dasharray="2 3"/>
+          <circle id="g-dot" r="5" stroke="#a14320" fill="white" visibility="hidden"/>
+          <circle id="f-dot" r="3" stroke="#006961" fill="#006961" visibility="hidden"/>
+        </g>
+      </svg>
+      <div class="plot-controls" id="plot-controls" hidden>
+        <span>x wählen</span>
+        <div class="choices" role="group" aria-label="x-Wert wählen">
+          <button aria-pressed="true" data-x="0">0</button><button aria-pressed="false" data-x="1">1</button><button aria-pressed="false" data-x="2">2</button>
+        </div>
+        <output id="readout" class="readout" aria-live="polite"></output>
+      </div>
+    </figure>
+  </div>
+  <div class="print-head print-only">
+    <div><span>Mathematik · Klasse 9</span><span>Name: __________________________</span></div>
+    <h2>Schnittpunkte zweier Parabeln</h2>
+    <p>Setze bei A bis C die Funktionen gleich. Berechne x und y, notiere S(x|y) und prüfe den Punkt mit der zweiten Funktion.</p>
+  </div>
+  <div class="layout">
+    <aside>
+      <h2>Stundenplan</h2>
+      <nav aria-label="Phasen nach Startminute">
+        <a href="#einstieg"><small>00′</small> Graph lesen</a>
+        <a href="#aufgabe-a"><small>10′</small> Gemeinsam rechnen</a>
+        <a href="#aufgabe-b"><small>30′</small> Mit Unterstützung</a>
+        <a href="#pause"><small>45′</small> Pause</a>
+        <a href="#aufgabe-c"><small>50′</small> Allein rechnen</a>
+        <a href="#puffer"><small>70′</small> Puffer</a>
+        <a href="#abschluss"><small>80′</small> Abschluss</a>
+      </nav>
+      <div class="clock" id="clock" hidden>
+        <output id="elapsed" role="timer" aria-live="off" aria-label="Verstrichene Zeit">00:00</output>
+        <button id="toggle">Start</button><button id="reset" hidden>Zurücksetzen</button>
+        <span id="timer-state" aria-live="polite">Stundentimer bereit</span>
+      </div>
+    </aside>
+    <article aria-label="Aufgaben und Unterrichtsverlauf">
+      <section id="einstieg" data-start="0">
+        <p class="time">Minute 0 bis 10 · Einstieg</p>
+        <h3>Wo sind beide gleich hoch?</h3>
+        <p>Zeige im Graphen auf den gemeinsamen Punkt. Lies zuerst x an der waagerechten Achse ab, dann y an der senkrechten.</p>
+        <p>Vergleiche die Höhen bei x = 0 und x = 2. Welche Parabel liegt jeweils oben? Was passiert dazwischen?</p>
+        <details><summary>Beobachtung besprechen</summary><div class="answer">Bei x = 0 liegt g oben (5 gegenüber −1), bei x = 2 liegt f oben (11 gegenüber 5). Bei x = 1 sind beide 4 hoch. Die Graphen wechseln dort die Reihenfolge und kreuzen sich. S(1|4) ist ein Schnittpunkt. An einem Berührpunkt würden die Parabeln beim Weitergehen auf derselben Seite voneinander bleiben.</div></details>
+      </section>
+      <section class="task" id="aufgabe-a" data-start="10">
+        <p class="time">Minute 10 bis 30 · Gemeinsam am Heft</p>
+        <h3>A · Vom Graphen zur Gleichung</h3>
+        <div class="funcs"><span>f(x) = x² + 4x − 1</span><span>g(x) = x² − 2x + 5</span></div>
+        <p>Welche Gleichung beschreibt „beide gleich hoch“? Schreibe sie auf. Ziehe auf beiden Seiten x² ab und berechne den Schnittpunkt.</p>
+        <p class="tutor screen">Schreibt die erste Zeile gemeinsam. Lass die Schülerin die Rechenoperation am Rand ansagen. Wenn sie x gefunden hat, frag: „Welche Koordinate fehlt deinem Punkt noch?“</p>
+        <details><summary>Rechenweg und Probe</summary><div class="answer"><ol>
+          <li><span class="math">x² + 4x − 1 = x² − 2x + 5</span>. Auf beiden Seiten steht derselbe Term x².</li>
+          <li><span class="math">4x − 1 = −2x + 5</span>. Addiere auf beiden Seiten <strong>2x</strong>. Das ergibt <span class="math">6x − 1 = 5</span>.</li>
+          <li>Addiere 1 und teile durch 6. Aus <span class="math">6x = 6</span> folgt <span class="math">x = 1</span>.</li>
+          <li><span class="math">f(1) = 1 + 4 − 1 = 4</span>. Die Probe liefert <span class="math">g(1) = 1 − 2 + 5 = 4</span>. Also <strong>S(1|4)</strong>.</li>
+        </ol></div></details>
+        <div class="writing" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+      <section class="task" id="aufgabe-b" data-start="30">
+        <p class="time">Minute 30 bis 45 · Zweites Heftbeispiel</p>
+        <h3>B · Was passiert mit dem Minus?</h3>
+        <div class="funcs"><span>f(x) = x² + 6x + 11</span><span>g(x) = x² − 2x + 3</span></div>
+        <p>Rechne bis zum Punkt S. Achte auf das Vorzeichen, wenn du 11 abziehst. Setze einen negativen x-Wert mit Klammern ein.</p>
+        <details><summary>Tipp für die nächste Zeile</summary><div class="answer">Nach dem Abziehen von x² und dem Addieren von 2x steht dort <span class="math">8x + 11 = 3</span>. Was ergibt rechts <span class="math">3 − 11</span>?</div></details>
+        <details><summary>Rechenweg und Probe</summary><div class="answer"><ol>
+          <li><span class="math">x² + 6x + 11 = x² − 2x + 3</span>. Ziehe auf beiden Seiten x² ab. Es bleibt <span class="math">6x + 11 = −2x + 3</span>.</li>
+          <li>Addiere 2x, dann ziehe 11 ab. Aus <span class="math">8x + 11 = 3</span> wird <span class="math">8x = −8</span>, also <span class="math">x = −1</span>.</li>
+          <li><span class="math">f(−1) = (−1)² + 6 · (−1) + 11 = 1 − 6 + 11 = 6</span>.</li>
+          <li>Probe: <span class="math">g(−1) = (−1)² − 2 · (−1) + 3 = 1 + 2 + 3 = 6</span>. Also <strong>S(−1|6)</strong>.</li>
+        </ol></div></details>
+        <div class="writing" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+      <section id="pause" data-start="45">
+        <p class="time">Minute 45 bis 50</p><h3>Fünf Minuten Pause</h3>
+        <p>Stifte weg. Falls B noch offen ist, markiert die letzte sichere Zeile. Dort geht es nach der Pause weiter.</p>
+      </section>
+      <section class="task" id="aufgabe-c" data-start="50">
+        <p class="time">Minute 50 bis 70 · Selbstständig</p>
+        <h3>C · Jetzt ohne Vorlage</h3>
+        <div class="funcs"><span>f(x) = x² − x + 3</span><span>g(x) = x² + 2x − 3</span></div>
+        <p>Bestimme S mit vollständigem Rechenweg. Prüfe in der zweiten Funktion, ob du denselben y-Wert erhältst.</p>
+        <details><summary>Tipp, falls du festhängst</summary><div class="answer">Setze f(x) = g(x). Wenn du auf beiden Seiten x² abziehst, bleibt <span class="math">−x + 3 = 2x − 3</span>. Addiere x auf beiden Seiten.</div></details>
+        <details><summary>Mit der eigenen Rechnung vergleichen</summary><div class="answer"><ol>
+          <li><span class="math">x² − x + 3 = x² + 2x − 3</span>, also <span class="math">−x + 3 = 2x − 3</span>.</li>
+          <li>Addiere x. Das gibt <span class="math">3 = 3x − 3</span>. Addiere 3, dann gilt <span class="math">6 = 3x</span>, also <span class="math">x = 2</span>.</li>
+          <li><span class="math">f(2) = 4 − 2 + 3 = 5</span>. Probe: <span class="math">g(2) = 4 + 4 − 3 = 5</span>. Also <strong>S(2|5)</strong>.</li>
+        </ol></div></details>
+        <div class="writing" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+      <section id="puffer" data-start="70">
+        <p class="time">Minute 70 bis 80 · Puffer</p><h3>Zeit für die offene Stelle</h3>
+        <p>Hakt es bei B oder C? Lass dir die letzte sichere Zeile erklären und rechnet von dort weiter. Wenn C noch gar nicht begonnen ist, bleibt C als Übung fürs nächste Mal.</p>
+        <p>Ist alles fertig, deckt bei C die Lösung ab. Die Schülerin erklärt an ihrer Rechnung, warum x² wegfällt und wofür sie den gefundenen x-Wert zweimal eingesetzt hat. Beginnt den Abschluss spätestens bei Minute 80.</p>
+      </section>
+      <section class="task" id="abschluss" data-start="80">
+        <p class="time">Minute 80 bis 90 · Abschluss</p><h3>Zum Schluss · Stimmt der Punkt?</h3>
+        <div class="funcs"><span>f(x) = x² + x + 1</span><span>g(x) = x² − x − 3</span></div>
+        <p>Jemand hat x = −2 gefunden. Prüfe den Wert in beiden Funktionen und notiere den Punkt. Erkläre in einem Satz, woran du erkennst, dass er auf beiden Parabeln liegt.</p>
+        <details><summary>Abschluss gemeinsam prüfen</summary><div class="answer"><span class="math">f(−2) = 4 − 2 + 1 = 3</span> und <span class="math">g(−2) = 4 + 2 − 3 = 3</span>. Bei demselben x haben beide denselben y-Wert. Damit liegt <strong>S(−2|3)</strong> auf beiden Parabeln.</div></details>
+        <div class="writing" aria-hidden="true"><i></i><i></i><i></i></div>
+      </section>
+    </article>
+  </div>
+</main>
+<script>
+const byId = id => document.getElementById(id);
+if (location.protocol === 'file:') document.querySelector('.brand').removeAttribute('href');
+const printButton = byId('print');
+printButton.hidden = false;
+printButton.addEventListener('click', () => window.print());
+
+const choices = document.querySelectorAll('[data-x]');
+function showValues(x) {
+  const f = x * x + 4 * x - 1;
+  const g = x * x - 2 * x + 5;
+  const column = 150 + 60 * x;
+  byId('probe').setAttribute('d', 'M' + column + ' 194V12');
+  for (const [id, y] of [['g-dot', g], ['f-dot', f]]) {
+    const dot = byId(id);
+    dot.setAttribute('cx', column);
+    dot.setAttribute('cy', 146 - 8 * y);
+    dot.setAttribute('visibility', 'visible');
+  }
+  for (const button of choices) button.setAttribute('aria-pressed', String(Number(button.dataset.x) === x));
+  byId('readout').textContent = ('f(' + x + ') = ' + f + ' · g(' + x + ') = ' + g).replaceAll('-', '−');
+}
+for (const button of choices) button.addEventListener('click', () => showValues(Number(button.dataset.x)));
+byId('plot-controls').hidden = false;
+showValues(0);
+
+const minutes = 60_000;
+const duration = 90 * minutes;
+const phases = Array.from(document.querySelectorAll('article [data-start]')).map(section => ({
+  start: Number(section.dataset.start) * minutes,
+  link: document.querySelector('nav a[href="#' + section.id + '"]')
+}));
+let accumulated = 0;
+let started = null;
+let interval;
+function elapsed() {
+  return Math.min(accumulated + (started === null ? 0 : Date.now() - started), duration);
+}
+function pauseClock() {
+  accumulated = elapsed();
+  started = null;
+  clearInterval(interval);
+}
+function updateClock() {
+  const ms = elapsed();
+  const seconds = Math.floor(ms / 1000);
+  const display = n => String(n).padStart(2, '0');
+  byId('elapsed').textContent = display(Math.floor(seconds / 60)) + ':' + display(seconds % 60);
+  if (ms === duration && started !== null) pauseClock();
+  const current = phases.filter(phase => phase.start <= ms).at(-1);
+  const active = (started !== null || ms > 0) && ms < duration;
+  for (const phase of phases) {
+    if (active && phase === current) phase.link.setAttribute('aria-current', 'step');
+    else phase.link.removeAttribute('aria-current');
+  }
+  let status = 'Stundentimer bereit';
+  if (ms === duration) status = '90 Minuten sind um.';
+  else if (active) status = (started === null ? 'Angehalten · ' : '') + current.link.lastChild.textContent.trim();
+  if (byId('timer-state').textContent !== status) byId('timer-state').textContent = status;
+  byId('toggle').textContent = started !== null ? 'Anhalten' : (ms ? 'Weiter' : 'Start');
+  byId('toggle').hidden = ms === duration;
+  byId('reset').hidden = !ms && started === null;
+}
+byId('toggle').addEventListener('click', () => {
+  if (started === null) {
+    started = Date.now();
+    interval = setInterval(updateClock, 500);
+  } else pauseClock();
+  updateClock();
+});
+byId('reset').addEventListener('click', () => {
+  pauseClock();
+  accumulated = 0;
+  updateClock();
+});
+byId('clock').hidden = false;
+</script>
+</body>
+</html>
