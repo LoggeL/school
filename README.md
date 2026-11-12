@@ -13,7 +13,7 @@ Production serves `site/` directly with nginx. No application server, database, 
 ## Content
 
 - Physics: coils and electromagnets, induction, generators, iron cores, transformers and high-voltage transmission. The five additional chapters start with a guiding question and a short answer, then explain the principle step by step. Buttons in the explanation set the experiment controls and camera. The 3D lab adds observation tasks, followed by formulas, a worked example, common misconceptions, five conceptual questions, three calculations and a recap. Answers start collapsed; no typed answers or scoring are required. The coil chapter follows the order basic idea, iron core, lab, optional calculations and self-test. Its original self-test remains at `#hausuebung`, with its content in `scripts/physics-worksheet.py`.
-- Mathematics: quadratic equations and two 90-minute tutoring plans. The parabola intersection lesson at `site/nachhilfe-parabelschnittpunkte/` includes the two worked notebook examples, a graph to explore, and a printable student worksheet.
+- Mathematics: quadratic equations and two 90-minute tutoring plans. The parabola intersection lesson mirrors the visual unit published in LoggeL/static-pages, with a draggable graph ruler, term cards and a number line.
 - German: picture description for grade 5, including its worksheets and games.
 - Pedagogy: movement education.
 - Chemistry and technology: the RECTIFY distillation simulation.
