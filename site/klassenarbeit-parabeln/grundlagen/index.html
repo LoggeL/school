@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<title>Binome und Scheitelpunktform · Klassenarbeit Klasse 10 · school</title>
+<meta name="description" content="Modul 1 der Klassenarbeits-Vorbereitung: binomische Formeln am Flächenbild verstehen, Scheitelpunktform lesen, quadratische Ergänzung als Legebild und Parabelgleichungen aus Scheitel und Punkt aufstellen. 35 Minuten, ohne Taschenrechner.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+<style>
+/* Seitenspezifisch: Modul 1 */
+.ka .fig-top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:10px}
+.ka .ka-plot svg text.mt{font-family:var(--math)}
+.ka .fm-extra{margin-top:10px;min-height:40px;display:flex;align-items:center}
+.ka .fm-extra>div{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.ka #fm-err[aria-pressed=true]{background:var(--no-wash);border-color:var(--no);color:var(--no)}
+.ka .fm-calc{margin-top:10px;padding:10px 14px;border-radius:10px;background:var(--bg);border:1px dashed var(--karo);font-family:var(--math);line-height:1.5}
+.ka .fm-calc b{font-weight:600}
+.ka .fm-calc .gen{display:block;font-size:20px}
+.ka .fm-calc .num{display:block;font-size:18px}
+.ka .fm-calc .say{display:block;font-family:School,system-ui,sans-serif;font-size:13.5px;color:var(--dim);min-height:2.9em;margin-top:2px}
+.ka .ka-readout>.c-gold{background:#f6edd6}
+.ka .ka-readout>.c-no{background:var(--no-wash)}
+.ka .why{font-size:14px;line-height:1.5;margin-top:8px;padding:8px 12px;border-radius:9px;background:var(--p-wash);min-height:3.6em}
+
+/* Aufgaben: Gleichungszeilen mit Lücken */
+.ka .rows{display:grid;gap:10px;margin:10px 0 2px}
+.ka .rows .ka-answers{margin:0}
+.ka .eq{gap:8px 14px;align-items:center}
+.ka .eqg{display:flex;flex-wrap:wrap;align-items:center;gap:7px;max-width:100%;font-family:var(--math);font-size:19px}
+.ka .eqg>span{white-space:nowrap}
+.ka .eqg .ka-answer[data-type=number] input[type=text]{width:3.5em}
+.ka .eqg .txt{font-family:School,system-ui,sans-serif;font-size:15px}
+.ka .sq-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--bg);display:inline-flex;align-items:center;justify-content:center;gap:1px;padding:0;color:var(--brand);vertical-align:middle}
+.ka .sq-btn i{width:10px;height:13px;border:1.5px dashed currentColor;border-radius:2px;margin-top:6px}
+.ka .sq-btn b{font:700 13px/1 School,system-ui,sans-serif;align-self:flex-start;margin-top:6px}
+.ka .sq-btn:hover{border-color:var(--brand)}
+.ka .ka-answer[data-type=custom]{display:block;width:100%;font-family:School,system-ui,sans-serif;font-size:15px}
+.ka .task-plot{max-width:460px}
+.ka .input-note{font-size:13.5px;color:var(--dim);margin-top:8px}
+.ka .input-note kbd{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;padding:2px 6px;border:1px solid var(--line);border-radius:5px;background:#fff}
+
+/* Regelkarten */
+.ka .rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.ka .rule{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 14px;align-items:center}
+.ka .rule svg{width:56px;height:56px;grid-row:span 2}
+.ka .rule small{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--accent)}
+.ka .rule .rf{font-family:var(--math);font-size:18.5px;line-height:1.35}
+.ka .rule .rx{grid-column:1/-1;font-family:var(--math);font-size:16px;color:var(--dim);border-top:1px dashed var(--karo);padding-top:8px;margin-top:6px}
+.ka .x{color:var(--no);font-weight:750}
+.ka .v{color:var(--ok);font-weight:750}
+.ka .fix{list-style:none;padding:0!important;margin:6px 0 0;display:grid;gap:8px}
+.ka .fix li{margin:0!important;line-height:1.5}
+.ka .ade{display:grid;gap:8px;margin:14px 0;padding:0;list-style:none}
+.ka .ade li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;margin:0!important;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line2);font-size:15px;line-height:1.5}
+.ka .ade li>i{font:italic 500 26px/1 var(--math);text-align:center;padding-top:2px}
+.ka .ex3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px}
+.ka .ex3>div{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 14px;min-width:0}
+.ka .ex3 h4{margin-bottom:2px}
+.ka .ex3 .ka-calc{font-size:16.5px;padding-inline:10px;margin-bottom:0}
+
+/* Quadratische Ergänzung: Bild bleibt beim Durchklicken sichtbar */
+.ka .qe-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(16px,3vw,34px);align-items:start;margin-top:14px}
+.ka .qe-main{order:1;min-width:0}
+.ka .qe-side{order:2;position:sticky;top:74px;min-width:0}
+.ka .qe-main .ka-steps{margin-top:0}
+
+/* Spickzettel */
+.ka .spick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.ka .spick>div{border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0;background:
+  linear-gradient(var(--karo2) 1px,transparent 1px) 0 0/100% 22px,
+  linear-gradient(90deg,var(--karo2) 1px,transparent 1px) 0 0/22px 100%,#fff}
+.ka .spick h3{margin:0 0 8px;font-size:17px}
+.ka .spick .sf{font-family:var(--math);font-size:18.5px;line-height:1.7}
+.ka .spick p,.ka .spick li{font-size:14.5px;line-height:1.55}
+.ka .spick ol{margin-top:4px}
+
+@media(max-width:820px){
+  .ka .rules,.ka .ex3,.ka .spick{grid-template-columns:minmax(0,1fr)}
+  /* Bild direkt hinter den Beobachtungsauftrag ziehen */
+  .ka .mix{row-gap:0}
+  .ka .mix>div:first-child{display:contents}
+  .ka .mix>div:first-child>*{order:1}
+  .ka .mix>.ka-figure{order:2;margin:16px 0 6px}
+  .ka .mix>div:first-child>.late{order:3}
+  .ka .mix .ka-task.late{margin:14px 0}
+  .ka .qe-grid{display:block}
+  .ka .qe-side{display:contents}
+  .ka .qe-fig{position:sticky;top:52px;z-index:6;background:var(--paper);padding:8px 0;margin:8px 0;box-shadow:0 12px 14px -14px #1f3a3470}
+  .ka .qe-cap{margin-bottom:12px}
+}
+@media(max-width:640px){
+  .ka .ka-calc{font-size:16px;padding-inline:10px}
+  .ka .fm-calc .gen{font-size:18px}.ka .fm-calc .num{font-size:16.5px}
+  .ka .eqg{font-size:18px}
+}
+</style>
+</head>
+<body class="ka" data-ka-page="grundlagen">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<header class="ka-hero">
+  <div>
+    <p class="ka-kicker">Modul 1 · Teil 1 · 35 Minuten</p>
+    <h1>Vom Binom <em>zum Scheitelpunkt.</em></h1>
+    <p class="ka-lead">Eine Parabel hat zwei Schreibweisen. Die binomischen Formeln sind die Brücke zwischen beiden. Hier siehst du, warum die Formeln stimmen, und lernst, aus jeder Parabelgleichung den Scheitel herauszuholen.</p>
+    <ul class="ka-goals">
+      <li data-goal="binome">Du multiplizierst <span class="m">(a + b)²</span>, <span class="m">(a − b)²</span> und <span class="m">(a + b)(a − b)</span> sicher aus und erkennst die Formeln rückwärts.</li>
+      <li data-goal="scheitel">Du liest aus <span class="m">f(x) = a · (x − d)² + e</span> Scheitel, Öffnung und Form der Parabel ab.</li>
+      <li data-goal="ergaenzung">Du bringst <span class="m">x² + px + q</span> mit der quadratischen Ergänzung in die Scheitelpunktform.</li>
+      <li data-goal="aufstellen">Du stellst aus dem Scheitel und einem weiteren Punkt die Gleichung einer Parabel auf.</li>
+    </ul>
+    <p class="ka-small" style="margin-top:14px">Die Minuten sind ein Richtwert. Wird es knapp, lass die Aufgaben mit dem Etikett „Knobeln“ zuerst aus und hol sie später nach.</p>
+  </div>
+  <figure class="ka-figure">
+    <div id="hero-plot"></div>
+    <div class="ka-readout" aria-live="polite"><span class="c-p" id="hero-sp"></span><span class="c-f" id="hero-nf"></span><span id="hero-bridge"></span></div>
+    <figcaption>Zieh den violetten Scheitel. Beide Gleichungen beschreiben immer dieselbe Parabel: Die Scheitelpunktform zeigt den Scheitel, die Normalform den Schnittpunkt mit der y-Achse.</figcaption>
+  </figure>
+</header>
+
+<!-- ============ 1 · Binome entdecken ============ -->
+<section class="ka-section" id="binome">
+  <p class="ka-phase"><b>Minute 0 bis 4</b> · Entdecken</p>
+  <h2>Warum (a&nbsp;+&nbsp;b)² mehr ist als a²&nbsp;+&nbsp;b²</h2>
+  <div class="ka-cols mix">
+    <div>
+      <p>Ein Quadrat mit der Seitenlänge <span class="m">a + b</span> hat den Flächeninhalt <span class="m">(a + b)²</span>. Zerlege es in Teile und zähle nach, was darin steckt. Jedes Kästchen ist eine Flächeneinheit.</p>
+      <div class="ka-idea"><b>Beobachte am Bild</b>
+        <ol>
+          <li>Stell <span class="m">a = 4</span> und <span class="m">b = 2</span> ein. Aus welchen vier Teilen besteht das große Quadrat?</li>
+          <li>Drück auf „Fehler zeigen“. Welche Teile fehlen, wenn jemand nur <span class="m">a² + b²</span> rechnet?</li>
+          <li>Wechsle zu <span class="m">(a − b)²</span> und klick die vier Schritte durch. Warum kommt <span class="m">b²</span> am Ende wieder dazu?</li>
+          <li>Wechsle zu <span class="m">(a + b)(a − b)</span> und leg das Rechteck um. Was ist aus <span class="m">a² − b²</span> geworden?</li>
+        </ol>
+      </div>
+      <article class="ka-task late" data-task="e1" data-level="1" data-goal="binome">
+        <h4>Zähl nach</h4>
+        <p>Stell im Bild <span class="m">a = 5</span> und <span class="m">b = 3</span> ein und lass dir den Fehler zeigen.</p>
+        <div class="rows">
+          <div class="ka-answers eq"><span class="eqg"><span>(5 + 3)² =</span><div class="ka-answer" data-type="number" data-answer="64" data-aria="Flächeninhalt des großen Quadrats" data-wrong='{"34":"Das ist 5² + 3². Im großen Quadrat stecken zusätzlich zwei Rechtecke.","16":"Quadrieren heißt 8 · 8, nicht 2 · 8."}'></div></span></div>
+          <div class="ka-answers eq"><span class="eqg"><span>5² + 3² =</span><div class="ka-answer" data-type="number" data-answer="34" data-aria="Summe der beiden kleinen Quadrate" data-wrong='{"64":"Das ist das ganze Quadrat. Gefragt sind nur die beiden kleinen Quadrate: 25 + 9.","16":"5² = 25 und 3² = 9. Quadrieren heißt mit sich selbst malnehmen."}'></div></span></div>
+          <div class="ka-answers eq"><span class="eqg"><span class="txt">Es fehlen</span><div class="ka-answer" data-type="number" data-answer="30" data-aria="Anzahl der fehlenden Kästchen" data-wrong='{"15":"Es fehlen zwei Rechtecke mit je 5 · 3 = 15 Kästchen.","8":"Zähle Flächen, nicht Seitenlängen: Jedes Rechteck hat 5 · 3 Kästchen."}'></div><span class="txt">Kästchen.</span></span></div>
+        </div>
+        <details class="ka-hint"><summary>Tipp</summary><p>Das große Quadrat hat die Seitenlänge 8. Die fehlenden Kästchen sind die beiden rot schraffierten Rechtecke.</p></details>
+        <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">(5 + 3)² = 8² = <b>64</b><br>5² + 3² = 25 + 9 = <b>34</b><br>64 − 34 = <b>30</b> = 2 · 5 · 3</div></details>
+      </article>
+      <div class="ka-warn late"><b>Typischer Fehler</b><span class="m">(a + b)² = a² + b²</span> <span class="x">✗</span><br>Die zwei Rechtecke fehlen. Zahlenprobe: <span class="m">(2 + 3)² = 25</span>, aber <span class="m">2² + 3² = 13</span>. Richtig ist <span class="m">(a + b)² = a² + 2ab + b²</span> <span class="v">✓</span></div>
+    </div>
+    <figure class="ka-figure sticky" id="fm">
+      <div class="fig-top" id="fm-mode"></div>
+      <div class="ka-plot" id="fm-stage"></div>
+      <div class="ka-controls" id="fm-controls"></div>
+      <div class="fm-extra">
+        <div id="fm-x-plus"><button type="button" class="ka-btn" id="fm-err" aria-pressed="false">Fehler zeigen: nur a² + b²</button></div>
+        <div id="fm-x-minus" hidden><span class="ka-small">Wegnehmen in vier Schritten:</span><span id="fm-steps"></span></div>
+        <div id="fm-x-diff" hidden><button type="button" class="ka-btn" id="fm-flip">Rechteck umlegen</button></div>
+      </div>
+      <div class="fm-calc" id="fm-calc" aria-live="polite"></div>
+      <div class="ka-readout"><span id="fm-r1"></span><span id="fm-r2"></span><span id="fm-r3"></span><span id="fm-r4"></span></div>
+      <figcaption id="fm-cap"></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 2 · Regeln vorwärts und rückwärts ============ -->
+<section class="ka-section" id="regeln">
+  <p class="ka-phase"><b>Minute 4 bis 9</b> · Verstehen</p>
+  <h2>Drei Formeln, zwei Richtungen</h2>
+  <p>Aus den drei Bildern werden drei Regeln. Von links nach rechts gelesen multiplizierst du aus. Von rechts nach links gelesen machst du aus einer Summe wieder eine Klammer. Die Rückrichtung brauchst du später für die Scheitelpunktform.</p>
+  <div class="rules">
+    <div class="rule">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="38" height="38" fill="#d5e1fb" stroke="#2459c4" stroke-width="1.5"/><rect x="40" y="2" width="22" height="38" fill="#e4dbf8" stroke="#6a4bbf" stroke-width="1.5"/><rect x="2" y="40" width="38" height="22" fill="#e4dbf8" stroke="#6a4bbf" stroke-width="1.5"/><rect x="40" y="40" width="22" height="22" fill="#f9d9cb" stroke="#c2512d" stroke-width="1.5"/></svg>
+      <small>1. binomische Formel</small>
+      <span class="rf">(a + b)² = a² + 2ab + b²</span>
+      <span class="rx">(x + 5)² = x² + 10x + 25</span>
+    </div>
+    <div class="rule">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="2" width="60" height="60" fill="#fff" stroke="#7b8a82" stroke-width="1.2" stroke-dasharray="4 3"/><rect x="2" y="2" width="38" height="38" fill="#cdecd9" stroke="#1d7a4f" stroke-width="1.5"/><rect x="40" y="2" width="22" height="38" fill="#e4dbf8" fill-opacity=".55" stroke="#6a4bbf" stroke-width="1.2" stroke-dasharray="4 3"/><rect x="2" y="40" width="38" height="22" fill="#e4dbf8" fill-opacity=".55" stroke="#6a4bbf" stroke-width="1.2" stroke-dasharray="4 3"/><rect x="40" y="40" width="22" height="22" fill="#f9d9cb" stroke="#c2512d" stroke-width="1.5"/></svg>
+      <small>2. binomische Formel</small>
+      <span class="rf">(a − b)² = a² − 2ab + b²</span>
+      <span class="rx">(x − 3)² = x² − 6x + 9</span>
+    </div>
+    <div class="rule">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="2" y="16" width="40" height="40" fill="none" stroke="#7b8a82" stroke-width="1.2" stroke-dasharray="4 3"/><rect x="2" y="16" width="40" height="26" fill="#d5e1fb" stroke="#2459c4" stroke-width="1.5"/><rect x="42" y="16" width="14" height="26" fill="#e4dbf8" stroke="#6a4bbf" stroke-width="1.5"/></svg>
+      <small>3. binomische Formel</small>
+      <span class="rf">(a + b)(a − b) = a² − b²</span>
+      <span class="rx">(x + 7)(x − 7) = x² − 49</span>
+    </div>
+  </div>
+
+  <div class="ka-cols even">
+    <div>
+      <h3>Vorwärts: ausmultiplizieren</h3>
+      <p>Leg zuerst fest, was <span class="m">a</span> und was <span class="m">b</span> ist. Dann schreibst du die drei Glieder der Reihe nach hin.</p>
+      <div class="ka-steps" id="steps-vor">
+        <ol>
+          <li data-step><div class="ka-line"><span>(3x − 2)²</span></div><p class="ka-why">Minus in der Klammer, also die zweite Formel. Hier ist a = 3x und b = 2.</p></li>
+          <li data-step="a² berechnen"><div class="ka-line"><span>a² = (3x)² = 9x²</span></div><p class="ka-why">Die 3 wird mitquadriert: 3x · 3x = 9x².</p></li>
+          <li data-step="2ab berechnen"><div class="ka-line"><span>2ab = 2 · 3x · 2 = 12x</span></div><p class="ka-why">Das doppelte Produkt bekommt das Vorzeichen aus der Klammer: −12x.</p></li>
+          <li data-step="b² berechnen"><div class="ka-line"><span>b² = 2² = 4</span></div><p class="ka-why">Das letzte Glied ist ein Quadrat und deshalb immer positiv.</p></li>
+          <li data-step="Zusammensetzen"><div class="ka-line"><span>(3x − 2)² = 9x² − 12x + 4</span></div><p class="ka-why">Kontrolle mit x = 1: (3 − 2)² = 1 und 9 − 12 + 4 = 1.</p></li>
+        </ol>
+      </div>
+    </div>
+    <div>
+      <h3>Rückwärts: faktorisieren</h3>
+      <p>Drei Glieder, vorne und hinten ein Quadrat: Das kann ein Binom sein. Sicher bist du erst nach der Kontrolle in der Mitte.</p>
+      <div class="ka-steps" id="steps-rueck">
+        <ol>
+          <li data-step><div class="ka-line"><span>x² − 14x + 49</span></div><p class="ka-why">Vorne steht x², hinten 49 = 7². Verdacht: Binom.</p></li>
+          <li data-step="Wurzeln ziehen"><div class="ka-line"><span>a = x, &nbsp;b = 7</span></div><p class="ka-why">Die Wurzel aus x² ist x, die Wurzel aus 49 ist 7.</p></li>
+          <li data-step="Mitte prüfen"><div class="ka-line"><span>2ab = 2 · x · 7 = 14x <span class="v">✓</span></span></div><p class="ka-why">Das mittlere Glied muss das doppelte Produkt sein. Es passt.</p></li>
+          <li data-step="Klammer schreiben"><div class="ka-line"><span>x² − 14x + 49 = (x − 7)²</span></div><p class="ka-why">Vor 14x steht ein Minus, also steht auch in der Klammer ein Minus.</p></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <h3>Lücken füllen: halbieren, dann quadrieren</h3>
+  <p>Bei <span class="m">x² + 10x + ▢</span> soll ein Binom entstehen. Die 10x sind das doppelte Produkt <span class="m">2 · x · b</span>. Also ist <span class="m">b</span> die Hälfte von 10, und in die Lücke gehört <span class="m">b² = 25</span>.</p>
+  <div class="ka-formula">x² + 10x + <mark>25</mark> = (x + <mark>5</mark>)²<small>Hälfte der Zahl vor x in die Klammer, ihr Quadrat in die Lücke</small></div>
+  <div class="ka-merke"><b>Merke</b>Vorwärts: erstes Glied quadrieren, doppeltes Produkt bilden, zweites Glied quadrieren. Rückwärts: Wurzeln der beiden Quadrate ziehen und prüfen, ob in der Mitte das doppelte Produkt steht.</div>
+  <div class="ka-warn"><b>Typische Fehler</b>
+    <ul class="fix">
+      <li><span class="m">(x − 4)² = x² − 16</span> <span class="x">✗</span> Das gemischte Glied fehlt. Richtig: <span class="m">x² − 8x + 16</span> <span class="v">✓</span></li>
+      <li><span class="m">(x − 4)² = x² − 8x − 16</span> <span class="x">✗</span> Das letzte Glied ist <span class="m">(−4)² = +16</span>. Minus steht nur in der Mitte.</li>
+      <li><span class="m">(3x + 2)² = 3x² + 12x + 4</span> <span class="x">✗</span> Die 3 gehört zu a und wird mitquadriert: <span class="m">9x² + 12x + 4</span> <span class="v">✓</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 3 · Binome üben ============ -->
+<section class="ka-section" id="binome-ueben">
+  <p class="ka-phase"><b>Minute 9 bis 15</b> · Üben</p>
+  <h2>Binome in beide Richtungen</h2>
+  <p>Rechne auf Papier und trag dann dein Ergebnis ein.</p>
+  <p class="input-note">Eingabe: Für <span class="m">x²</span> tippst du <kbd>x^2</kbd> oder nimmst den Knopf mit der kleinen 2 neben dem Feld. Leerzeichen sind egal.</p>
+  <div class="ka-tasks">
+
+    <article class="ka-task" data-task="b1" data-level="1" data-goal="binome">
+      <h4>Ausmultiplizieren</h4>
+      <p>Wende jeweils die passende binomische Formel an.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>(x + 5)² =</span><div class="ka-answer" data-type="expr" data-answer="x²+10x+25||25+10x+x²||x²+25+10x" data-aria="(x + 5)² ausmultipliziert" data-wrong='{"x²+25":"Das gemischte Glied fehlt. Im Flächenbild sind das die zwei Rechtecke: 2 · x · 5 = 10x.","x²+5x+25":"In der Mitte steht das doppelte Produkt: 2 · x · 5 = 10x.","x²+10x+10":"5² ist 25, nicht 10."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>(x − 3)² =</span><div class="ka-answer" data-type="expr" data-answer="x²-6x+9||9-6x+x²||x²+9-6x" data-aria="(x − 3)² ausmultipliziert" data-wrong='{"x²-9":"Das gemischte Glied fehlt: −2 · x · 3 = −6x. Und das letzte Glied ist +9.","x²+9":"Das gemischte Glied fehlt: −2 · x · 3 = −6x.","x²-6x-9":"Das letzte Glied ist (−3)² = +9. Minus steht nur in der Mitte.","x²-3x+9":"In der Mitte steht das doppelte Produkt: 2 · x · 3 = 6x.","x²+6x+9":"In der Klammer steht ein Minus, also auch vor dem gemischten Glied."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>(x + 7)(x − 7) =</span><div class="ka-answer" data-type="expr" data-answer="x²-49||-49+x²" data-aria="(x + 7)(x − 7) ausmultipliziert" data-wrong='{"x²+49":"Plus mal minus ergibt minus: 7 · (−7) = −49.","x²-14x+49":"Das wäre (x − 7)². Hier haben die Klammern verschiedene Vorzeichen, die gemischten Glieder +7x und −7x heben sich auf.","x²+14x+49":"Das wäre (x + 7)². Hier haben die Klammern verschiedene Vorzeichen, die gemischten Glieder heben sich auf.","x²-14":"7 · 7 = 49, nicht 14."}'></div></span></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Zweimal ein Quadrat, einmal Plus und Minus gemischt. Schreib dir für jede Zeile auf, was a und was b ist.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">(x + 5)² = x² + 2 · x · 5 + 5²<br>= <b>x² + 10x + 25</b><br>(x − 3)² = x² − 2 · x · 3 + 3²<br>= <b>x² − 6x + 9</b><br>(x + 7)(x − 7) = x² − 7²<br>= <b>x² − 49</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="b2" data-level="2" data-goal="binome">
+      <h4>Lücken füllen</h4>
+      <p>Ergänze so, dass links und rechts dasselbe steht.</p>
+      <div class="rows">
+        <div class="ka-answers eq">
+          <span class="eqg"><span>x² + 10x +</span><div class="ka-answer" data-type="number" data-answer="25" data-aria="Lücke hinter 10x" data-wrong='{"100":"Du hast 10 quadriert. Erst halbieren, dann quadrieren: 5² = 25.","20":"Halbieren und dann quadrieren, nicht verdoppeln.","5":"5 ist die Hälfte. In diese Lücke gehört ihr Quadrat."}'></div></span>
+          <span class="eqg"><span>= (x +</span><div class="ka-answer" data-type="number" data-answer="5" data-aria="Zahl in der Klammer" data-wrong='{"10":"In die Klammer gehört die Hälfte von 10.","25":"25 gehört in die erste Lücke. In die Klammer kommt die Wurzel daraus."}'></div><span>)²</span></span>
+        </div>
+        <div class="ka-answers eq">
+          <span class="eqg"><span>x² − 14x +</span><div class="ka-answer" data-type="number" data-answer="49" data-aria="Lücke hinter 14x" data-wrong='{"196":"Du hast 14 quadriert. Erst halbieren, dann quadrieren: 7² = 49.","-49":"Das letzte Glied ist ein Quadrat und deshalb positiv.","7":"7 ist die Hälfte. In diese Lücke gehört ihr Quadrat.","28":"Halbieren und dann quadrieren, nicht verdoppeln."}'></div></span>
+          <span class="eqg"><span>= (x −</span><div class="ka-answer" data-type="number" data-answer="7" data-aria="Zahl in der Klammer" data-wrong='{"14":"In die Klammer gehört die Hälfte von 14.","-7":"Das Minus steht schon in der Klammer. Trag nur 7 ein."}'></div><span>)²</span></span>
+        </div>
+        <div class="ka-answers eq">
+          <span class="eqg"><span>x² − 81</span></span>
+          <span class="eqg"><span>= (x +</span><div class="ka-answer" data-type="number" data-answer="9" data-aria="Zahl in der ersten Klammer" data-wrong='{"81":"Gesucht ist die Zahl, deren Quadrat 81 ist.","40.5":"Hier wird nicht halbiert. Zieh die Wurzel aus 81."}'></div><span>)(x −</span><div class="ka-answer" data-type="number" data-answer="9" data-aria="Zahl in der zweiten Klammer" data-wrong='{"81":"Gesucht ist die Zahl, deren Quadrat 81 ist.","40.5":"Hier wird nicht halbiert. Zieh die Wurzel aus 81."}'></div><span>)</span></span>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Zeile 1 und 2: Halbiere die Zahl vor x. Die Hälfte kommt in die Klammer, ihr Quadrat in die Lücke.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Zeile 3 hat kein Glied mit x. Das passt zur dritten Formel: <span class="m">a² − b² = (a + b)(a − b)</span> mit <span class="m">b² = 81</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">10 : 2 = 5 &nbsp;und&nbsp; 5² = 25<br>x² + 10x + <b>25</b> = (x + <b>5</b>)²<br>14 : 2 = 7 &nbsp;und&nbsp; 7² = 49<br>x² − 14x + <b>49</b> = (x − <b>7</b>)²<br>81 = 9², also<br>x² − 81 = (x + <b>9</b>)(x − <b>9</b>)</div></details>
+    </article>
+
+    <article class="ka-task" data-task="b3" data-level="2" data-goal="binome">
+      <h4>Binom oder nicht?</h4>
+      <p>Welche Terme lassen sich als <span class="m">(…)²</span> schreiben? Wähle alle passenden aus.</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-multi data-answer="a;c;e">
+          <button data-value="a" data-fb="x² + 6x + 9 = (x + 3)²."><span class="m">x² + 6x + 9</span></button>
+          <button data-value="b" data-fb="x² + 6x + 36 passt nicht: Zu (x + 6)² gehört in der Mitte 2 · x · 6 = 12x."><span class="m">x² + 6x + 36</span></button>
+          <button data-value="c" data-fb="x² − 12x + 36 = (x − 6)²."><span class="m">x² − 12x + 36</span></button>
+          <button data-value="d" data-fb="x² + 25 passt nicht: Es fehlt das gemischte Glied."><span class="m">x² + 25</span></button>
+          <button data-value="e" data-fb="4x² + 12x + 9 = (2x + 3)², denn 2 · 2x · 3 = 12x."><span class="m">4x² + 12x + 9</span></button>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Zieh bei jedem Term die Wurzeln aus dem ersten und dem letzten Glied. Steht in der Mitte genau ihr doppeltes Produkt? Drei der fünf Terme bestehen diese Kontrolle.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">x² + 6x + 9: &nbsp;2 · x · 3 = 6x <span class="v">✓</span><br>&nbsp;&nbsp;= <b>(x + 3)²</b><br>x² + 6x + 36: &nbsp;2 · x · 6 = 12x <span class="x">✗</span><br>x² − 12x + 36: &nbsp;2 · x · 6 = 12x <span class="v">✓</span><br>&nbsp;&nbsp;= <b>(x − 6)²</b><br>x² + 25: &nbsp;Mitte fehlt <span class="x">✗</span><br>4x² + 12x + 9: &nbsp;2 · 2x · 3 = 12x <span class="v">✓</span><br>&nbsp;&nbsp;= <b>(2x + 3)²</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="b4" data-level="3" data-goal="binome">
+      <h4>Mit Vorfaktor und im Kopf</h4>
+      <p>Die Formeln sparen auch beim Kopfrechnen Arbeit: <span class="m">19 = 20 − 1</span>, <span class="m">18 = 20 − 2</span> und <span class="m">22 = 20 + 2</span>.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>(2x − 5)² =</span><div class="ka-answer" data-type="expr" data-answer="4x²-20x+25||25-20x+4x²||4x²+25-20x" data-aria="(2x − 5)² ausmultipliziert" data-wrong='{"2x²-20x+25":"(2x)² = 4x². Die 2 wird mitquadriert.","4x²-25":"Das gemischte Glied fehlt: −2 · 2x · 5 = −20x. Und das letzte Glied ist +25.","4x²+25":"Das gemischte Glied fehlt: −2 · 2x · 5 = −20x.","4x²-10x+25":"Das doppelte Produkt ist 2 · 2x · 5 = 20x.","4x²-20x-25":"Das letzte Glied ist (−5)² = +25.","2x²-10x+25":"(2x)² = 4x², und das doppelte Produkt ist 2 · 2x · 5 = 20x."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>9x² − 16 =</span><div class="ka-answer" data-type="expr" data-answer="(3x+4)(3x-4)||(3x-4)(3x+4)||(4+3x)(3x-4)||(3x-4)(4+3x)" data-aria="9x² − 16 als Produkt" data-wrong='{"(3x-4)²":"(3x − 4)² hätte ein gemischtes Glied −24x. Ohne mittleres Glied passt die dritte Formel.","(3x+4)²":"(3x + 4)² hätte ein gemischtes Glied +24x. Ohne mittleres Glied passt die dritte Formel.","(9x+16)(9x-16)":"Zieh zuerst die Wurzeln: Aus 9x² wird 3x, aus 16 wird 4.","(9x+4)(9x-4)":"Die Wurzel aus 9x² ist 3x.","(3x+16)(3x-16)":"Die Wurzel aus 16 ist 4.","(x+4)(x-4)":"Das ergibt x² − 16. Aus 9x² wird in der Klammer 3x."}'></div></span></div>
+        <div class="ka-answers eq">
+          <span class="eqg"><span>19² =</span><div class="ka-answer" data-type="number" data-answer="361" data-aria="19 zum Quadrat" data-wrong='{"401":"Das ist 20² + 1². Das gemischte Glied 2 · 20 · 1 = 40 fehlt: 400 − 40 + 1.","441":"Das wäre (20 + 1)². Bei 19 = 20 − 1 wird das gemischte Glied abgezogen: 400 − 40 + 1.","399":"Das wäre 20² − 1². Hier steht aber (20 − 1)², also die zweite Formel.","359":"(−1)² = +1. Das letzte Glied wird addiert.","381":"Das gemischte Glied ist 2 · 20 · 1 = 40, nicht 20."}'></div></span>
+          <span class="eqg"><span>18 · 22 =</span><div class="ka-answer" data-type="number" data-answer="396" data-aria="18 mal 22" data-wrong='{"404":"Dritte Formel: 20² − 2² = 400 − 4.","400":"Zieh noch 2² = 4 ab.","398":"b ist 2, also b² = 4."}'></div></span>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Bei <span class="m">(2x − 5)²</span> ist <span class="m">a = 2x</span>. Bei <span class="m">9x² − 16</span> fehlt das mittlere Glied: dritte Formel rückwärts.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p><span class="m">19² = (20 − 1)²</span> und <span class="m">18 · 22 = (20 − 2)(20 + 2)</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">(2x − 5)² = (2x)² − 2 · 2x · 5 + 5²<br>= <b>4x² − 20x + 25</b><br>9x² − 16 = (3x)² − 4²<br>= <b>(3x + 4)(3x − 4)</b><br>19² = (20 − 1)²<br>= 400 − 40 + 1 = <b>361</b><br>18 · 22 = (20 − 2)(20 + 2)<br>= 400 − 4 = <b>396</b></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 4 · Scheitelpunktform ============ -->
+<section class="ka-section" id="scheitel">
+  <p class="ka-phase"><b>Minute 15 bis 20</b> · Entdecken und üben</p>
+  <h2>Die Scheitelpunktform verrät den Scheitel</h2>
+  <div class="ka-cols mix">
+    <div>
+      <p>Jede Parabel hat einen Scheitel S: ihren tiefsten oder höchsten Punkt. In der Scheitelpunktform stehen seine Koordinaten direkt in der Gleichung.</p>
+      <div class="ka-formula">f(x) = <span class="c-gold">a</span> · (x − <span class="c-g">d</span>)² + <span class="c-ok">e</span><small>Scheitelpunktform mit Scheitel S(d | e)</small></div>
+      <div class="ka-idea"><b>Beobachte am Bild</b>
+        <ol>
+          <li>Ansicht „Verschieben“: Drück <span class="m">(x − 3)²</span> und danach <span class="m">(x + 3)²</span>. In welche Richtung wandert der Scheitel jeweils?</li>
+          <li>Ansicht „Vorzeichen-Falle“: Die rote Parabel zeigt, wo der Scheitel bei vertauschtem Vorzeichen läge. Zieh den Scheitel hin und her.</li>
+          <li>Ansicht „Strecken“: Stell nacheinander <span class="m">a = 2</span>, <span class="m">a = 0,5</span> und <span class="m">a = −1</span> ein. Wie weit geht es vom Scheitel aus nach oben oder unten, wenn du 1 nach rechts gehst?</li>
+        </ol>
+      </div>
+      <ul class="ade late">
+        <li><i class="c-g">d</i><span><b>Rechts oder links.</b> <span class="m">(x − 3)</span> schiebt 3 nach rechts, <span class="m">(x + 3)</span> schiebt 3 nach links. In der Klammer dreht sich das Vorzeichen um.</span></li>
+        <li><i class="c-ok">e</i><span><b>Hoch oder runter.</b> <span class="m">+ 2</span> schiebt 2 nach oben, <span class="m">− 2</span> schiebt 2 nach unten. Hier bleibt das Vorzeichen, wie es ist.</span></li>
+        <li><i class="c-gold">a</i><span><b>Öffnung und Form.</b> <span class="m">a &gt; 0</span>: nach oben geöffnet. <span class="m">a &lt; 0</span>: nach unten geöffnet. Betrag größer als 1: schmaler als die Normalparabel. Betrag kleiner als 1: breiter.</span></li>
+      </ul>
+      <div class="ka-merke late"><b>Merke</b>Der Scheitel liegt dort, wo die Klammer null wird. <span class="m">(x − 3)</span> wird null für <span class="m">x = 3</span>, <span class="m">(x + 3)</span> wird null für <span class="m">x = −3</span>.</div>
+      <div class="ka-warn late"><b>Typischer Fehler</b><span class="m">f(x) = (x + 3)² − 2</span> hat den Scheitel <span class="m">S(3 | −2)</span> <span class="x">✗</span><br>Probe: <span class="m">f(3) = 6² − 2 = 34</span>. Das ist nicht der tiefste Punkt. Richtig ist <span class="m">S(−3 | −2)</span> <span class="v">✓</span>, denn <span class="m">f(−3) = 0² − 2 = −2</span>.</div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div class="fig-top" id="sp-lens"></div>
+      <div id="sp-plot"></div>
+      <div class="ka-controls" id="sp-controls"></div>
+      <div class="ka-btnrow" id="sp-presets" role="group" aria-label="Beispiele einstellen">
+        <button type="button" class="ka-btn" data-d="3" data-e="0"><span class="m">(x − 3)²</span></button>
+        <button type="button" class="ka-btn" data-d="-3" data-e="0"><span class="m">(x + 3)²</span></button>
+        <button type="button" class="ka-btn" data-d="0" data-e="3"><span class="m">x² + 3</span></button>
+        <button type="button" class="ka-btn" data-d="0" data-e="-3"><span class="m">x² − 3</span></button>
+      </div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="sp-term"></span><span class="c-p" id="sp-vertex"></span><span class="c-g" id="sp-dx"></span><span class="c-ok" id="sp-dy"></span><span class="c-gold" id="sp-a"></span></div>
+      <p class="why" id="sp-why"></p>
+      <figcaption id="sp-cap"></figcaption>
+    </figure>
+  </div>
+
+  <h3>Zurück in die Normalform</h3>
+  <p>Aus der Scheitelpunktform wird die Normalform <span class="m">f(x) = x² + px + q</span>, wenn du das Binom ausmultiplizierst und zusammenfasst. Steht ein Faktor a vor der Klammer, multiplizierst du danach jedes Glied damit und erhältst die allgemeine Form <span class="m">f(x) = ax² + bx + c</span>.</p>
+  <div class="ka-calc">f(x) = (x − 3)² − 4<br>= x² − 6x + 9 − 4<span class="note">zweite binomische Formel</span><br>= <b>x² − 6x + 5</b></div>
+
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="s1" data-level="1" data-goal="scheitel">
+      <h4>Scheitel ablesen</h4>
+      <p>Gib zu jeder Parabel den Scheitel an.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) = (x − 4)² + 1</span></span><div class="ka-answer" data-type="point" data-answer="4|1" data-label="S" data-wrong='{"-4|1":"In der Klammer steht x − 4. Die Klammer wird null für x = +4.","4|-1":"Die Zahl hinter der Klammer übernimmst du mit ihrem Vorzeichen: +1.","-4|-1":"Nur in der Klammer dreht sich das Vorzeichen um: x = +4. Die +1 bleibt +1."}'></div></div>
+        <div class="ka-answers eq"><span class="eqg"><span>g(x) = (x + 1)² − 6</span></span><div class="ka-answer" data-type="point" data-answer="-1|-6" data-label="S" data-wrong='{"1|-6":"In der Klammer steht x + 1. Die Klammer wird null für x = −1.","-1|6":"Die Zahl hinter der Klammer übernimmst du mit ihrem Vorzeichen: −6.","1|6":"Nur in der Klammer dreht sich das Vorzeichen um: x = −1. Die −6 bleibt −6."}'></div></div>
+        <div class="ka-answers eq"><span class="eqg"><span>h(x) = −3x² + 6</span></span><div class="ka-answer" data-type="point" data-answer="0|6" data-label="S" data-wrong='{"-3|6":"−3 ist der Streckfaktor a. Ohne Klammer ist die Parabel nicht seitlich verschoben: d = 0.","3|6":"−3 ist der Streckfaktor a. Ohne Klammer ist die Parabel nicht seitlich verschoben: d = 0.","0|-3":"−3 ist der Streckfaktor a. Die Höhe des Scheitels ist die Zahl ohne x."}'></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Für welches x wird die Klammer null? Das ist die x-Koordinate. Die Zahl hinter der Klammer ist die y-Koordinate. Bei h steht keine Klammer, du kannst dir <span class="m">(x − 0)²</span> denken.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f: &nbsp;x − 4 = 0 für x = 4<br>&nbsp;&nbsp;&nbsp;dahinter + 1: &nbsp;<b>S(4 | 1)</b><br>g: &nbsp;x + 1 = 0 für x = −1<br>&nbsp;&nbsp;&nbsp;dahinter − 6: &nbsp;<b>S(−1 | −6)</b><br>h: &nbsp;−3 · (x − 0)² + 6<br>&nbsp;&nbsp;&nbsp;also <b>S(0 | 6)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="s2" data-level="2" data-goal="scheitel">
+      <h4>Schieb die Parabel an die richtige Stelle</h4>
+      <p>Zieh den violetten Scheitel so, dass die Parabel zur Gleichung <span class="m">f(x) = (x + 3)² − 2</span> gehört. Mit den Pfeiltasten geht es auch.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="custom" id="s2-answer">
+          <div class="task-plot" id="s2-plot"></div>
+          <div class="ka-readout" aria-live="polite"><span class="c-p" id="s2-read"></span></div>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Für welches x wird <span class="m">(x + 3)</span> null? Dorthin gehört der Scheitel. Die <span class="m">− 2</span> hinter der Klammer gibt seine Höhe an.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">x + 3 = 0 für x = −3<span class="note">3 nach links</span><br>hinter der Klammer: − 2<span class="note">2 nach unten</span><br><b>S(−3 | −2)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="s3" data-level="2" data-goal="scheitel">
+      <h4>Von der Scheitelpunktform zur Normalform</h4>
+      <p>Multipliziere aus und fasse zusammen.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>(x − 2)² + 1 =</span><div class="ka-answer" data-type="expr" data-answer="x²-4x+5||5-4x+x²||x²+5-4x" data-aria="(x − 2)² + 1 in Normalform" data-wrong='{"x²+5":"Das gemischte Glied fehlt: (x − 2)² = x² − 4x + 4.","x²-4x+4":"Die + 1 hinter der Klammer gehört noch dazu: 4 + 1 = 5.","x²-4x+1":"Aus dem Binom kommt + 4 dazu: 4 + 1 = 5.","x²+4x+5":"In der Klammer steht ein Minus, also −4x.","x²-2x+5":"Das doppelte Produkt ist 2 · x · 2 = 4x.","x²-4x-3":"(−2)² = +4, und 4 + 1 = 5."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>2(x + 1)² − 5 =</span><div class="ka-answer" data-type="expr" data-answer="2x²+4x-3||-3+4x+2x²||2x²-3+4x" data-aria="2(x + 1)² − 5 in allgemeiner Form" data-wrong='{"2x²+2x-3":"Die 2 vor der Klammer multipliziert jedes Glied: 2 · 2x = 4x.","2x²+4x-4":"2 · 1 = 2, und 2 − 5 = −3.","4x²+8x-1":"Erst die Klammer quadrieren, dann mit 2 malnehmen. Die 2 wird nicht mitquadriert.","2x²-3":"Das gemischte Glied fehlt: (x + 1)² = x² + 2x + 1.","x²+2x-4":"Die 2 vor der Klammer multipliziert jedes Glied des Binoms.","2x²+4x+2":"Die − 5 hinter der Klammer gehört noch dazu: 2 − 5 = −3."}'></div></span></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Erst das Binom ausmultiplizieren. In der zweiten Zeile danach alle drei Glieder mit 2 malnehmen. Ganz am Ende die Zahlen zusammenfassen.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">(x − 2)² + 1 = x² − 4x + 4 + 1<br>= <b>x² − 4x + 5</b><br>2(x + 1)² − 5<br>= 2 · (x² + 2x + 1) − 5<br>= 2x² + 4x + 2 − 5<br>= <b>2x² + 4x − 3</b></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 5 · Quadratische Ergänzung ============ -->
+<section class="ka-section" id="ergaenzung">
+  <p class="ka-phase"><b>Minute 20 bis 26</b> · Verstehen und üben</p>
+  <h2>Quadratische Ergänzung: aus drei Gliedern wird ein Quadrat</h2>
+  <p>Die Normalform <span class="m">f(x) = x² + 6x + 5</span> zeigt den Scheitel nicht. Mit einem Trick baust du sie um: Du legst aus den Teilen ein Quadrat und merkst dir, was dabei fehlt oder übrig bleibt.</p>
+  <div class="ka-idea"><b>Beobachte am Bild</b>Klick die Schritte durch. Achte auf die Ecke: Wie viele Felder hat sie, und wie viele davon können die 5 losen Kästchen füllen?</div>
+
+  <div class="qe-grid">
+    <div class="qe-side">
+      <div class="fig-top"><span id="qe-pick"></span></div>
+      <figure class="ka-figure qe-fig" id="qe-fig">
+        <div class="fig-top" id="qe-view"></div>
+        <div class="ka-plot" id="qe-bild"></div>
+        <div id="qe-plot-wrap"><div id="qe-plot"></div></div>
+        <div class="ka-readout" aria-live="polite"><span class="c-f" id="qe-now"></span><span id="qe-bal"></span></div>
+      </figure>
+      <p class="ka-caption qe-cap" id="qe-cap"></p>
+    </div>
+    <div class="qe-main">
+      <div class="ka-steps" id="steps-qe">
+        <ol>
+          <li data-step><div class="ka-line"><span id="qe-l0">f(x) = x² + 6x + 5</span></div><p class="ka-why" id="qe-w0">Im Bild: ein Quadrat mit der Fläche x², ein Streifen mit der Fläche 6 · x und 5 einzelne Kästchen.</p></li>
+          <li data-step="Streifen halbieren"><div class="ka-line"><span id="qe-l1">= x² + 2 · 3 · x + 5</span></div><p class="ka-why" id="qe-w1">Halbiere den Streifen: 6 : 2 = 3. Ein halber Streifen wandert nach unten. So entsteht fast ein Quadrat mit der Seitenlänge x + 3.</p></li>
+          <li data-step="Ecke ergänzen"><div class="ka-line"><span id="qe-l2">= x² + 6x <b class="c-gold">+ 9</b> <b class="c-no">− 9</b> + 5</span></div><p class="ka-why" id="qe-w2">Zum vollen Quadrat fehlt die Ecke 3 · 3 = 9. Du ergänzt 9 und ziehst 9 sofort wieder ab. So ändert sich der Wert des Terms nicht.</p></li>
+          <li data-step="Binom bilden"><div class="ka-line"><span id="qe-l3">= (x + 3)² − 9 + 5</span></div><p class="ka-why" id="qe-w3">x² + 6x + 9 ist die erste binomische Formel, rückwärts gelesen.</p></li>
+          <li data-step="Zusammenfassen"><div class="ka-line"><span id="qe-l4">= (x + 3)² − 4</span></div><p class="ka-why" id="qe-w4">Fasse zusammen: −9 + 5 = −4. Im Bild füllen die 5 Kästchen die Ecke nur zum Teil: 4 Felder bleiben leer.</p></li>
+          <li data-step="Scheitel ablesen"><div class="ka-line"><span id="qe-l5">Scheitel S(−3 | −4)</span></div><p class="ka-why" id="qe-w5">In der Klammer steht + 3, also ist x = −3. Die Zahl dahinter übernimmst du unverändert.</p></li>
+        </ol>
+      </div>
+      <div class="ka-merke"><b>Merke: vier Handgriffe</b>
+        <ol>
+          <li>Zahl vor x halbieren.</li>
+          <li>Die Hälfte quadrieren, das Quadrat ergänzen und sofort wieder abziehen.</li>
+          <li>Die ersten drei Glieder als Binom schreiben.</li>
+          <li>Die restlichen Zahlen zusammenfassen und den Scheitel ablesen.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="ka-warn"><b>Typischer Fehler</b><span class="m">x² + 6x + 5 = (x + 3)² + 5</span> <span class="x">✗</span><br>Hier wurde die 9 ergänzt, aber nicht wieder abgezogen. Die Parabel läge 9 Einheiten zu hoch. In der Ansicht „Parabel“ siehst du sie rot gestrichelt. Richtig: <span class="m">(x + 3)² − 9 + 5</span> <span class="m">= (x + 3)² − 4</span> <span class="v">✓</span><br>Probe durch Ausmultiplizieren: <span class="m">(x + 3)² − 4</span> <span class="m">= x² + 6x + 9 − 4</span> <span class="m">= x² + 6x + 5</span>.</div>
+
+  <h3>Drei Sonderfälle, die in Arbeiten vorkommen</h3>
+  <div class="ex3">
+    <div>
+      <h4>Minus vor x</h4>
+      <p class="ka-small">Zweite binomische Formel. Ergänzt wird trotzdem ein positives Quadrat.</p>
+      <div class="ka-calc">x² − 8x + 13<br>= x² − 8x + 16 − 16 + 13<br>= <b>(x − 4)² − 3</b><br>S(4 | −3)</div>
+    </div>
+    <div>
+      <h4>Ungerade Zahl vor x</h4>
+      <p class="ka-small">Die Hälfte ist dann eine Kommazahl: Die Hälfte von 1 ist 0,5 und 0,5² = 0,25.</p>
+      <div class="ka-calc">x² + x + 1,25<br>= x² + x + 0,25 − 0,25 + 1,25<br>= <b>(x + 0,5)² + 1</b><br>S(−0,5 | 1)</div>
+    </div>
+    <div>
+      <h4>Faktor vor x²</h4>
+      <p class="ka-small">Klammere den Faktor zuerst aus den Gliedern mit x aus.</p>
+      <div class="ka-calc">2x² + 12x + 10<br>= 2 · [x² + 6x] + 10<br>= 2 · [(x + 3)² − 9] + 10<br>= 2 · (x + 3)² − 18 + 10<br>= <b>2 · (x + 3)² − 8</b><br>S(−3 | −8)</div>
+    </div>
+  </div>
+
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="q1" data-level="1" data-goal="ergaenzung">
+      <h4>Ergänzen mit Geländer</h4>
+      <div class="ka-given"><span>f(x) = x² + 8x + 10</span></div>
+      <div class="rows">
+        <div class="ka-answers eq">
+          <span class="eqg"><span class="txt">Hälfte von 8:</span><div class="ka-answer" data-type="number" data-answer="4" data-aria="Hälfte von 8" data-wrong='{"16":"Das ist das Doppelte. Gesucht ist die Hälfte.","8":"Halbiere die Zahl vor x."}'></div></span>
+          <span class="eqg"><span class="txt">Quadrat davon:</span><div class="ka-answer" data-type="number" data-answer="16" data-aria="Quadrat der Hälfte" data-wrong='{"8":"Quadrieren heißt 4 · 4, nicht 2 · 4.","64":"Erst halbieren, dann quadrieren: 4² = 16.","4":"4 ist die Hälfte. Gesucht ist ihr Quadrat."}'></div></span>
+        </div>
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="(x+4)²-6||-6+(x+4)²" data-aria="Scheitelpunktform von f" data-wrong='{"(x+4)²+10":"Du hast 16 ergänzt, aber nicht wieder abgezogen: −16 + 10 = −6.","(x+4)²+26":"Die 16 wird abgezogen, nicht addiert: −16 + 10 = −6.","(x+4)²-16":"Die + 10 gehört noch dazu: −16 + 10 = −6.","(x+8)²-54":"In die Klammer gehört die Hälfte von 8.","(x+8)²+10":"In die Klammer gehört die Hälfte von 8, und ihr Quadrat ziehst du wieder ab.","(x-4)²-6":"Vor 8x steht ein Plus, also auch in der Klammer.","(x+4)²+6":"−16 + 10 = −6. Das Ergebnis ist negativ."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="-4|-6" data-label="S" data-wrong='{"4|-6":"(x + 4) wird null für x = −4.","-4|6":"Die Zahl hinter der Klammer übernimmst du mit ihrem Vorzeichen.","4|6":"(x + 4) wird null für x = −4, und hinter der Klammer steht −6."}'></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Schreib <span class="m">x² + 8x + 16 − 16 + 10</span>. Die ersten drei Glieder sind ein Binom, die letzten beiden fasst du zusammen.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">8 : 2 = 4, &nbsp;4² = 16<br>f(x) = x² + 8x + 16 − 16 + 10<br>= (x + 4)² − 16 + 10<br>= <b>(x + 4)² − 6</b><br><b>S(−4 | −6)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="q2" data-level="2" data-goal="ergaenzung">
+      <h4>Jetzt ohne Geländer</h4>
+      <div class="ka-given"><span>f(x) = x² − 6x + 11</span></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="(x-3)²+2||2+(x-3)²" data-aria="Scheitelpunktform von f" data-wrong='{"(x-3)²+11":"Du hast 9 ergänzt, aber nicht wieder abgezogen: −9 + 11 = 2.","(x-3)²+20":"Die 9 wird abgezogen, nicht addiert: −9 + 11 = 2.","(x-6)²+11":"In die Klammer gehört die Hälfte von 6, und ihr Quadrat ziehst du wieder ab.","(x-6)²-25":"In die Klammer gehört die Hälfte von 6.","(x+3)²+2":"Vor 6x steht ein Minus, also auch in der Klammer.","(x-3)²-2":"−9 + 11 = +2.","(x-3)²-9":"Die + 11 gehört noch dazu: −9 + 11 = 2."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="3|2" data-label="S" data-wrong='{"-3|2":"(x − 3) wird null für x = +3.","3|-2":"Hinter der Klammer steht + 2.","-3|-2":"(x − 3) wird null für x = +3, und hinter der Klammer steht + 2."}'></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Die Hälfte von 6 ist 3, ihr Quadrat 9. Wegen des Minus vor 6x entsteht <span class="m">(x − 3)²</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f(x) = x² − 6x + 9 − 9 + 11<br>= (x − 3)² − 9 + 11<br>= <b>(x − 3)² + 2</b><br><b>S(3 | 2)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="q3" data-level="3" data-goal="ergaenzung">
+      <h4>Ungerade Zahl vor x</h4>
+      <div class="ka-given"><span>f(x) = x² − 3x + 0,25</span></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="(x-1.5)²-2||-2+(x-1.5)²||(x-3/2)²-2||(x-1.50)²-2" data-aria="Scheitelpunktform von f" data-wrong='{"(x-1.5)²+0.25":"Du hast 2,25 ergänzt, aber nicht wieder abgezogen: −2,25 + 0,25 = −2.","(x-1.5)²-2.25":"Die + 0,25 gehört noch dazu: −2,25 + 0,25 = −2.","(x-1.5)²+2.5":"Die 2,25 wird abgezogen: −2,25 + 0,25 = −2.","(x-3)²-8.75":"In die Klammer gehört die Hälfte von 3, also 1,5.","(x+1.5)²-2":"Vor 3x steht ein Minus, also auch in der Klammer.","(x-1.5)²+2":"−2,25 + 0,25 = −2. Das Ergebnis ist negativ."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="1.5|-2" data-label="S" data-wrong='{"-1.5|-2":"(x − 1,5) wird null für x = +1,5.","1.5|2":"Hinter der Klammer steht − 2.","3|-2":"In der Klammer steht die Hälfte von 3."}'></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Die Hälfte von 3 ist 1,5.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p><span class="m">1,5² = 2,25</span>, denn <span class="m">15 · 15 = 225</span>. Ergänze 2,25 und zieh es wieder ab.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">3 : 2 = 1,5, &nbsp;1,5² = 2,25<br>f(x) = x² − 3x + 2,25 − 2,25 + 0,25<br>= (x − 1,5)² − 2,25 + 0,25<br>= <b>(x − 1,5)² − 2</b><br><b>S(1,5 | −2)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="q4" data-level="3" data-goal="ergaenzung">
+      <h4>Mit Faktor vor x²</h4>
+      <div class="ka-given"><span>f(x) = 2x² − 8x + 5</span></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="2(x-2)²-3||-3+2(x-2)²" data-aria="Scheitelpunktform von f" data-wrong='{"2(x-2)²+1":"Die −4 steht in der eckigen Klammer und wird mit 2 malgenommen: 2 · (−4) = −8, dann −8 + 5 = −3.","(x-2)²-3":"Der Faktor 2 vor der Klammer fehlt.","2(x-2)²-8":"Die + 5 gehört noch dazu: −8 + 5 = −3.","2(x-2)²+5":"Du hast 4 ergänzt, aber nicht wieder abgezogen. Mit dem Faktor 2 sind das −8, und −8 + 5 = −3.","2(x-4)²-27":"Klammere zuerst 2 aus: 2 · [x² − 4x]. Dann ist die Hälfte 2.","2(x-4)²-11":"Klammere zuerst 2 aus: 2 · [x² − 4x]. Dann ist die Hälfte 2.","(x-4)²-11":"Vor x² steht eine 2. Klammere sie zuerst aus den Gliedern mit x aus.","2(x+2)²-3":"Vor 4x steht ein Minus, also auch in der Klammer.","2(x-2)²+3":"2 · (−4) = −8, und −8 + 5 = −3."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="2|-3" data-label="S" data-wrong='{"-2|-3":"(x − 2) wird null für x = +2.","2|3":"Hinter der Klammer steht − 3.","4|-3":"Nach dem Ausklammern steht in der eckigen Klammer x² − 4x. Die Hälfte von 4 ist 2."}'></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Klammere 2 aus den ersten beiden Gliedern aus: <span class="m">2 · [x² − 4x] + 5</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>In der eckigen Klammer ergänzt du wie gewohnt: <span class="m">x² − 4x = (x − 2)² − 4</span>. Beim Auflösen der eckigen Klammer wird auch die −4 mit 2 malgenommen.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f(x) = 2 · [x² − 4x] + 5<br>= 2 · [(x − 2)² − 4] + 5<br>= 2 · (x − 2)² − 8 + 5<br>= <b>2 · (x − 2)² − 3</b><br><b>S(2 | −3)</b></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 6 · Gleichung aufstellen ============ -->
+<section class="ka-section" id="aufstellen">
+  <p class="ka-phase"><b>Minute 26 bis 30</b> · Anwenden</p>
+  <h2>Scheitelpunkt aufstellen: Gleichung aus S und einem Punkt</h2>
+  <div class="ka-cols mix">
+    <div>
+      <p>Kennst du den Scheitel, kennst du schon <span class="m">d</span> und <span class="m">e</span>. Offen ist nur der Faktor <span class="m">a</span>. Den legt ein zweiter Punkt der Parabel fest.</p>
+      <div class="ka-idea"><b>Beobachte am Bild</b>Durch den Scheitel gehen viele Parabeln. Zieh P nach oben und nach unten. Wie ändert sich a? Vergleiche mit der gestrichelten Normalparabel: Wie hoch wäre sie an der Stelle von P?</div>
+      <div class="ka-steps late" id="steps-auf">
+        <ol>
+          <li data-step><div class="ka-line"><span>f(x) = a · (x − 2)² − 3</span></div><p class="ka-why">Scheitel S(2 | −3) einsetzen: d = 2 und e = −3.</p></li>
+          <li data-step="Punkt einsetzen"><div class="ka-line"><span>5 = a · (4 − 2)² − 3</span></div><p class="ka-why">Punkt P(4 | 5) einsetzen: x = 4 und f(x) = 5.</p></li>
+          <li data-step="Klammer ausrechnen"><div class="ka-line"><span>5 = 4a − 3</span><span class="op">| + 3</span></div><p class="ka-why">Erst die Klammer, dann das Quadrat: (4 − 2)² = 2² = 4.</p></li>
+          <li data-step="Nach a auflösen"><div class="ka-line"><span>8 = 4a</span><span class="op">| : 4</span></div><p class="ka-why">Teile durch die Zahl vor a.</p></li>
+          <li data-step="Gleichung notieren"><div class="ka-line"><span>a = 2, &nbsp;also f(x) = 2 · (x − 2)² − 3</span></div><p class="ka-why">Probe mit P: f(4) = 2 · 2² − 3 = 8 − 3 = 5.</p></li>
+        </ol>
+      </div>
+      <div class="ka-merke late"><b>Aus dem Graphen ablesen</b>Lies zuerst den Scheitel ab. Such dir dann einen Punkt, der genau auf einer Gitterkreuzung liegt, und rechne wie oben. Kontrolle mit der Treppe: Geh vom Scheitel 1 nach rechts. So weit, wie es dann nach oben oder unten geht, so groß ist a.</div>
+      <div class="ka-warn late"><b>Typischer Fehler</b><span class="m">5 = a · (4 − 2) − 3</span>, also <span class="m">a = 4</span> <span class="x">✗</span><br>Das Quadrat wurde vergessen. Richtig: <span class="m">(4 − 2)² = 4</span>, also <span class="m">8 = 4a</span> und <span class="m">a = 2</span>&nbsp;<span class="v">✓</span><br>Am Bild: 2 zur Seite heißt bei der Normalparabel 4 nach oben, nicht 2.</div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="ap-plot"></div>
+      <div class="ka-btnrow"><button type="button" class="ka-btn" id="ap-reset">Beispiel S(2 | −3), P(4 | 5) einstellen</button></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-p" id="ap-s"></span><span class="c-g" id="ap-p"></span><span id="ap-run"></span><span id="ap-ref"></span><span class="c-gold" id="ap-a"></span><span class="c-f" id="ap-term"></span></div>
+      <figcaption>Violett: Scheitel S. Orange: Punkt P. Gestrichelt: die Normalparabel mit demselben Scheitel. Die orange Strecke ist a-mal so lang wie der Weg bis zum offenen grauen Punkt.</figcaption>
+    </figure>
+  </div>
+
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="a1" data-level="2" data-goal="aufstellen">
+      <h4>Faktor a berechnen</h4>
+      <p>Eine Parabel hat den Scheitel <span class="m">S(1 | 2)</span> und verläuft durch <span class="m">P(3 | −6)</span>.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>a =</span><div class="ka-answer" data-type="number" data-answer="-2" data-aria="Faktor a" data-wrong='{"2":"Der Betrag stimmt. −6 − 2 = −8, also ist a negativ: Die Parabel ist nach unten geöffnet.","-4":"Du hast durch 2 geteilt. In der Gleichung steht (3 − 1)² = 4.","-1":"−6 − 2 = −8, nicht −4. Dann −8 : 4.","-8":"Teile noch durch (3 − 1)² = 4.","-1.5":"Erst die 2 auf die andere Seite bringen: −6 − 2 = −8. Dann durch 4 teilen."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="-2(x-1)²+2||2-2(x-1)²" data-aria="Funktionsgleichung in Scheitelpunktform" data-wrong='{"-2(x+1)²+2":"Der Scheitel liegt bei x = +1. In der Klammer steht dann x − 1.","2(x-1)²+2":"a ist negativ: Von S aus geht es nach unten zu P.","-2(x-1)²-2":"Die y-Koordinate des Scheitels ist + 2.","-2(x-3)²-6":"In die Scheitelpunktform gehören die Koordinaten von S, nicht die von P."}'></div></span></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Ansatz mit dem Scheitel: <span class="m">f(x) = a · (x − 1)² + 2</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>P einsetzen: <span class="m">−6 = a · (3 − 1)² + 2</span>. Rechne die Klammer aus und löse nach a auf.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f(x) = a · (x − 1)² + 2<br>−6 = a · (3 − 1)² + 2<br>−6 = 4a + 2<span class="op">| − 2</span><br>−8 = 4a<span class="op">| : 4</span><br>a = <b>−2</b><br>f(x) = <b>−2 · (x − 1)² + 2</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="a2" data-level="3" data-goal="aufstellen">
+      <h4>Gleichung aus dem Graphen ablesen</h4>
+      <p>Bestimme die Gleichung der abgebildeten Parabel in Scheitelpunktform.</p>
+      <div class="task-plot" id="a2-plot"></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="2|-2" data-label="S"></div>
+          <span class="eqg"><span>a =</span><div class="ka-answer" data-type="number" data-answer="0.5" data-aria="Faktor a" data-wrong='{"2":"Umgekehrt: Von S aus 2 nach rechts geht es 2 nach oben. Die Normalparabel ginge 4 nach oben, also a = 2 : 4.","1":"Von S aus 2 nach rechts geht es nur 2 nach oben. Die Normalparabel ginge 4 nach oben.","-0.5":"Die Parabel ist nach oben geöffnet, also ist a positiv.","0.25":"Setz einen Gitterpunkt ein, zum Beispiel (4 | 0): 0 = a · 4 − 2."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="0.5(x-2)²-2||1/2(x-2)²-2||(x-2)²/2-2||½(x-2)²-2||-2+0.5(x-2)²||(1/2)(x-2)²-2" data-aria="Funktionsgleichung in Scheitelpunktform" data-wrong='{"0.5(x+2)²-2":"Der Scheitel liegt bei x = +2. In der Klammer steht dann x − 2.","0.5(x-2)²+2":"Der Scheitel liegt unter der x-Achse: e = −2.","(x-2)²-2":"Der Faktor a fehlt. Die Parabel ist breiter als die Normalparabel.","2(x-2)²-2":"Die Parabel ist breiter als die Normalparabel, also liegt a zwischen 0 und 1."}'></div></span></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Der tiefste Punkt liegt auf einer Gitterkreuzung. Das ist der Scheitel.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Die Parabel geht durch <span class="m">(4 | 0)</span>. Setz diesen Punkt in <span class="m">f(x) = a · (x − 2)² − 2</span> ein.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">Scheitel ablesen: <b>S(2 | −2)</b><br>f(x) = a · (x − 2)² − 2<br>Punkt (4 | 0): &nbsp;0 = a · (4 − 2)² − 2<br>0 = 4a − 2<span class="op">| + 2</span><br>2 = 4a<span class="op">| : 4</span><br>a = <b>0,5</b><br>f(x) = <b>0,5 · (x − 2)² − 2</b></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 7 · Mini-Test ============ -->
+<section class="ka-section" id="test">
+  <p class="ka-phase"><b>Minute 30 bis 35</b> · Mini-Test</p>
+  <h2>Mini-Test: Sitzt das Fundament?</h2>
+  <p>Vier Aufgaben in fünf Minuten, ohne Tipps. Rechne alles auf Papier und prüfe erst danach. Den Lösungsweg öffnest du nur zur Kontrolle.</p>
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="m1" data-level="1" data-goal="binome">
+      <h4>Binome</h4>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>(x − 6)² =</span><div class="ka-answer" data-type="expr" data-answer="x²-12x+36||36-12x+x²||x²+36-12x" data-aria="(x − 6)² ausmultipliziert" data-wrong='{"x²-36":"Das gemischte Glied fehlt: −2 · x · 6 = −12x. Und das letzte Glied ist +36.","x²+36":"Das gemischte Glied fehlt: −2 · x · 6 = −12x.","x²-12x-36":"Das letzte Glied ist (−6)² = +36.","x²-6x+36":"Das doppelte Produkt ist 2 · x · 6 = 12x.","x²+12x+36":"In der Klammer steht ein Minus, also −12x."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>x² + 18x + 81 =</span><div class="ka-answer" data-type="expr" data-answer="(x+9)²||(x+9)(x+9)||(9+x)²" data-aria="x² + 18x + 81 als Binom" data-wrong='{"(x-9)²":"Vor 18x steht ein Plus, also auch in der Klammer.","(x+18)²":"In die Klammer gehört die Hälfte von 18.","(x+81)²":"In die Klammer gehört die Wurzel aus 81.","(x+9)(x-9)":"Das ergibt x² − 81. Hier gibt es ein gemischtes Glied, also ein Quadrat."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>(3x + 1)(3x − 1) =</span><div class="ka-answer" data-type="expr" data-answer="9x²-1||-1+9x²" data-aria="(3x + 1)(3x − 1) ausmultipliziert" data-wrong='{"3x²-1":"(3x)² = 9x². Die 3 wird mitquadriert.","9x²+1":"Plus mal minus ergibt minus: −1.","9x²-6x+1":"Das wäre (3x − 1)². Hier heben sich die gemischten Glieder auf.","9x²+6x+1":"Das wäre (3x + 1)². Hier heben sich die gemischten Glieder auf."}'></div></span></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">(x − 6)² = x² − 2 · x · 6 + 6²<br>= <b>x² − 12x + 36</b><br>x² + 18x + 81: &nbsp;2 · x · 9 = 18x <span class="v">✓</span><br>= <b>(x + 9)²</b><br>(3x + 1)(3x − 1) = (3x)² − 1²<br>= <b>9x² − 1</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="m2" data-level="2" data-goal="scheitel">
+      <h4>Scheitelpunktform lesen</h4>
+      <div class="ka-given"><span>f(x) = −2 · (x + 1)² + 8</span></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="-1|8" data-label="S" data-wrong='{"1|8":"(x + 1) wird null für x = −1.","-1|-8":"Hinter der Klammer steht + 8.","-2|8":"−2 ist der Streckfaktor a. Die x-Koordinate kommt aus der Klammer.","1|-8":"(x + 1) wird null für x = −1, und hinter der Klammer steht + 8."}'></div></div>
+        <div class="ka-answers">
+          <div class="ka-answer stack" data-type="choice" data-answer="b" aria-label="Öffnung und Form der Parabel">
+            <button data-value="a" data-fb="a = −2 ist negativ. Die Parabel ist nach unten geöffnet.">nach oben geöffnet, schmaler als die Normalparabel</button>
+            <button data-value="b" data-fb="a = −2: negativ, also nach unten geöffnet. Betrag 2 ist größer als 1, also schmaler.">nach unten geöffnet, schmaler als die Normalparabel</button>
+            <button data-value="c" data-fb="Die Richtung stimmt. Der Betrag von a ist 2, also größer als 1: Die Parabel ist schmaler.">nach unten geöffnet, breiter als die Normalparabel</button>
+            <button data-value="d" data-fb="a = −2 ist negativ, und der Betrag 2 ist größer als 1.">nach oben geöffnet, breiter als die Normalparabel</button>
+          </div>
+        </div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">x + 1 = 0 für x = −1<br>dahinter + 8: &nbsp;<b>S(−1 | 8)</b><br>a = −2 &lt; 0: &nbsp;nach unten geöffnet<br>Betrag 2 &gt; 1: &nbsp;schmaler</div></details>
+    </article>
+
+    <article class="ka-task" data-task="m3" data-level="2" data-goal="ergaenzung">
+      <h4>Quadratisch ergänzen</h4>
+      <div class="ka-given"><span>f(x) = x² − 12x + 31</span></div>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="(x-6)²-5||-5+(x-6)²" data-aria="Scheitelpunktform von f" data-wrong='{"(x-6)²+31":"Du hast 36 ergänzt, aber nicht wieder abgezogen: −36 + 31 = −5.","(x-6)²+67":"Die 36 wird abgezogen, nicht addiert: −36 + 31 = −5.","(x-12)²-113":"In die Klammer gehört die Hälfte von 12.","(x-12)²+31":"In die Klammer gehört die Hälfte von 12, und ihr Quadrat ziehst du wieder ab.","(x+6)²-5":"Vor 12x steht ein Minus, also auch in der Klammer.","(x-6)²+5":"−36 + 31 = −5. Das Ergebnis ist negativ.","(x-6)²-36":"Die + 31 gehört noch dazu: −36 + 31 = −5."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span class="txt">Scheitel:</span></span><div class="ka-answer" data-type="point" data-answer="6|-5" data-label="S" data-wrong='{"-6|-5":"(x − 6) wird null für x = +6.","6|5":"Hinter der Klammer steht − 5.","12|-5":"In der Klammer steht die Hälfte von 12."}'></div></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">12 : 2 = 6, &nbsp;6² = 36<br>f(x) = x² − 12x + 36 − 36 + 31<br>= (x − 6)² − 36 + 31<br>= <b>(x − 6)² − 5</b><br><b>S(6 | −5)</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="m4" data-level="3" data-goal="aufstellen">
+      <h4>Gleichung aufstellen</h4>
+      <p>Eine Parabel hat den Scheitel <span class="m">S(3 | 1)</span> und verläuft durch <span class="m">P(5 | 3)</span>.</p>
+      <div class="rows">
+        <div class="ka-answers eq"><span class="eqg"><span>a =</span><div class="ka-answer" data-type="number" data-answer="0.5" data-aria="Faktor a" data-wrong='{"2":"Umgekehrt: 2 = 4a, also a = 2 : 4.","1":"Du hast durch 2 geteilt. In der Gleichung steht (5 − 3)² = 4.","0.75":"Bring zuerst die 1 auf die andere Seite: 3 − 1 = 2. Dann durch 4 teilen.","1.5":"Rechne die Klammer aus und quadriere: (5 − 3)² = 4. Dann 3 = 4a + 1."}'></div></span></div>
+        <div class="ka-answers eq"><span class="eqg"><span>f(x) =</span><div class="ka-answer" data-type="expr" data-answer="0.5(x-3)²+1||1/2(x-3)²+1||(x-3)²/2+1||½(x-3)²+1||1+0.5(x-3)²||(1/2)(x-3)²+1" data-aria="Funktionsgleichung in Scheitelpunktform" data-wrong='{"0.5(x+3)²+1":"Der Scheitel liegt bei x = +3. In der Klammer steht dann x − 3.","0.5(x-3)²-1":"Die y-Koordinate des Scheitels ist + 1.","0.5(x-5)²+3":"In die Scheitelpunktform gehören die Koordinaten von S, nicht die von P.","2(x-3)²+1":"2 = 4a, also a = 2 : 4 = 0,5."}'></div></span></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f(x) = a · (x − 3)² + 1<br>3 = a · (5 − 3)² + 1<br>3 = 4a + 1<span class="op">| − 1</span><br>2 = 4a<span class="op">| : 4</span><br>a = <b>0,5</b><br>f(x) = <b>0,5 · (x − 3)² + 1</b></div></details>
+    </article>
+  </div>
+  <div class="ka-merke" id="test-result" role="status" hidden></div>
+</section>
+
+<!-- ============ 8 · Spickzettel ============ -->
+<section class="ka-section" id="spickzettel">
+  <p class="ka-phase"><b>Zum Abschreiben</b> · Spickzettel</p>
+  <h2>Spickzettel: Binome und Scheitelpunktform</h2>
+  <p>Schreib diese vier Kästen in dein Heft. Was du einmal mit der Hand geschrieben hast, bleibt besser hängen.</p>
+  <div class="spick">
+    <div>
+      <h3>Binomische Formeln</h3>
+      <p class="sf">(a + b)² = a² + 2ab + b²<br>(a − b)² = a² − 2ab + b²<br>(a + b)(a − b) = a² − b²</p>
+      <p>Rückwärts: Wurzeln der beiden Quadrate ziehen, dann prüfen, ob in der Mitte das doppelte Produkt steht.</p>
+    </div>
+    <div>
+      <h3>Scheitelpunktform</h3>
+      <p class="sf">f(x) = a · (x − d)² + e, &nbsp;S(d | e)</p>
+      <p><span class="m">(x − 3)</span>: 3 nach rechts. <span class="m">(x + 3)</span>: 3 nach links. Die Zahl hinter der Klammer bleibt, wie sie ist.<br><span class="m">a &gt; 0</span> oben offen, <span class="m">a &lt; 0</span> unten offen. Betrag größer 1: schmaler. Betrag kleiner 1: breiter.</p>
+    </div>
+    <div>
+      <h3>Quadratische Ergänzung</h3>
+      <ol>
+        <li>Zahl vor x halbieren.</li>
+        <li>Hälfte quadrieren, ergänzen und wieder abziehen.</li>
+        <li>Binom schreiben.</li>
+        <li>Zahlen zusammenfassen, Scheitel ablesen.</li>
+      </ol>
+      <p class="sf">x² + 6x + 5 = (x + 3)² − 9 + 5<br>= (x + 3)² − 4, &nbsp;S(−3 | −4)</p>
+    </div>
+    <div>
+      <h3>Gleichung aus S und P</h3>
+      <ol>
+        <li>Scheitel einsetzen: <span class="m">f(x) = a · (x − d)² + e</span>.</li>
+        <li>Punkt P für x und f(x) einsetzen.</li>
+        <li>Klammer ausrechnen, quadrieren, nach a auflösen.</li>
+        <li>Probe mit P.</li>
+      </ol>
+      <p class="sf">S(2 | −3), P(4 | 5): &nbsp;5 = 4a − 3, &nbsp;a = 2</p>
+    </div>
+  </div>
+</section>
+
+<nav data-ka-next></nav>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+(() => {
+'use strict';
+const NS = 'http://www.w3.org/2000/svg';
+const byId = id => { const el = document.getElementById(id); if (!el) throw new Error('Modul grundlagen: Element #' + id + ' fehlt.'); return el; };
+const sv = (tag, attrs, text) => {
+  const el = document.createElementNS(NS, tag);
+  for (const [key, value] of Object.entries(attrs || {})) if (value != null && value !== false) el.setAttribute(key, value);
+  if (text != null) el.textContent = text;
+  return el;
+};
+const fmt = KA.fmt, C = KA.COLORS;
+const FILL = {f: '#d5e1fb', p: '#e4dbf8', g: '#f9d9cb', ok: '#cdecd9', gold: '#fbf0cf'};
+const lerp = (a, b, t) => a + (b - a) * t;
+const unit = t => Math.min(1, Math.max(0, t));
+const hatch = (defs, id, angle, col) => {
+  const p = sv('pattern', {id, width: 9, height: 9, patternUnits: 'userSpaceOnUse', patternTransform: `rotate(${angle})`});
+  p.append(sv('line', {x1: 4.5, y1: 0, x2: 4.5, y2: 9, stroke: col, 'stroke-width': 2.4}));
+  defs.append(p);
+};
+/** Text in eine eigene SVG-Ebene schreiben, mit weißem Rand für Lesbarkeit. */
+const writer = layer => (x, y, str, o = {}) => {
+  const node = sv('text', {x, y, 'text-anchor': o.anchor || 'middle', 'dominant-baseline': 'central', fill: o.color || C.ink, 'font-size': o.size || 16, 'font-weight': o.weight || 700, class: o.math ? 'mt' : null, 'font-style': o.italic ? 'italic' : null,
+    stroke: o.halo === false ? null : '#fff', 'stroke-width': o.halo === false ? null : 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round', transform: o.rot ? `rotate(${o.rot} ${x} ${y})` : null, opacity: o.opacity}, str);
+  layer.append(node);
+  return node;
+};
+
+/* ---------- Kopf: zwei Schreibweisen, eine Parabel ---------- */
+{
+  const plot = KA.plot('#hero-plot', {x: [-5, 5], y: [-4, 6], label: 'Parabel mit verschiebbarem Scheitel, dazu Scheitelpunktform und Normalform'});
+  const S = plot.handle({x: 2, y: -3, snap: 1, name: 'Scheitel verschieben', bounds: {x: [-4, 4], y: [-3, 5]}, onMove: show});
+  function show() {
+    const d = S.x, e = S.y;
+    byId('hero-sp').textContent = 'Scheitelpunktform: f(x) = ' + KA.vertexForm(1, d, e);
+    byId('hero-nf').textContent = 'Normalform: f(x) = ' + KA.quad(1, -2 * d, d * d + e);
+    byId('hero-bridge').textContent = d === 0 ? 'Ohne Klammer: Der Scheitel liegt auf der y-Achse.' : 'Die Brücke: ' + KA.vertexForm(1, d, 0) + ' = ' + KA.quad(1, -2 * d, d * d);
+  }
+  plot.render(g => {
+    const d = S.x, e = S.y, q = d * d + e;
+    g.vline(d, {color: 'p', opacity: .45});
+    g.fn(x => (x - d) ** 2 + e, {color: 'f'});
+    if (d !== 0 && q <= 6) g.point(0, q, {color: 'f', label: '(0 | ' + fmt(q) + ')', pos: d > 0 ? 'ne' : 'nw'});
+  });
+  show();
+}
+
+/* ---------- Flächenmodell für die drei binomischen Formeln ---------- */
+{
+  const OX = 46, OY = 44, W = 436, H = 424;
+  // Kästchengröße passt sich an, damit die Figur die Fläche füllt (größte Seite höchstens 360 Einheiten).
+  let U = 36;
+  const host = byId('fm-stage');
+  const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img'});
+  const defs = sv('defs');
+  hatch(defs, 'fm-h1', 45, '#9a84dd'); hatch(defs, 'fm-h2', -45, '#9a84dd'); hatch(defs, 'fm-miss', 45, '#e6aea7');
+  const layer = sv('g');
+  svg.append(defs, layer); host.append(svg);
+  const txt = writer(layer);
+  const st = {mode: 'plus', a: 4, b: 2, err: false, step: 3, flip: 0};
+  const px = u => OX + u * U, py = u => OY + u * U;
+  const rect = (x, y, w, h, o = {}) => layer.appendChild(sv('rect', {x: px(x), y: py(y), width: w * U, height: h * U, rx: 2, fill: o.fill || 'none', stroke: o.stroke, 'stroke-width': o.sw || 2, 'stroke-dasharray': o.dash, opacity: o.opacity}));
+  const cellPath = (x0, y0, w, h) => { let d = ''; for (let i = 1; i < w; i++) d += `M${x0 + i * U} ${y0}v${h * U}`; for (let j = 1; j < h; j++) d += `M${x0} ${y0 + j * U}h${w * U}`; return d; };
+  const cells = (x, y, w, h) => { const d = cellPath(px(x), py(y), w, h); if (d) layer.append(sv('path', {d, stroke: '#1f3a34', 'stroke-opacity': .17, 'stroke-width': 1, fill: 'none'})); };
+  /** Beschriftung in ein Feld setzen: waagerecht, sonst senkrecht, sonst Kurzform. */
+  const place = (x, y, w, h, full, short, col) => {
+    const need = full.length * 8.6 + 8, cx = px(x + w / 2), cy = py(y + h / 2);
+    if (w * U >= need) txt(cx, cy, full, {color: col});
+    else if (h * U >= need) txt(cx, cy, full, {color: col, rot: -90});
+    else txt(cx, cy, short, {color: col, size: 15});
+  };
+  const tag = (x, y, w, h, name, value, col) => place(x, y, w, h, name + ' = ' + value, String(value), col);
+  const dim = (side, from, to, label) => {
+    if (side === 'top') {
+      const y = OY - 12;
+      layer.append(sv('path', {d: `M${px(from) + 3} ${y}H${px(to) - 3}M${px(from) + 3} ${y - 4}v8M${px(to) - 3} ${y - 4}v8`, stroke: C.dim, 'stroke-width': 1.5, fill: 'none'}));
+      txt(px((from + to) / 2), y - 14, label, {italic: true, math: true, halo: false, weight: 600});
+    } else {
+      const x = OX - 12;
+      layer.append(sv('path', {d: `M${x} ${py(from) + 3}V${py(to) - 3}M${x - 4} ${py(from) + 3}h8M${x - 4} ${py(to) - 3}h8`, stroke: C.dim, 'stroke-width': 1.5, fill: 'none'}));
+      txt(x - 14, py((from + to) / 2), label, {italic: true, math: true, halo: false, weight: 600, rot: -90});
+    }
+  };
+
+  function draw() {
+    layer.textContent = '';
+    const {a, b} = st, m = a - b, n = a + b;
+    U = Math.min(60, Math.floor(360 / (st.mode === 'minus' ? a : n)));
+    if (st.mode === 'plus') {
+      const side = st.err ? {fill: 'url(#fm-miss)', stroke: C.no, dash: '7 5'} : {fill: FILL.p, stroke: C.p};
+      rect(0, 0, a, a, {fill: FILL.f, stroke: C.f});
+      rect(a, 0, b, a, side); rect(0, a, a, b, side);
+      rect(a, a, b, b, {fill: FILL.g, stroke: C.g});
+      cells(0, 0, n, n);
+      rect(0, 0, n, n, {stroke: C.ink, sw: 2.6});
+      tag(0, 0, a, a, 'a²', a * a, C.f);
+      if (st.err) { place(a, 0, b, a, 'fehlt', '?', C.no); place(0, a, a, b, 'fehlt', '?', C.no); }
+      else { tag(a, 0, b, a, 'a·b', a * b, C.p); tag(0, a, a, b, 'a·b', a * b, C.p); }
+      tag(a, a, b, b, 'b²', b * b, C.g);
+      dim('top', 0, a, 'a'); dim('top', a, n, 'b'); dim('left', 0, a, 'a'); dim('left', a, n, 'b');
+      svg.setAttribute('aria-label', st.err
+        ? `Quadrat mit der Seitenlänge ${n}. Eingefärbt sind nur a Quadrat mit ${a * a} und b Quadrat mit ${b * b} Kästchen. Zwei Rechtecke mit je ${a * b} Kästchen fehlen.`
+        : `Quadrat mit der Seitenlänge ${n}, zerlegt in a Quadrat mit ${a * a} Kästchen, zwei Rechtecke mit je ${a * b} Kästchen und b Quadrat mit ${b * b} Kästchen.`);
+    } else if (st.mode === 'minus') {
+      const s = st.step;
+      rect(0, 0, a, a, {fill: FILL.f});
+      if (s >= 1) rect(m, 0, b, a, {fill: '#fff'});
+      if (s >= 2) rect(0, m, a, b, {fill: '#fff'});
+      if (s >= 1) rect(m, 0, b, a, {fill: 'url(#fm-h1)'});
+      if (s >= 2) rect(0, m, a, b, {fill: 'url(#fm-h2)'});
+      if (s === 3) { rect(0, 0, m, m, {fill: FILL.ok}); rect(m, m, b, b, {fill: FILL.g}); }
+      cells(0, 0, a, a);
+      rect(0, 0, a, a, {stroke: C.ink, sw: 2.6});
+      if (s >= 1) rect(m, 0, b, a, {stroke: C.p, dash: '7 5'});
+      if (s >= 2) rect(0, m, a, b, {stroke: C.p, dash: '7 5'});
+      if (s === 2) rect(m, m, b, b, {stroke: C.no, sw: 3.4});
+      if (s === 3) { rect(0, 0, m, m, {stroke: C.ok, sw: 2.6}); rect(m, m, b, b, {stroke: C.g, sw: 3.4}); }
+      if (s === 0) tag(0, 0, a, a, 'a²', a * a, C.f);
+      if (s === 1) { place(0, 0, m, a, 'noch ' + m * a, String(m * a), C.f); place(m, 0, b, a, '− a·b', '−ab', C.p); }
+      if (s >= 2) { place(m, 0, b, m, '− a·b', '−ab', C.p); place(0, m, m, b, '− a·b', '−ab', C.p); }
+      if (s === 2) { place(0, 0, m, m, 'noch ' + m * m, String(m * m), C.f); place(m, m, b, b, 'doppelt', '2×', C.no); }
+      if (s === 3) { tag(0, 0, m, m, '(a − b)²', m * m, C.ok); place(m, m, b, b, '+ b²', '+b²', C.g); }
+      dim('top', 0, m, 'a − b'); dim('top', m, a, 'b'); dim('left', 0, m, 'a − b'); dim('left', m, a, 'b');
+      svg.setAttribute('aria-label', `Quadrat mit der Seitenlänge a gleich ${a}. Rechts und unten wird je ein Streifen der Breite b gleich ${b} weggenommen. Die Streifen überlappen sich in einer Ecke mit ${b * b} Kästchen. Übrig bleibt ein Quadrat mit ${m * m} Kästchen.`);
+    } else {
+      const t = st.flip;
+      rect(0, 0, a, a, {stroke: C.dim, dash: '5 5', sw: 1.5});
+      rect(m, m, b, b, {fill: 'url(#fm-miss)', stroke: C.no, dash: '7 5'});
+      place(m, m, b, b, '− b²', '−b²', C.no);
+      rect(0, 0, a, m, {fill: FILL.f, stroke: C.f});
+      cells(0, 0, a, m);
+      const g = sv('g', {transform: `translate(${px(lerp(m / 2, a + b / 2, t))} ${py(lerp(m + b / 2, m / 2, t))}) rotate(${-90 * t})`});
+      g.append(sv('rect', {x: -m * U / 2, y: -b * U / 2, width: m * U, height: b * U, rx: 2, fill: FILL.p, stroke: C.p, 'stroke-width': 2}));
+      const inner = cellPath(-m * U / 2, -b * U / 2, m, b);
+      if (inner) g.append(sv('path', {d: inner, stroke: '#1f3a34', 'stroke-opacity': .17, 'stroke-width': 1, fill: 'none'}));
+      layer.append(g);
+      if (t === 1) { rect(0, 0, n, m, {stroke: C.ink, sw: 2.6}); place(0, 0, n, m, `(a + b) · (a − b) = ${n * m}`, String(n * m), C.ink); }
+      if (t === 0) place(0, 0, a, m, `a² − b² = ${a * a - b * b}`, String(a * a - b * b), C.ink);
+      dim('top', 0, a, 'a'); if (t >= .5) dim('top', a, n, 'b');
+      dim('left', 0, m, 'a − b'); if (t < .5) dim('left', m, a, 'b');
+      svg.setAttribute('aria-label', t === 1
+        ? `Rechteck mit den Seiten a plus b gleich ${n} und a minus b gleich ${m}. Es hat ${n * m} Kästchen, genauso viele wie a Quadrat minus b Quadrat.`
+        : `Quadrat mit der Seitenlänge ${a}, aus dem unten rechts ein Quadrat mit der Seitenlänge ${b} herausgeschnitten ist. Es bleiben ${a * a - b * b} Kästchen.`);
+    }
+    paint();
+  }
+
+  const chip = (id, cls, text) => { const el = byId(id); el.className = cls; el.textContent = text; el.hidden = !text; };
+  function paint() {
+    const {a, b} = st, m = a - b, n = a + b, ab = a * b;
+    let gen, num, say, cap;
+    if (st.mode === 'plus') {
+      if (st.err) {
+        gen = '<b class="c-no">a² + b²</b> ≠ (a + b)²';
+        num = `${a * a} + ${b * b} = ${a * a + b * b}, aber ${n}² = ${n * n}`;
+        say = `Es fehlen die zwei Rechtecke: 2 · ${ab} = ${2 * ab} Kästchen.`;
+      } else {
+        gen = '(a + b)² = <b class="c-f">a²</b> + <b class="c-p">2ab</b> + <b class="c-g">b²</b>';
+        num = `(${a} + ${b})² = <b class="c-f">${a * a}</b> + <b class="c-p">2 · ${ab}</b> + <b class="c-g">${b * b}</b> = ${n * n}`;
+        say = 'Vier Teile füllen das große Quadrat lückenlos aus.';
+      }
+      cap = 'Das große Quadrat hat die Seitenlänge a + b. Jedes Kästchen ist eine Flächeneinheit, du kannst also nachzählen.';
+      chip('fm-r1', 'c-f', `a² = ${a * a}`); chip('fm-r2', st.err ? 'c-no' : 'c-p', st.err ? `fehlt: 2 · ${ab} = ${2 * ab}` : `2 · a·b = ${2 * ab}`); chip('fm-r3', 'c-g', `b² = ${b * b}`); chip('fm-r4', '', `(a + b)² = ${n * n}`);
+    } else if (st.mode === 'minus') {
+      gen = '(a − b)² = <b class="c-f">a²</b> − <b class="c-p">2ab</b> + <b class="c-g">b²</b>';
+      num = [`a² = ${a * a}`, `${a * a} − ${ab} = ${a * a - ab}`, `${a * a} − ${ab} − ${ab} = ${fmt(a * a - 2 * ab)}`, `(${a} − ${b})² = <b class="c-f">${a * a}</b> − <b class="c-p">2 · ${ab}</b> + <b class="c-g">${b * b}</b> = ${m * m}`][st.step];
+      say = ['Start: das ganze Quadrat a².', 'Rechts ist ein Streifen mit der Fläche a · b weggenommen.', `Die Rechnung sagt ${fmt(a * a - 2 * ab)}, im Bild bleiben aber ${m * m} Kästchen. Die Ecke b² wurde zweimal abgezogen.`, 'Die doppelt abgezogene Ecke b² kommt einmal zurück. Jetzt stimmen Rechnung und Bild.'][st.step];
+      cap = 'Schraffiert ist, was von a² weggenommen wird. Die Ecke unten rechts liegt in beiden Streifen.';
+      chip('fm-r1', 'c-f', `a² = ${a * a}`); chip('fm-r2', 'c-p', `a·b = ${ab}`); chip('fm-r3', 'c-g', `b² = ${b * b}`); chip('fm-r4', 'c-ok', `(a − b)² = ${m * m}`);
+    } else {
+      gen = '(a + b) · (a − b) = <b class="c-f">a²</b> − <b class="c-g">b²</b>';
+      num = st.flip === 1 ? `(${a} + ${b}) · (${a} − ${b}) = ${n} · ${m} = ${n * m}` : `<b class="c-f">${a * a}</b> − <b class="c-g">${b * b}</b> = ${a * a - b * b}`;
+      say = st.flip === 1 ? 'Dieselben Kästchen, jetzt als Rechteck mit den Seiten a + b und a − b.' : 'Aus a² ist unten rechts die Ecke b² herausgeschnitten.';
+      cap = 'Das violette Rechteck wandert von unten an die rechte Seite. Die Fläche bleibt dabei gleich.';
+      chip('fm-r1', 'c-f', `a² = ${a * a}`); chip('fm-r2', 'c-g', `b² = ${b * b}`); chip('fm-r3', '', `a + b = ${n}`); chip('fm-r4', '', `a − b = ${m}`);
+    }
+    byId('fm-calc').innerHTML = `<span class="gen">${gen}</span><span class="num">${num}</span><span class="say">${say}</span>`;
+    byId('fm-cap').textContent = cap;
+  }
+
+  const sa = KA.slider('#fm-controls', {label: 'a', aria: 'Länge a', min: 2, max: 6, step: 1, value: st.a, onInput: v => { st.a = v; fit('a'); draw(); }});
+  const sb = KA.slider('#fm-controls', {label: 'b', aria: 'Länge b', min: 1, max: 4, step: 1, value: st.b, onInput: v => { st.b = v; fit('b'); draw(); }});
+  /** In den Bildern mit a − b muss b kleiner als a sein. */
+  function fit(changed) {
+    if (st.mode === 'plus' || st.b < st.a) return;
+    if (changed === 'b') { st.a = st.b + 1; sa.set(st.a, true); } else { st.b = st.a - 1; sb.set(st.b, true); }
+  }
+  const errBtn = byId('fm-err'), flipBtn = byId('fm-flip');
+  errBtn.addEventListener('click', () => { st.err = !st.err; errBtn.setAttribute('aria-pressed', String(st.err)); errBtn.textContent = st.err ? 'Fehler ausblenden' : 'Fehler zeigen: nur a² + b²'; draw(); });
+  KA.seg('#fm-steps', {label: 'Schritt beim Wegnehmen', value: 3, options: [{value: 0, label: '1 · a²'}, {value: 1, label: '2 · − ab'}, {value: 2, label: '3 · − ab'}, {value: 3, label: '4 · + b²'}], onChange: v => { st.step = +v; draw(); }});
+  let flipRun = 0;
+  flipBtn.addEventListener('click', () => {
+    const target = st.flip < .5 ? 1 : 0, run = ++flipRun;
+    flipBtn.textContent = target ? 'Zurücklegen' : 'Rechteck umlegen';
+    KA.tween(st.flip, target, 900, v => { if (run === flipRun) { st.flip = v; draw(); } });
+  });
+  KA.seg('#fm-mode', {label: 'Welche binomische Formel?', value: 'plus', options: [{value: 'plus', label: '(a + b)²'}, {value: 'minus', label: '(a − b)²'}, {value: 'diff', label: '(a + b)(a − b)'}], onChange: v => {
+    st.mode = v; flipRun++; st.flip = 0; flipBtn.textContent = 'Rechteck umlegen';
+    byId('fm-x-plus').hidden = v !== 'plus'; byId('fm-x-minus').hidden = v !== 'minus'; byId('fm-x-diff').hidden = v !== 'diff';
+    fit('a'); draw();
+  }});
+  draw();
+}
+
+/* ---------- Scheitel ziehen, strecken, Vorzeichen-Falle ---------- */
+{
+  const AV = [-3, -2, -1.5, -1, -0.5, -0.25, 0.25, 0.5, 1, 1.5, 2, 3];
+  let a = 1, lens = 'shift';
+  const plot = KA.plot('#sp-plot', {x: [-6, 6], y: [-5, 7], label: 'Parabel mit ziehbarem Scheitel und einstellbarem Streckfaktor a'});
+  const S = plot.handle({x: 3, y: -2, snap: 1, name: 'Scheitel S verschieben', bounds: {x: [-5, 5], y: [-4, 6]}, onMove: show});
+  const CAP = {
+    shift: 'Gestrichelt: die Normalparabel y = x². Der orange Pfeil zeigt die Verschiebung zur Seite, der grüne die Verschiebung in der Höhe.',
+    stretch: 'Gestrichelt: die Normalparabel mit demselben Scheitel. Die goldene Treppe zeigt: 1 nach rechts, a nach oben oder unten.',
+    trap: 'Rot gestrichelt: die Parabel mit vertauschtem Vorzeichen in der Klammer. Sie ist das Spiegelbild an der y-Achse.',
+  };
+  plot.render(g => {
+    const d = S.x, e = S.y;
+    if (lens === 'shift') {
+      g.fn(x => x * x, {color: 'dim', dash: true, width: 2});
+      g.point(0, 0, {color: 'dim', r: 4});
+      if (d) g.seg(0, 0, e === 0 ? d - Math.sign(d) * .42 : d, 0, {color: 'g', arrow: true, width: 3.2});
+      if (e) g.seg(d, 0, d, e - Math.sign(e) * .42, {color: 'ok', arrow: true, width: 3.2});
+    } else if (lens === 'stretch') {
+      if (a !== 1) g.fn(x => (x - d) ** 2 + e, {color: 'dim', dash: true, width: 2});
+      g.seg(d, e, d + 1, e, {color: 'gold', width: 2.8});
+      g.seg(d + 1, e, d + 1, e + a, {color: 'gold', width: 2.8, arrow: true});
+      g.label(d + .5, e, '1', {color: 'gold', pos: a > 0 ? 's' : 'n', size: 13});
+      g.label(d + 1, e + a / 2, 'a = ' + fmt(a), {color: 'gold', pos: 'e', size: 13});
+    } else if (d) {
+      g.fn(x => a * (x + d) ** 2 + e, {color: 'no', dash: true, width: 2.2});
+      g.point(-d, e, {color: 'no', open: true});
+      g.label(-d, e, KA.vertexForm(1, -d, 0), {color: 'no', pos: (a > 0 ? 's' : 'n') + (d > 0 ? 'w' : 'e'), size: 13});
+      g.label(d, e - (a > 0 ? .3 : -.3), KA.vertexForm(1, d, 0), {color: 'f', pos: (a > 0 ? 's' : 'n') + (d > 0 ? 'e' : 'w'), size: 13});
+    }
+    g.fn(x => a * (x - d) ** 2 + e, {color: 'f'});
+  });
+  function show() {
+    const d = S.x, e = S.y, bracket = d === 0 ? 'x' : '(x ' + (d > 0 ? '− ' : '+ ') + Math.abs(d) + ')';
+    byId('sp-term').textContent = 'f(x) = ' + KA.vertexForm(a, d, e);
+    byId('sp-vertex').textContent = KA.point(d, e, 'S');
+    byId('sp-dx').textContent = d === 0 ? 'keine Klammer: nicht zur Seite verschoben' : `${bracket}: ${Math.abs(d)} nach ${d > 0 ? 'rechts' : 'links'}`;
+    byId('sp-dy').textContent = e === 0 ? 'nichts hinter der Klammer: Höhe 0' : `${e > 0 ? '+' : '−'} ${Math.abs(e)}: ${Math.abs(e)} nach ${e > 0 ? 'oben' : 'unten'}`;
+    const form = Math.abs(a) === 1 ? 'so breit wie die Normalparabel' : Math.abs(a) > 1 ? 'schmaler als die Normalparabel' : 'breiter als die Normalparabel';
+    byId('sp-a').textContent = `a = ${fmt(a)}: nach ${a > 0 ? 'oben' : 'unten'} geöffnet, ${form}`;
+    byId('sp-why').textContent = d === 0 && lens === 'trap'
+      ? 'Der Scheitel liegt auf der y-Achse, also gibt es in der Klammer kein Vorzeichen zum Vertauschen. Zieh S nach links oder rechts.'
+      : d === 0
+      ? 'Ohne Klammer steht dort nur x². Das Quadrat ist null für x = 0, also liegt der Scheitel auf der y-Achse.'
+      : `Die Klammer ${bracket} wird null für x = ${fmt(d)}. Das Quadrat ist dort 0 und überall sonst größer. Deshalb liegt der Scheitel bei x = ${fmt(d)}, also ${Math.abs(d)} nach ${d > 0 ? 'rechts' : 'links'}.`;
+    byId('sp-cap').textContent = CAP[lens];
+  }
+  KA.seg('#sp-lens', {label: 'Was soll das Bild zeigen?', value: lens, options: [{value: 'shift', label: 'Verschieben'}, {value: 'trap', label: 'Vorzeichen-Falle'}, {value: 'stretch', label: 'Strecken'}], onChange: v => { lens = v; show(); plot.update(); }});
+  KA.slider('#sp-controls', {label: 'a', aria: 'Streckfaktor a', min: 0, max: AV.length - 1, step: 1, value: AV.indexOf(1), format: i => fmt(AV[i]), onInput: i => { a = AV[i]; show(); plot.update(); }});
+  let run = 0;
+  byId('sp-presets').addEventListener('click', evt => {
+    const btn = evt.target.closest('button');
+    if (!btn) return;
+    const fromX = S.x, fromY = S.y, toX = +btn.dataset.d, toY = +btn.dataset.e, mine = ++run;
+    KA.tween(0, 1, 700, t => {
+      if (mine !== run) return;
+      S.x = +lerp(fromX, toX, t).toFixed(3); S.y = +lerp(fromY, toY, t).toFixed(3);
+      if (t === 1) show();
+      plot.update();
+    });
+  });
+  show();
+}
+
+/* ---------- Quadratische Ergänzung als Legebild ---------- */
+{
+  const W = 460, H = 292, U = 30, XL = 120, OX = 42, OY = 40, TX = 376, TY = OY;
+  const PRE = {a: [6, 5], b: [4, 5], c: [2, 1]};
+  const cur = {p: 6, q: 5, stage: 0, index: 0, view: 'bild'};
+  const host = byId('qe-bild');
+  const svg = sv('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img'});
+  const defs = sv('defs');
+  hatch(defs, 'qe-miss', 45, '#e6aea7');
+  const layer = sv('g');
+  svg.append(defs, layer); host.append(svg);
+  const txt = writer(layer);
+  const box = (x, y, w, h, o = {}) => layer.appendChild(sv('rect', {x, y, width: w, height: h, rx: o.rx ?? 2, fill: o.fill || 'none', stroke: o.stroke, 'stroke-width': o.sw || 2, 'stroke-dasharray': o.dash, opacity: o.opacity}));
+  const bracket = (side, from, to, label) => {
+    if (side === 'top') {
+      const y = OY - 11;
+      layer.append(sv('path', {d: `M${from + 3} ${y}H${to - 3}M${from + 3} ${y - 4}v8M${to - 3} ${y - 4}v8`, stroke: C.dim, 'stroke-width': 1.5, fill: 'none'}));
+      txt((from + to) / 2, y - 13, label, {italic: true, math: true, halo: false, weight: 600, size: 17});
+    } else {
+      const x = OX - 11;
+      layer.append(sv('path', {d: `M${x} ${from + 3}V${to - 3}M${x - 4} ${from + 3}h8M${x - 4} ${to - 3}h8`, stroke: C.dim, 'stroke-width': 1.5, fill: 'none'}));
+      txt(x - 14, (from + to) / 2, label, {italic: true, math: true, halo: false, weight: 600, size: 17, rot: -90});
+    }
+  };
+
+  function texts(p, q) {
+    const h = p / 2, c = h * h, e = q - c;
+    const rest = e < 0 ? `Im Bild füllen die ${q} Kästchen die Ecke nur zum Teil: ${-e} Felder bleiben leer.`
+      : e > 0 ? `Im Bild ist die Ecke voll, und ${e === 1 ? 'ein Kästchen bleibt' : e + ' Kästchen bleiben'} übrig.`
+      : 'Im Bild ist die Ecke damit genau gefüllt.';
+    return [
+      [`f(x) = ${KA.quad(1, p, q)}`, `Im Bild: ein Quadrat mit der Fläche x², ein Streifen mit der Fläche ${p} · x und ${q === 1 ? 'ein einzelnes Kästchen' : q + ' einzelne Kästchen'}.`],
+      [`= x² + 2 · ${h} · x + ${q}`, `Halbiere den Streifen: ${p} : 2 = ${h}. Ein halber Streifen wandert nach unten. So entsteht fast ein Quadrat mit der Seitenlänge x + ${h}.`],
+      [`= x² + ${p}x <b class="c-gold">+ ${c}</b> <b class="c-no">− ${c}</b> + ${q}`, `Zum vollen Quadrat fehlt die Ecke ${h} · ${h} = ${c}. Du ergänzt ${c} und ziehst ${c} sofort wieder ab. So ändert sich der Wert des Terms nicht.`],
+      [`= (x + ${h})² − ${c} + ${q}`, `${KA.quad(1, p, c)} ist die erste binomische Formel, rückwärts gelesen.`],
+      [`= ${KA.vertexForm(1, -h, e)}`, `Fasse zusammen: −${c} + ${q} = ${fmt(e)}. ${rest}`],
+      [`Scheitel ${KA.point(-h, e, 'S')}`, `In der Klammer steht + ${h}, also ist x = −${h}. ${e ? 'Die Zahl dahinter übernimmst du unverändert.' : 'Hinter der Klammer steht nichts, also ist y = 0.'}`],
+    ];
+  }
+  function writeSteps() {
+    texts(cur.p, cur.q).forEach(([line, why], i) => { byId('qe-l' + i).innerHTML = line; byId('qe-w' + i).textContent = why; });
+  }
+
+  function draw() {
+    layer.textContent = '';
+    const {p, q} = cur, h = p / 2, c = h * h, e = q - c, s = cur.stage, hw = h * U;
+    const t1 = unit(s), t2 = unit(s - 1), t3 = unit(s - 2), t4 = unit(s - 3);
+    const cx0 = OX + XL, cy0 = OY + XL;
+    // Quadrat x²
+    box(OX, OY, XL, XL, {fill: FILL.f, stroke: C.f});
+    txt(OX + XL / 2, OY + XL / 2, 'x²', {color: C.f, size: 24, math: true, italic: true, weight: 600});
+    // Ecke (h mal h Felder)
+    if (t2 > 0) for (let i = 0; i < c; i++) box(cx0 + (i % h) * U, cy0 + Math.floor(i / h) * U, U, U, {fill: FILL.gold, stroke: C.gold, sw: 1.4, dash: '4 3', opacity: t2, rx: 0});
+    // fester halber Streifen
+    box(cx0, OY, hw, XL, {fill: FILL.p, stroke: C.p});
+    let lines = '';
+    for (let i = 1; i < h; i++) lines += `M${cx0 + i * U} ${OY}v${XL}`;
+    if (lines) layer.append(sv('path', {d: lines, stroke: C.p, 'stroke-opacity': .35, 'stroke-width': 1, fill: 'none'}));
+    // wandernder halber Streifen
+    const mx = lerp(cx0 + hw * 1.5, OX + XL / 2, t1), my = lerp(OY + XL / 2, cy0 + hw / 2, t1);
+    const piece = sv('g', {transform: `translate(${mx} ${my}) rotate(${90 * t1})`});
+    piece.append(sv('rect', {x: -hw / 2, y: -XL / 2, width: hw, height: XL, rx: 2, fill: FILL.p, stroke: C.p, 'stroke-width': 2}));
+    let inner = '';
+    for (let i = 1; i < h; i++) inner += `M${-hw / 2 + i * U} ${-XL / 2}v${XL}`;
+    if (inner) piece.append(sv('path', {d: inner, stroke: C.p, 'stroke-opacity': .35, 'stroke-width': 1, fill: 'none'}));
+    layer.append(piece);
+    // Beschriftung der Streifen
+    if (t1 < .5) txt(cx0 + hw, OY + XL / 2, `${p} · x`, {color: C.p, math: true, size: 18});
+    else {
+      txt(cx0 + hw / 2, OY + XL / 2, `${h} · x`, {color: C.p, math: true, size: 18, rot: hw < 56 ? -90 : null});
+      txt(mx, my, `${h} · x`, {color: C.p, math: true, size: 18});
+    }
+    // Einerkästchen: wandern ab Schritt 5 in die Ecke
+    const fill = Math.min(q, c);
+    for (let i = 0; i < q; i++) {
+      const fromX = TX + (i % 2) * U, fromY = TY + Math.floor(i / 2) * U;
+      const toX = i < fill ? cx0 + (i % h) * U : fromX, toY = i < fill ? cy0 + Math.floor(i / h) * U : fromY;
+      box(lerp(fromX, toX, t4) + 3, lerp(fromY, toY, t4) + 3, U - 6, U - 6, {fill: FILL.g, stroke: C.g, sw: 1.6, rx: 4});
+    }
+    if (t4 === 1) for (let i = fill; i < c; i++) box(cx0 + (i % h) * U + 2, cy0 + Math.floor(i / h) * U + 2, U - 4, U - 4, {fill: 'url(#qe-miss)', stroke: C.no, sw: 1.6, dash: '4 3', rx: 3});
+    if (t4 < 1) txt(TX + U, TY + Math.ceil(q / 2) * U + 14, q === 1 ? '1 Kästchen' : q + ' Kästchen', {color: C.g, size: 14});
+    // volles Quadrat ab Schritt 4
+    if (t3 > 0) box(OX, OY, XL + hw, XL + hw, {stroke: C.ink, sw: 2.8, opacity: t3});
+    // Maße
+    if (t3 >= .5) { bracket('top', OX, cx0 + hw, `x + ${h}`); bracket('left', OY, cy0 + hw, `x + ${h}`); }
+    else {
+      bracket('top', OX, cx0, 'x'); bracket('left', OY, cy0, 'x');
+      if (t1 < .5) bracket('top', cx0, cx0 + 2 * hw, String(p));
+      else { bracket('top', cx0, cx0 + hw, String(h)); bracket('left', cy0, cy0 + hw, String(h)); }
+    }
+    // Buchführung neben der Ecke
+    const nx = cx0 + hw + 14, ny = cy0 + hw / 2;
+    if (t2 > 0 && t4 < 1) {
+      txt(nx, ny - 11, `+ ${c} ergänzt`, {color: C.gold, anchor: 'start', size: 15, opacity: t2});
+      txt(nx, ny + 11, `− ${c} zum Ausgleich`, {color: C.no, anchor: 'start', size: 15, opacity: t2});
+    } else if (t4 === 1) {
+      txt(nx, ny - 11, e < 0 ? `${-e} ${e === -1 ? 'Feld bleibt' : 'Felder bleiben'} leer` : e > 0 ? `${e} ${e === 1 ? 'Kästchen bleibt' : 'Kästchen bleiben'} übrig` : 'Die Ecke ist genau voll', {color: e < 0 ? C.no : C.ok, anchor: 'start', size: 15});
+      txt(nx, ny + 11, `Rest: −${c} + ${q} = ${fmt(e)}`, {anchor: 'start', size: 15});
+    }
+    svg.setAttribute('aria-label', [
+      `Legebild: ein Quadrat x mal x, daneben ein Streifen mit der Fläche ${p} mal x und ${q} einzelne Kästchen.`,
+      `Legebild: Der Streifen ist halbiert. Eine Hälfte liegt rechts neben dem Quadrat, die andere darunter. Unten rechts fehlt eine Ecke.`,
+      `Legebild: Die fehlende Ecke mit ${c} Feldern ist ergänzt und wird zum Ausgleich wieder abgezogen.`,
+      `Legebild: ein volles Quadrat mit der Seitenlänge x plus ${h}.`,
+      `Legebild: Die ${q} Kästchen liegen in der Ecke mit ${c} Feldern. Rest ${fmt(e)}.`,
+    ][Math.min(4, Math.round(s))]);
+    paint();
+  }
+  function paint() {
+    const {p, q} = cur, h = p / 2, c = h * h, e = q - c, i = cur.index;
+    const now = ['f(x) = ' + KA.quad(1, p, q), `f(x) = x² + 2 · ${h} · x + ${q}`, `f(x) = x² + ${p}x + ${c} − ${c} + ${q}`, `f(x) = (x + ${h})² − ${c} + ${q}`, 'f(x) = ' + KA.vertexForm(1, -h, e), 'f(x) = ' + KA.vertexForm(1, -h, e)][i];
+    byId('qe-now').textContent = now;
+    const bal = byId('qe-bal');
+    bal.className = i === 5 ? 'c-p' : i >= 2 ? 'c-gold' : '';
+    bal.textContent = i === 5 ? KA.point(-h, e, 'S') : i === 4 ? `Rest: −${c} + ${q} = ${fmt(e)}` : i >= 2 ? `ergänzt: + ${c}, Ausgleich: − ${c}` : i === 1 ? `Hälfte von ${p}: ${h}` : `Streifen: ${p} · x, lose: ${q}`;
+    byId('qe-cap').textContent = cur.view === 'parabel'
+      ? `Blau: die Parabel f mit dem Scheitel ${KA.point(-h, e, 'S')}. Rot gestrichelt: die Parabel, die entsteht, wenn man die ergänzte ${c} nicht wieder abzieht. Sie liegt ${c} zu hoch.`
+      : 'Blau: x². Violett: die beiden halben Streifen. Gold gestrichelt: die ergänzte Ecke. Orange: die losen Kästchen aus dem Term.';
+  }
+
+  const plot = KA.plot('#qe-plot', {x: [-8, 2], y: [-5, 6], label: 'Parabel zur quadratischen Ergänzung mit Scheitel'});
+  plot.render(g => {
+    const {p, q} = cur, h = p / 2, c = h * h, e = q - c;
+    g.fn(x => (x + h) ** 2 + q, {color: 'no', dash: true, width: 2, opacity: .8});
+    g.point(-h, q, {color: 'no', open: true, r: 4.5});
+    g.label(-h, q, 'ohne − ' + c, {color: 'no', pos: 'n', size: 13});
+    g.seg(-h, q - .25, -h, e + .45, {color: 'no', arrow: true, width: 2.2});
+    if (c >= 4) g.label(-h, (q + e) / 2, '− ' + c, {color: 'no', pos: 'w', size: 13});
+    g.fn(x => (x + h) ** 2 + e, {color: 'f'});
+    g.point(0, q, {color: 'f', label: '(0 | ' + fmt(q) + ')', pos: 'e'});
+    g.point(-h, e, {label: KA.point(-h, e, 'S'), pos: 's'});
+  });
+
+  const viewSeg = KA.seg('#qe-view', {label: 'Ansicht', value: 'bild', options: [{value: 'bild', label: 'Legebild'}, {value: 'parabel', label: 'Parabel'}], onChange: setView});
+  function setView(v) {
+    cur.view = v;
+    host.hidden = v !== 'bild';
+    byId('qe-plot-wrap').hidden = v !== 'parabel';
+    byId('qe-fig').classList.toggle('is-parabel', v === 'parabel');
+    paint();
+  }
+  let run = 0;
+  const steps = byId('steps-qe');
+  steps.addEventListener('ka:step', evt => {
+    const i = evt.detail.index, target = Math.min(i, 4), from = cur.stage, mine = ++run;
+    const wasLast = cur.index === 5;
+    cur.index = i;
+    if (i === 5 && cur.view !== 'parabel') viewSeg.set('parabel');
+    else if (i < 5 && wasLast && cur.view !== 'bild') viewSeg.set('bild');
+    if (Math.abs(target - from) > 1.01) { cur.stage = target; draw(); return; }
+    KA.tween(from, target, 750, v => { if (mine === run) { cur.stage = v; draw(); } });
+  });
+  KA.seg('#qe-pick', {label: 'Beispiel wählen', value: 'a', options: [{value: 'a', label: 'x² + 6x + 5'}, {value: 'b', label: 'x² + 4x + 5'}, {value: 'c', label: 'x² + 2x + 1'}], onChange: v => {
+    [cur.p, cur.q] = PRE[v];
+    writeSteps();
+    plot.update();
+    if (typeof steps.kaGoto !== 'function') throw new Error('Modul grundlagen: Schrittfolge #steps-qe ist nicht initialisiert.');
+    run++; cur.stage = 0;
+    steps.kaGoto(0);
+    if (cur.view !== 'bild') viewSeg.set('bild');
+    draw();
+  }});
+  writeSteps();
+  setView('bild');
+  draw();
+}
+
+/* ---------- Faktor a aus Scheitel und Punkt ---------- */
+{
+  const plot = KA.plot('#ap-plot', {x: [-4, 8], y: [-5, 7], label: 'Parabel durch den Scheitel S und den Punkt P, beide verschiebbar'});
+  const S = plot.handle({x: 2, y: -3, snap: 1, color: 'p', name: 'Scheitel S verschieben', onMove: show});
+  const P = plot.handle({x: 4, y: 5, snap: 1, color: 'g', name: 'Punkt P verschieben', onMove: show});
+  const FAMILY = [-2, -1, -0.5, 0.25, 0.5, 1, 2, 4];
+  plot.render(g => {
+    const dx = P.x - S.x, dy = P.y - S.y;
+    for (const k of FAMILY) g.fn(x => k * (x - S.x) ** 2 + S.y, {color: 'dim', width: 1.2, opacity: .3, under: true});
+    if (dx !== 0) {
+      const a = dy / (dx * dx);
+      g.fn(x => (x - S.x) ** 2 + S.y, {color: 'dim', dash: true, width: 2});
+      g.seg(S.x, S.y, P.x, S.y, {color: 'p', dash: true, width: 2});
+      if (dy) g.seg(P.x, S.y, P.x, P.y, {color: 'g', width: 3.4});
+      if (a !== 1) g.point(P.x, S.y + dx * dx, {color: 'dim', open: true, r: 5});
+      if (a !== 0) g.fn(x => a * (x - S.x) ** 2 + S.y, {color: 'f'});
+    }
+    const up = dx !== 0 && dy < 0;
+    g.label(S.x, S.y + (up ? .35 : -.35), 'S', {color: 'p', pos: up ? 'n' : 's'});
+    g.label(P.x + (dx >= 0 ? .35 : -.35), P.y, 'P', {color: 'g', pos: dx >= 0 ? 'e' : 'w'});
+  });
+  function show() {
+    const dx = P.x - S.x, dy = P.y - S.y, sq = dx * dx;
+    byId('ap-s').textContent = KA.point(S.x, S.y, 'S');
+    byId('ap-p').textContent = KA.point(P.x, P.y, 'P');
+    const run = byId('ap-run'), ref = byId('ap-ref'), out = byId('ap-a'), term = byId('ap-term');
+    ref.hidden = term.hidden = dx === 0;
+    if (dx === 0) {
+      run.textContent = dy === 0 ? 'P liegt auf S.' : 'P liegt genau über oder unter S.';
+      out.textContent = dy === 0 ? 'Jedes a passt. Zieh P vom Scheitel weg.' : 'Dort kann kein zweiter Punkt der Parabel liegen. Zieh P zur Seite.';
+      return;
+    }
+    const a = dy / sq, exact = Math.abs(a * 100 - Math.round(a * 100)) < 1e-9;
+    run.textContent = `von S zu P: ${Math.abs(dx)} zur Seite, ${dy === 0 ? '0 in der Höhe' : Math.abs(dy) + ' nach ' + (dy > 0 ? 'oben' : 'unten')}`;
+    ref.textContent = `Normalparabel: ${Math.abs(dx)}² = ${sq} nach oben`;
+    out.textContent = `a = ${fmt(dy)} : ${sq} ${exact ? '=' : '≈'} ${fmt(a)}`;
+    term.textContent = a === 0 ? 'a = 0: Das wäre eine waagerechte Gerade, keine Parabel.' : `f(x) ${exact ? '=' : '≈'} ${KA.vertexForm(+a.toFixed(2), S.x, S.y)}`;
+  }
+  byId('ap-reset').addEventListener('click', () => { S.set(2, -3, true); P.set(4, 5, true); plot.update(); show(); });
+  show();
+}
+
+/* ---------- Aufgabe: Scheitel an die richtige Stelle ziehen ---------- */
+{
+  const el = byId('s2-answer'), task = el.closest('.ka-task');
+  const plot = KA.plot('#s2-plot', {x: [-6, 6], y: [-5, 5], label: 'Normalparabel, deren Scheitel du verschieben kannst'});
+  const store = h => { el.kaValue = h.x + '|' + h.y; byId('s2-read').textContent = 'Dein Scheitel: ' + KA.point(h.x, h.y, 'S'); };
+  const S = plot.handle({x: 0, y: 0, snap: 1, name: 'Scheitel der Parabel verschieben', bounds: {x: [-5, 5], y: [-4, 4]}, onMove: store});
+  plot.render(g => g.fn(x => (x - S.x) ** 2 + S.y, {color: task.classList.contains('is-solved') ? 'ok' : 'f'}));
+  store(S);
+  el.kaJudge = value => {
+    const [x, y] = value.split('|').map(Number);
+    if (x === -3 && y === -2) return {ok: true, msg: '(x + 3) wird null für x = −3, und die − 2 schiebt um 2 nach unten.'};
+    if (x === 0 && y === 0) return {ok: false, msg: 'Zieh zuerst den violetten Punkt dorthin, wo der Scheitel liegen muss.'};
+    if (x === 3 && y === -2) return {ok: false, msg: 'Du bist 3 nach rechts gegangen. Die Klammer (x + 3) wird aber für x = −3 null. Der Scheitel liegt 3 nach links.'};
+    if (x === -3 && y === 2) return {ok: false, msg: 'Die Seite stimmt. Hinter der Klammer steht − 2, also geht es 2 nach unten.'};
+    if (x === 3 && y === 2) return {ok: false, msg: 'Beide Richtungen sind vertauscht: (x + 3) heißt 3 nach links, − 2 heißt 2 nach unten.'};
+    if (Math.abs(x) === 2 && Math.abs(y) === 3) return {ok: false, msg: 'Die Zahl in der Klammer gehört zur x-Richtung, die Zahl dahinter zur y-Richtung.'};
+    if (y === -2) return {ok: false, msg: 'Die Höhe stimmt. Prüfe, für welches x die Klammer (x + 3) null wird.'};
+    if (x === -3) return {ok: false, msg: 'Die x-Koordinate stimmt. Die Zahl hinter der Klammer gibt die Höhe des Scheitels an.'};
+    return {ok: false, msg: 'Noch nicht. Der Scheitel liegt dort, wo die Klammer null wird, und so hoch, wie die Zahl hinter der Klammer angibt.'};
+  };
+  el.addEventListener('ka:restore', evt => {
+    const parts = String(evt.detail || '0|0').split('|').map(Number);
+    if (parts.length !== 2 || parts.some(Number.isNaN)) throw new Error('Modul grundlagen: gespeicherte Antwort für Aufgabe s2 ist unlesbar: ' + evt.detail);
+    S.set(parts[0], parts[1], true); store(S); plot.update();
+  });
+  const repaint = () => plot.update();
+  task.addEventListener('ka:solved', repaint); task.addEventListener('ka:missed', repaint);
+  document.addEventListener('DOMContentLoaded', repaint);
+}
+
+/* ---------- Aufgabe: Gleichung aus dem Graphen ablesen ---------- */
+KA.plot('#a2-plot', {x: [-3, 7], y: [-3, 7], label: 'Nach oben geöffnete Parabel, breiter als die Normalparabel'}).render(g => g.fn(x => .5 * (x - 2) ** 2 - 2, {color: 'f'}));
+
+/* ---------- Nach dem Start der Bibliothek: Eingabehilfe, Lernziele, Testauswertung ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  // x^2 wird beim Tippen zu x², dazu ein Knopf für die Hochzahl.
+  for (const input of document.querySelectorAll('.ka-answer[data-type=expr] input[type=text]')) {
+    input.addEventListener('input', () => {
+      const fixed = input.value.replace(/\^2|\*\*2/g, '²');
+      if (fixed === input.value) return;
+      const pos = input.selectionStart - (input.value.length - fixed.length);
+      input.value = fixed;
+      input.setSelectionRange(pos, pos);
+    });
+    const btn = KA.h('button', {type: 'button', class: 'sq-btn', 'aria-label': 'Hochzahl 2 einfügen', title: 'Hochzahl 2 einfügen'}, KA.h('i', {'aria-hidden': 'true'}), KA.h('b', {'aria-hidden': 'true', text: '2'}));
+    btn.addEventListener('click', () => {
+      const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? start;
+      input.value = input.value.slice(0, start) + '²' + input.value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + 1, start + 1);
+    });
+    input.after(btn);
+  }
+
+  // Lernziele abhaken, sobald alle zugehörigen Aufgaben gelöst sind.
+  const goals = [...document.querySelectorAll('.ka-goals [data-goal]')];
+  const paintGoals = () => {
+    for (const li of goals) {
+      const tasks = [...document.querySelectorAll(`.ka-task[data-goal="${li.dataset.goal}"]`)];
+      if (!tasks.length) throw new Error('Modul grundlagen: Lernziel ohne Aufgaben: ' + li.dataset.goal);
+      li.classList.toggle('is-done', tasks.every(task => task.classList.contains('is-solved')));
+    }
+  };
+  document.addEventListener('ka:progress', paintGoals);
+  paintGoals();
+
+  // Mini-Test: Rückmeldung, sobald alle vier Aufgaben bearbeitet sind.
+  const LINKS = {binome: ['#regeln', 'Drei Formeln, zwei Richtungen'], scheitel: ['#scheitel', 'Scheitelpunktform'], ergaenzung: ['#ergaenzung', 'Quadratische Ergänzung'], aufstellen: ['#aufstellen', 'Gleichung aufstellen']};
+  const test = [...document.querySelectorAll('#test .ka-task')], first = new Map();
+  const result = byId('test-result');
+  const summary = () => {
+    const open = test.filter(task => !task.classList.contains('is-solved'));
+    const tried = test.every(task => first.has(task.dataset.task) || task.classList.contains('is-solved'));
+    result.hidden = !tried;
+    if (!tried) return;
+    result.textContent = '';
+    result.append(KA.h('b', {text: 'Dein Ergebnis'}));
+    if (!open.length) {
+      const clean = test.every(task => first.get(task.dataset.task) === true);
+      result.append(clean ? 'Alle vier Aufgaben auf Anhieb richtig. Das Fundament sitzt, du bist bereit für Modul 2.' : 'Alle vier Aufgaben gelöst. Sieh dir bei den Aufgaben, die nicht sofort geklappt haben, noch einmal den Lösungsweg an.');
+      return;
+    }
+    result.append(`${test.length - open.length} von ${test.length} gelöst. Wiederhole dazu: `);
+    open.forEach((task, i) => { const [href, label] = LINKS[task.dataset.goal]; result.append(i ? ', ' : '', KA.h('a', {href, text: label})); });
+    result.append('.');
+  };
+  for (const task of test) {
+    task.addEventListener('ka:solved', () => { if (!first.has(task.dataset.task)) first.set(task.dataset.task, true); summary(); });
+    task.addEventListener('ka:missed', () => { if (!first.has(task.dataset.task)) first.set(task.dataset.task, false); summary(); });
+  }
+  summary();
+});
+})();
+</script>
+</body>
+</html>

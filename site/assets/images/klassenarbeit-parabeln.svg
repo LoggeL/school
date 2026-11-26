@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1024" width="1536" height="1024">
+  <defs>
+    <pattern id="karo" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#cfdae8" stroke-width="2"/>
+    </pattern>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f3f1e8"/>
+    </linearGradient>
+    <clipPath id="sheet"><rect width="1536" height="1024"/></clipPath>
+  </defs>
+  <rect width="1536" height="1024" fill="url(#shade)"/>
+  <rect width="1536" height="1024" fill="url(#karo)"/>
+  <g clip-path="url(#sheet)">
+    <!-- Geodreieck -->
+    <g transform="translate(1010 742) rotate(-8)" opacity=".5">
+      <path d="M0 250L250 0L500 250Z" fill="#dff0e6" stroke="#235849" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M250 60V250M130 250v-22M190 250v-22M310 250v-22M370 250v-22" stroke="#235849" stroke-width="2.5" opacity=".7"/>
+      <path d="M150 250A100 100 0 0 1 350 250" fill="none" stroke="#235849" stroke-width="2.5" opacity=".7"/>
+    </g>
+    <!-- Achsen -->
+    <g stroke="#3d524a" stroke-width="5" stroke-linecap="round">
+      <path d="M96 640H1452M768 980V60"/>
+      <path d="M1470 640l-30 -14v28zM768 40l-14 30h28z" fill="#3d524a" stroke="none"/>
+      <path d="M480 628v24M576 628v24M672 628v24M864 628v24M960 628v24M1056 628v24M756 544h24M756 448h24M756 352h24M756 736h24M756 832h24M756 928h24" stroke-width="4"/>
+    </g>
+    <g font-family="Georgia,serif" font-size="34" fill="#4c5f57" text-anchor="middle">
+      <text x="864" y="690">1</text><text x="960" y="690">2</text><text x="1056" y="690">3</text><text x="672" y="690">−1</text><text x="576" y="690">−2</text><text x="480" y="690">−3</text>
+      <text x="730" y="556">1</text><text x="730" y="460">2</text><text x="730" y="364">3</text>
+      <text x="1456" y="702" font-style="italic" font-size="40">x</text><text x="808" y="72" font-style="italic" font-size="40">y</text>
+    </g>
+    <!-- Gerade g(x) = x − 1 und Parabel f(x) = x² − 3 -->
+    <path d="M0 1504L1536 -32" stroke="#c2512d" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <path d="M480 64Q768 1792 1056 64" stroke="#2459c4" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <!-- Hilfslinien zu den Schnittpunkten -->
+    <path d="M672 640V832H768M960 640V544H768" fill="none" stroke="#6a4bbf" stroke-width="4" stroke-dasharray="12 10"/>
+    <g fill="#6a4bbf" stroke="#fff" stroke-width="6">
+      <circle cx="672" cy="832" r="19"/><circle cx="960" cy="544" r="19"/>
+    </g>
+    <circle cx="768" cy="928" r="13" fill="#fff" stroke="#2459c4" stroke-width="6"/>
+    <g font-family="Georgia,serif" font-style="italic" font-size="46" stroke="#fff" stroke-width="10" paint-order="stroke" stroke-linejoin="round">
+      <text x="994" y="524" fill="#55389f">S₂(2 | 1)</text>
+      <text x="640" y="842" fill="#55389f" text-anchor="end">S₁(−1 | −2)</text>
+      <text x="452" y="170" fill="#2459c4" text-anchor="end">f(x) = x² − 3</text>
+      <text x="1196" y="424" fill="#c2512d">g(x) = x − 1</text>
+    </g>
+  </g>
+</svg>

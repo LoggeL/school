@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<meta name="robots" content="noindex">
+<title>Bausteine (Referenz) · Klassenarbeit Klasse 10 · school</title>
+<meta name="description" content="Referenzseite mit allen Bausteinen der Lerneinheit.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+</head>
+<!-- data-ka-page = id des Moduls aus KA.MODULES (grundlagen, zeichnen, gleichungen, schnittpunkte, modellieren, probearbeit). -->
+<body class="ka" data-ka-page="demo">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<!-- KOPF: links Text, rechts eine interaktive Figur. Mit class="ka-hero solo" ohne Figur. -->
+<header class="ka-hero">
+  <div>
+    <p class="ka-kicker">Modul 0 · Referenz · 35 Minuten</p>
+    <h1>Eine Überschrift mit <em>einem Akzent.</em></h1>
+    <p class="ka-lead">Ein bis zwei Sätze, die sagen, was man hier lernt und warum es in der Arbeit Punkte bringt.</p>
+    <ul class="ka-goals">
+      <li>Lernziel eins, konkret und überprüfbar</li>
+      <li>Lernziel zwei</li>
+    </ul>
+  </div>
+  <figure class="ka-figure">
+    <div id="hero-plot"></div>
+    <div class="ka-readout" aria-live="polite"><span class="c-f" id="hero-term"></span><span class="c-p" id="hero-vertex"></span></div>
+    <figcaption>Zieh den violetten Punkt. Er ist der Scheitel der Parabel.</figcaption>
+  </figure>
+</header>
+
+<!-- ABSCHNITT mit Erklärung links und Graph rechts -->
+<section class="ka-section" id="erklaerung">
+  <p class="ka-phase"><b>Minute 0 bis 10</b> · Verstehen</p>
+  <h2>Abschnittsüberschrift</h2>
+  <div class="ka-cols">
+    <div>
+      <p>Fließtext mit Mathe im Satz: <span class="m">f(x) = x² − 6x + 5</span>. Farben verbinden Text und Bild: <span class="m c-f">f</span> ist blau, <span class="m c-g">g</span> ist orange, Punkte sind <span class="c-p">violett</span>. Wichtiges bekommt einen <mark>Textmarker</mark>.</p>
+      <p>Brüche und Wurzeln: <span class="m">x = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span></span></p>
+      <div class="ka-formula">f(x) = a · (x − d)² + e<small>Scheitelpunktform mit Scheitel S(d | e)</small></div>
+      <div class="ka-merke"><b>Merke</b>Ein Merksatz steht in diesem Kasten. Kurz halten.</div>
+      <div class="ka-warn"><b>Typischer Fehler</b><span class="m">(x + 3)² ≠ x² + 9</span>. Das gemischte Glied <span class="m">6x</span> fehlt.</div>
+      <div class="ka-idea"><b>Idee</b>Ein Denkanstoß oder eine Beobachtungsfrage.</div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="plot-a"></div>
+      <div class="ka-controls" id="controls-a"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="read-f"></span><span class="c-g" id="read-g"></span><span class="c-p" id="read-s"></span></div>
+      <figcaption>Jede Figur braucht eine Bildunterschrift, die sagt, worauf man achten soll.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Rechnung Schritt für Schritt</h3>
+  <p>Die Schritte erscheinen einzeln. Der Text in <code>data-step</code> beschriftet den Knopf, der diesen Schritt aufdeckt.</p>
+  <div class="ka-steps" id="steps-a">
+    <ol>
+      <li data-step><div class="ka-line"><span>x² − 6x + 5 = 0</span><span class="op">| − 5</span></div><p class="ka-why">Die Zahl ohne x wandert auf die rechte Seite.</p></li>
+      <li data-step="Quadratisch ergänzen"><div class="ka-line"><span>x² − 6x = −5</span><span class="op">| + 9</span></div><p class="ka-why">Die Hälfte von 6 ist 3, und 3² = 9. Addiere 9 auf beiden Seiten.</p></li>
+      <li data-step="Als Binom schreiben"><div class="ka-line"><span>(x − 3)² = 4</span><span class="op">| √</span></div><p class="ka-why">Links steht jetzt die zweite binomische Formel.</p></li>
+      <li data-step="Wurzel ziehen"><div class="ka-line"><span>x − 3 = 2 &nbsp;oder&nbsp; x − 3 = −2</span></div><p class="ka-why">Beim Wurzelziehen gibt es zwei Möglichkeiten.</p></li>
+      <li data-step="Lösungen notieren"><div class="ka-line"><span>x₁ = 5, &nbsp;x₂ = 1, &nbsp;L = {1; 5}</span></div><p class="ka-why">Probe: 25 − 30 + 5 = 0 und 1 − 6 + 5 = 0.</p></li>
+    </ol>
+  </div>
+
+  <h3>Formelwahl</h3>
+  <p>Wo eine Lösungsformel vorkommt, steht dieser Umschalter. Inhalte mit <code>data-if-formel="pq"</code> oder <code>"abc"</code> blendet die Bibliothek passend ein.</p>
+  <div data-ka-formel></div>
+  <div class="ka-formula" data-if-formel="pq">x₁,₂ = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span><small>für x² + px + q = 0</small></div>
+  <div class="ka-formula" data-if-formel="abc">x₁,₂ = <span class="frac"><span>−b ± <span class="sqrt"><span>b² − 4ac</span></span></span><span>2a</span></span><small>für ax² + bx + c = 0</small></div>
+
+  <h3>Wertetabelle</h3>
+  <table class="ka-table"><tr><th>x</th><td>−2</td><td>−1</td><td>0</td><td>1</td><td>2</td></tr><tr><th>x²</th><td>4</td><td>1</td><td>0</td><td>1</td><td>4</td></tr></table>
+</section>
+
+<!-- AUFGABEN: jede .ka-task braucht data-task (eindeutig auf der Seite). data-level 1 bis 3. -->
+<section class="ka-section" id="ueben">
+  <p class="ka-phase"><b>Minute 10 bis 25</b> · Üben</p>
+  <h2>Alle Antworttypen</h2>
+  <div class="ka-tasks">
+
+    <article class="ka-task" data-task="zahl" data-level="1">
+      <h4>Zahl eingeben</h4>
+      <p>Berechne <span class="m">f(3)</span> für <span class="m">f(x) = x² − 2x</span>.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="number" data-answer="3" data-label="f(3) =" data-wrong='{"15":"Du hast 2 · 3 addiert statt abgezogen.", "0":"3² ist 9, nicht 6."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Setze für jedes x die Zahl 3 ein: <span class="m">3² − 2 · 3</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">f(3) = 3² − 2 · 3<br>= 9 − 6<br>= <b>3</b></div></details>
+    </article>
+
+    <article class="ka-task" data-task="menge" data-level="2">
+      <h4>Lösungsmenge</h4>
+      <div class="ka-given"><span>x² − x − 6 = 0</span></div>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="set" data-answer="-2;3" data-wrong='{"2;-3":"Die Beträge stimmen. Prüfe die Vorzeichen mit einer Probe."}'></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">x² − x − 6 = 0<span class="note">p = −1, q = −6</span><br>(x − 3)(x + 2) = 0<br>L = {−2; 3}</div></details>
+    </article>
+
+    <article class="ka-task" data-task="leer" data-level="2">
+      <h4>Keine Lösung</h4>
+      <div class="ka-given"><span>x² + 4 = 0</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="leer"></div></div>
+    </article>
+
+    <article class="ka-task" data-task="punkt" data-level="2">
+      <h4>Punkt und mehrere Punkte</h4>
+      <p>Scheitel von <span class="m">f(x) = (x − 2)² + 1</span> und die Schnittpunkte von <span class="m">y = x²</span> mit <span class="m">y = x + 2</span>.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="point" data-answer="2|1" data-label="S"></div>
+        <div class="ka-answer" data-type="points" data-answer="-1|1;2|4" data-names="S₁,S₂"></div>
+      </div>
+    </article>
+
+    <article class="ka-task" data-task="term" data-level="2">
+      <h4>Term eingeben</h4>
+      <p>Schreibe <span class="m">x² + 6x + 9</span> als Binom. Alternativen trennt <code>||</code>.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="expr" data-answer="(x+3)²||(3+x)²||(x+3)(x+3)" data-label="=" data-wrong='{"(x-3)²":"Achte auf das Vorzeichen in der Mitte: +6x."}'></div></div>
+    </article>
+
+    <article class="ka-task" data-task="wahl" data-level="1">
+      <h4>Auswahl (prüft sofort)</h4>
+      <p>In welche Richtung ist die Parabel <span class="m">f(x) = −2x² + 3</span> geöffnet?</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="choice" data-answer="unten">
+          <button data-value="oben" data-fb="Der Faktor vor x² ist negativ.">nach oben</button>
+          <button data-value="unten" data-fb="Der Faktor −2 ist negativ, also öffnet sie nach unten.">nach unten</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="ka-task" data-task="mehrfach" data-level="2">
+      <h4>Mehrfachauswahl (mit Prüfen-Knopf)</h4>
+      <p>Welche Gleichungen löst du am schnellsten mit dem Nullprodukt?</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-multi data-answer="a;c">
+          <button data-value="a"><span class="m">x² − 5x = 0</span></button>
+          <button data-value="b"><span class="m">x² − 16 = 0</span></button>
+          <button data-value="c"><span class="m">(x − 2)(x + 7) = 0</span></button>
+        </div>
+      </div>
+    </article>
+
+    <article class="ka-task" data-task="selbst" data-level="2">
+      <h4>Auf Papier lösen und selbst vergleichen</h4>
+      <p>Zeichne die Parabel <span class="m">f(x) = (x − 1)² − 2</span> in dein Heft.</p>
+      <details class="ka-solution"><summary>Lösung ansehen</summary><p>Scheitel bei S(1 | −2), von dort 1 nach rechts und 1 nach oben, dann 2 nach rechts und 4 nach oben.</p></details>
+      <div class="ka-answers"><div class="ka-answer" data-type="self"></div></div>
+    </article>
+
+    <article class="ka-task" data-task="tabelle" data-level="1">
+      <h4>Wertetabelle ausfüllen</h4>
+      <table class="ka-table"><tr><th>x</th><td>−1</td><td>0</td><td>1</td></tr><tr><th>x² + 1</th>
+        <td><span class="ka-answer" data-type="number" data-answer="2" data-aria="Wert bei x = −1"></span></td>
+        <td><span class="ka-answer" data-type="number" data-answer="1" data-aria="Wert bei x = 0"></span></td>
+        <td><span class="ka-answer" data-type="number" data-answer="2" data-aria="Wert bei x = 1"></span></td></tr></table>
+    </article>
+  </div>
+</section>
+
+<!-- PROBEARBEIT: nur im Modul probearbeit. Aufgaben brauchen data-points und data-topic (Modul-id). -->
+<section class="ka-section ka-exam" data-ka-exam data-minutes="5" id="probe">
+  <h2>Mini-Probearbeit</h2>
+  <div class="ka-exam-body">
+    <div class="ka-tasks">
+      <article class="ka-task" data-task="p1" data-points="2" data-topic="gleichungen">
+        <div class="ka-given"><span>x² = 49</span></div>
+        <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-7;7"></div></div>
+        <details class="ka-solution"><summary>Lösung</summary><div class="ka-calc">x = ±7, also L = {−7; 7}</div></details>
+      </article>
+      <article class="ka-task" data-task="p2" data-points="3" data-topic="zeichnen">
+        <p>Zeichne <span class="m">f(x) = x² − 4</span> für −3 ≤ x ≤ 3.</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="self"></div></div>
+        <details class="ka-solution"><summary>Lösung</summary><p>Normalparabel, um 4 nach unten verschoben. Nullstellen bei −2 und 2.</p></details>
+      </article>
+    </div>
+  </div>
+</section>
+
+<nav data-ka-next></nav>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+// Kopf: ziehbarer Scheitel. plot.handle() liefert ein Objekt mit x und y.
+{
+  const plot = KA.plot('#hero-plot', {x: [-5, 5], y: [-3, 6], label: 'Parabel mit verschiebbarem Scheitel'});
+  const S = plot.handle({x: 1, y: -2, snap: 0.5, name: 'Scheitel verschieben', onMove: show});
+  function show() {
+    document.getElementById('hero-term').textContent = 'f(x) = ' + KA.vertexForm(1, S.x, S.y);
+    document.getElementById('hero-vertex').textContent = KA.point(S.x, S.y, 'S');
+  }
+  plot.render(g => {
+    g.vline(S.x, {color: 'p', opacity: .5});
+    g.fn(x => (x - S.x) ** 2 + S.y, {color: 'f'});
+  });
+  show();
+}
+// Abschnitt: Regler steuern den Graphen. Alles Sichtbare entsteht in render().
+{
+  const plot = KA.plot('#plot-a', {x: [-4, 5], y: [-4, 7], label: 'Parabel f und Gerade g mit Schnittpunkten'});
+  let m = 1, b = 2;
+  const f = x => x * x, g = x => m * x + b;
+  plot.render(c => {
+    c.fn(f, {color: 'f', label: 'f', labelAt: -2.4, pos: 'w'});
+    c.fn(g, {color: 'g', label: 'g', labelAt: 4, pos: 'se'});
+    const D = m * m + 4 * b;
+    if (D >= 0) for (const x of new Set([(m - Math.sqrt(D)) / 2, (m + Math.sqrt(D)) / 2])) {
+      c.seg(x, 0, x, f(x), {color: 'p', dash: true});
+      c.point(x, f(x), {label: KA.point(x, f(x), 'S'), pos: x < 0 ? 'nw' : 'se'});
+    }
+    document.getElementById('read-f').textContent = 'f(x) = x²';
+    document.getElementById('read-g').textContent = 'g(x) = ' + KA.linear(m, b);
+    document.getElementById('read-s').textContent = D > 0 ? 'zwei Schnittpunkte' : D === 0 ? 'ein Berührpunkt' : 'kein Schnittpunkt';
+  });
+  KA.slider('#controls-a', {label: 'm', min: -3, max: 3, step: 1, value: m, onInput: v => { m = v; plot.update(); }});
+  KA.slider('#controls-a', {label: 'b', min: -4, max: 6, step: 1, value: b, onInput: v => { b = v; plot.update(); }});
+}
+// Schrittfolge mit Bild koppeln: document.getElementById('steps-a').addEventListener('ka:step', e => …e.detail.index…)
+</script>
+</body>
+</html>

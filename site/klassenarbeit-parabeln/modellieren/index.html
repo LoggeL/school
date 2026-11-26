@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<title>Mathematisch modellieren · Klassenarbeit Klasse 10 · school</title>
+<meta name="description" content="Modul 5 der Klassenarbeits-Vorbereitung: Brücken, Würfe und Tore mit Parabeln modellieren. Koordinatensystem wählen, Funktionsgleichung aufstellen, rechnen, Antwortsatz schreiben. Ohne Taschenrechner.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+<style>
+/* Kopf: zwei Brücken, eine Gleichung */
+.ka .mo-kopf{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin:0 0 6px;font-size:13px;color:var(--dim);line-height:1.4}
+.ka .mo-kopf b{font-size:15px;color:var(--ink)}
+.ka .mo-kopf .mo-status{margin-left:auto;font-weight:750;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--line2);color:var(--dim);white-space:nowrap}
+.ka .mo-kopf .mo-status[data-state=ok]{background:var(--ok-wash);color:var(--ok)}
+.ka .mo-kopf .mo-status[data-state=no]{background:var(--no-wash);color:var(--no)}
+.ka .mo-kopf .mo-status[data-state=mid]{background:#f6edd6;color:var(--gold)}
+.ka .mo-hero-fig .ka-plot+.mo-kopf{margin-top:14px}
+.ka .mo-ctl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:12px 0 5px}
+.ka .ka-figure .ka-btn[aria-pressed=true]{background:var(--no-wash);border-color:var(--no);color:var(--no)}
+.ka .ka-cols.mo-bild{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)}
+.ka .ka-section>p+.ka-cols{margin-top:18px}
+/* Aufgabenspalte darf nicht durch lange Rechenzeilen breiter werden als der Bildschirm */
+.ka .ka-tasks{grid-template-columns:minmax(0,1fr)}
+
+/* Vorzeichenregel als zwei Karten */
+.ka .mo-regel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.ka .mo-regel>div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:#fff}
+.ka .mo-regel svg{width:96px;height:58px}
+.ka .mo-regel b{display:block;font-size:15.5px;margin-bottom:2px}
+.ka .mo-regel span{font-size:14px;line-height:1.5;color:var(--dim)}
+.ka .mo-regel .m{color:var(--ink);font-weight:600}
+
+/* Fahrplan in vier Schritten */
+.ka .ka-section .mo-vier{list-style:none;padding:0;margin:14px 0 6px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ka .ka-section .mo-vier li{position:relative;margin:0;padding:14px 14px 15px;border:1px solid var(--line2);border-radius:12px;background:var(--bg);font-size:14px;line-height:1.5;color:var(--dim)}
+.ka .ka-section .mo-vier li i{display:block;font:italic 500 30px/1 var(--math);color:var(--accent);margin-bottom:7px}
+.ka .ka-section .mo-vier li b{display:block;font-size:15.5px;color:var(--ink);margin-bottom:3px;line-height:1.3}
+.ka .ka-section .mo-vier li:not(:last-child)::after{content:"";position:absolute;right:-10px;top:26px;width:8px;height:8px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);transform:rotate(45deg);z-index:1}
+
+/* Wörterbuch Alltag → Mathematik */
+.ka .mo-woerter{width:100%;border-collapse:separate;border-spacing:0 6px;margin:8px 0 4px;font-size:14.5px;line-height:1.4}
+.ka .mo-woerter th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:800;text-align:left;padding:0 12px 2px}
+.ka .mo-woerter td{padding:9px 12px;background:var(--bg);border:1px solid var(--line2);vertical-align:middle}
+.ka .mo-woerter td:first-child{border-right:0;border-radius:10px 0 0 10px;width:52%}
+.ka .mo-woerter td:last-child{border-radius:0 10px 10px 0;font-weight:650;position:relative;padding-left:26px}
+.ka .mo-woerter td:last-child::before{content:"→";position:absolute;left:4px;top:50%;transform:translateY(-50%);color:var(--accent);font-weight:800}
+
+/* Lückensatz und Zeilenfragen */
+.ka .mo-satz{display:grid;gap:8px;margin:10px 0 2px}
+.ka .mo-zeile{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:15.5px;line-height:1.4}
+.ka .mo-zeile .ka-answer[data-type=choice]{width:auto}
+.ka .mo-frage{padding:10px 0;border-top:1px dashed var(--karo)}
+.ka .mo-frage:first-of-type{border-top:0;padding-top:4px}
+.ka .mo-frage>p{margin:0 0 6px;line-height:1.5}
+.ka .mo-teil{display:grid;grid-template-columns:1.7em minmax(0,1fr);gap:0 4px;padding:9px 0;border-top:1px dashed var(--karo)}
+.ka .mo-teil:first-of-type{border-top:0}
+.ka .mo-teil>b{color:var(--accent);font-weight:800}
+.ka .mo-teil p{line-height:1.55}
+.ka .mo-teil .ka-answers{margin:8px 0 0}
+.ka .ka-task .ka-figure{margin:10px 0 4px}
+.ka .mo-lage{font-family:School,system-ui,sans-serif;font-size:14.5px;line-height:1.45;width:100%}
+.ka .mo-lage b{font-weight:700}
+.ka .mo-stand{margin-top:14px;font-weight:700;color:var(--brand)}
+.ka .mo-stand:empty{display:none}
+.ka #ursprung-plot svg>g:nth-of-type(3),.ka #ursprung-plot svg>g:nth-of-type(4){display:none}
+.ka .mo-antwort{font-style:italic}
+
+/* Spickzettel */
+.ka .mo-spick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.ka .mo-spick>div{border:1px solid var(--karo);border-radius:12px;padding:15px 18px;background:
+  linear-gradient(var(--karo2) 1px,transparent 1px) 0 0/100% 22px,
+  linear-gradient(90deg,var(--karo2) 1px,transparent 1px) 0 0/22px 100%,#fff}
+.ka .mo-spick>div.wide{grid-column:1/-1}
+.ka .ka-section .mo-spick h3{margin:0 0 6px;font-size:16.5px;color:var(--brand)}
+.ka .ka-section .mo-spick ol,.ka .ka-section .mo-spick ul{padding-left:1.2em;font-size:14.5px;line-height:1.55}
+.ka .ka-section .mo-spick p{font-size:14.5px;line-height:1.55}
+.ka .mo-spick .ka-formula{margin:8px 0;font-size:clamp(18px,2.6vw,22px);padding:9px 8px;background:#fffd}
+.ka .mo-spick dl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 14px;margin:0;font-size:14.5px;line-height:1.45}
+.ka .mo-spick dt{color:var(--dim)}
+.ka .mo-spick dd{margin:0;font-weight:650}
+
+@media(max-width:820px){
+  .ka .ka-cols.mo-bild{grid-template-columns:minmax(0,1fr)}
+  .ka .ka-section .mo-vier{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ka .ka-section .mo-vier li:nth-child(2)::after{display:none}
+}
+@media(max-width:640px){
+  .ka .mo-regel,.ka .mo-spick{grid-template-columns:minmax(0,1fr)}
+  .ka .mo-regel>div{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:12px}
+  .ka .mo-regel svg{width:76px;height:46px}
+  .ka .mo-woerter{font-size:14px}
+  .ka .mo-woerter td{padding:8px 9px}
+  .ka .mo-woerter td:last-child{padding-left:22px}
+  .ka .mo-spick dl{grid-template-columns:minmax(0,1fr)}
+  .ka .mo-spick dd{margin-bottom:5px}
+  /* Fahrplan: auf dem Handy untereinander, Nummer links */
+  .ka .ka-section .mo-vier{grid-template-columns:minmax(0,1fr);gap:8px}
+  .ka .ka-section .mo-vier li{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:10px;padding:11px 14px}
+  .ka .ka-section .mo-vier li i{grid-row:1/3;margin:0;font-size:26px}
+  .ka .ka-section .mo-vier li::after{display:none}
+  /* Rechnungen: Randnotizen in eine eigene Zeile, damit nichts seitlich scrollt */
+  .ka .ka-calc{font-size:16px;padding:6px 8px 6px 10px}
+  .ka .ka-calc .op{margin-left:8px}
+  .ka .ka-calc .note{display:block;margin:0 0 2px}
+  .ka .ka-calc .note+br{display:none}
+}
+</style>
+</head>
+<body class="ka" data-ka-page="modellieren">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<header class="ka-hero">
+  <div>
+    <p class="ka-kicker">Modul 5 · Teil 2 · 20 Minuten</p>
+    <h1>Aus einer Brücke wird <em>eine Gleichung.</em></h1>
+    <p class="ka-lead">Sachaufgaben sehen jedes Mal anders aus. Der Weg bleibt derselbe: Skizze mit Koordinatensystem, Funktionsgleichung, Rechnung, Antwortsatz. Du übst ihn an Brücken, Würfen und Toren.</p>
+    <ul class="ka-goals" id="ziele">
+      <li data-tasks="heft satz m1">Du begründest mit dem Vorzeichen vor x², ob eine Parabel zu einem Tragseil oder zu einem Bogen gehört.</li>
+      <li data-tasks="bogen-a fahrbahn ursprung m2">Du legst den Ursprung fest und berechnest den Faktor a aus einem Punkt.</li>
+      <li data-tasks="uebersetzen tor m3 m4">Du übersetzt Sachfragen in Scheitel, Nullstelle, Funktionswert oder Gleichung.</li>
+      <li data-tasks="antwortsatz balkon m5">Du sortierst unpassende Lösungen aus und schreibst einen Antwortsatz mit Einheit.</li>
+    </ul>
+    <p class="ka-small" style="margin-top:14px">Die Minuten sind ein Richtwert. Wird es knapp, lass die Aufgaben mit dem Etikett „Knobeln“ zuerst aus und hol sie später nach.</p>
+  </div>
+  <figure class="ka-figure mo-hero-fig">
+    <div class="mo-kopf"><b>Hängebrücke</b><span>Typ wie die Ponte 25 de Abril in Lissabon</span><span class="mo-status" id="hero-st-h"></span></div>
+    <div id="hero-haenge"></div>
+    <div class="mo-kopf"><b>Bogenbrücke</b><span>Typ wie die Ponte Dom Luís I in Porto</span><span class="mo-status" id="hero-st-b"></span></div>
+    <div id="hero-bogen"></div>
+    <div class="ka-controls" id="hero-controls"></div>
+    <div class="ka-readout" aria-live="polite"><span class="c-f" id="hero-term"></span><span id="hero-sign"></span><span id="hero-fit"></span></div>
+    <figcaption>Schieb den Regler für a. Dieselbe Parabel <span class="m">y = a · x²</span> liegt über beiden Brücken, der Scheitel sitzt jeweils im Ursprung. Bei welchem a passt sie zum Tragseil, bei welchem zum Bogen? Alle Maße sind vereinfachte Modellwerte in Metern, keine echten Abmessungen.</figcaption>
+  </figure>
+</header>
+
+<!-- ============ Abschnitt 1 ============ -->
+<section class="ka-section" id="bruecken">
+  <p class="ka-phase"><b>Minute 0 bis 8</b> · Entdecken und rechnen</p>
+  <h2>Vier Schritte und zwei Brücken</h2>
+  <p>In deinem Heft steht die Antwort auf eine Brückenaufgabe: <mark>„… gehört zur Ponte 25 de Abril, da der Koeffizient vor dem x² positiv ist und die Parabel nach oben geöffnet ist.“</mark> Das Bild oben zeigt, warum das stimmt. Ein Tragseil hängt durch. Ein Brückenbogen wölbt sich nach oben. Über die Richtung entscheidet allein das Vorzeichen von a.</p>
+
+  <div class="mo-regel">
+    <div>
+      <svg viewBox="0 0 96 58" aria-hidden="true"><path d="M10 8v44M86 8v44M4 46h88" stroke="#8e3221" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M10 10Q48 62 86 10" stroke="#bf4a30" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+      <div><b>Tragseil hängt durch</b><span>Parabel nach oben geöffnet, Koeffizient vor x² positiv: <span class="m">a &gt; 0</span></span></div>
+    </div>
+    <div>
+      <svg viewBox="0 0 96 58" aria-hidden="true"><path d="M4 12h88M4 52h14M78 52h14" stroke="#435763" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M14 52Q48 -24 82 52" stroke="#5f7684" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+      <div><b>Bogen wölbt sich</b><span>Parabel nach unten geöffnet, Koeffizient vor x² negativ: <span class="m">a &lt; 0</span></span></div>
+    </div>
+  </div>
+
+  <h3>Der Fahrplan für jede Sachaufgabe</h3>
+  <ol class="mo-vier">
+    <li><i>1</i><b>Skizze und Koordinatensystem</b>Wo liegt der Ursprung? Was bedeuten x und y, in welcher Einheit?</li>
+    <li><i>2</i><b>Funktionsgleichung</b>Ansatz wählen, einen Punkt einsetzen, a berechnen. Oder die gegebene Gleichung verstehen.</li>
+    <li><i>3</i><b>Rechnen</b>Die Frage übersetzen: Scheitel, Nullstelle, Funktionswert oder Gleichung?</li>
+    <li><i>4</i><b>Antwortsatz</b>Ganzer Satz mit Einheit. Passt das Ergebnis zur Situation?</li>
+  </ol>
+
+  <h3>Schritt 1 am Bild: Wohin mit dem Ursprung?</h3>
+  <div class="ka-cols mo-bild">
+    <div>
+      <p>Modell einer Hängebrücke mit vereinfachten Werten: Die Pfeiler stehen <b>200&nbsp;m</b> auseinander. An den Pfeilern ist das Seil <b>50&nbsp;m</b> höher als an seinem tiefsten Punkt. In der Mitte hängt es <b>20&nbsp;m</b> über der Fahrbahn.</p>
+      <div class="ka-idea"><b>Beobachte</b>Schalte unter dem Bild zwischen den drei Ursprüngen um und verschiebe das Lineal. Welche Zahlen ändern sich? Was bleibt immer gleich?</div>
+      <details><summary>Das solltest du sehen</summary><p>Die Brücke bleibt, wo sie ist. Nur das Achsenkreuz wandert, und mit ihm ändern sich die Gleichung und die Koordinaten von A und P. Die Höhe des Seils über der Fahrbahn bleibt immer gleich.</p></details>
+      <p style="margin-top:12px">Am wenigsten Arbeit hast du, wenn der Ursprung im Scheitel liegt. Dann lautet der Ansatz <span class="m">y = a · x²</span> und nur a fehlt noch.</p>
+
+      <h3>Schritte 2 bis 4: Gleichung aufstellen und rechnen</h3>
+      <p>Frage: Wie hoch hängt das Seil 40&nbsp;m neben der Mitte über seinem tiefsten Punkt?</p>
+      <div class="ka-steps" id="steps-bruecke">
+        <ol>
+          <li data-step><div class="ka-line"><span>Ursprung im tiefsten Punkt</span><span>⇒ &nbsp;y = a · x²</span></div><p class="ka-why"><b>Koordinatensystem:</b> Der Scheitel liegt im Ursprung. Die Parabel ist weder nach rechts noch nach oben verschoben.</p></li>
+          <li data-step="Punkt suchen"><div class="ka-line"><span class="c-g">A(100 | 50)</span><span>liegt auf dem Seil</span></div><p class="ka-why"><b>Punkt:</b> Vom Scheitel bis zum Pfeiler ist es die halbe Strecke, also 100&nbsp;m. Dort ist das Seil 50&nbsp;m höher.</p></li>
+          <li data-step="Punkt einsetzen"><div class="ka-line"><span>50 = a · 100²</span></div><div class="ka-line"><span>50 = a · 10 000</span><span class="op">| : 10 000</span></div><p class="ka-why"><b>Einsetzen:</b> x = 100 und y = 50 in y = a · x².</p></li>
+          <li data-step="a berechnen"><div class="ka-line"><span>a = <span class="frac"><span>50</span><span>10 000</span></span> = <span class="frac"><span>1</span><span>200</span></span> = 0,005</span></div><div class="ka-line"><span class="c-f">y = 0,005x²</span></div><p class="ka-why"><b>Funktionsgleichung:</b> a ist positiv. Das passt, denn das Seil hängt durch.</p></li>
+          <li data-step="Seilhöhe berechnen"><div class="ka-line"><span>y = 0,005 · 40² = 0,005 · 1600 = 8</span></div><p class="ka-why"><b>Rechnen:</b> 40&nbsp;m neben der Mitte heißt x = 40. Kopfrechnen: 5 · 1600 = 8000, dann das Komma drei Stellen nach links.</p></li>
+          <li data-step="Antwortsatz"><div class="ka-line"><span class="mo-antwort">40&nbsp;m neben der Mitte hängt das Seil 8&nbsp;m über seinem tiefsten Punkt.</span></div><p class="ka-why"><b>Antwort und Probe:</b> 8&nbsp;m liegt zwischen 0&nbsp;m in der Mitte und 50&nbsp;m am Pfeiler. Das ist plausibel. Über der Fahrbahn sind es 8&nbsp;m + 20&nbsp;m = 28&nbsp;m.</p></li>
+        </ol>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="ks-plot"></div>
+      <p class="mo-ctl" id="ks-origin-label">Ursprung liegt</p>
+      <div id="ks-origin"></div>
+      <div class="ka-controls" id="ks-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="ks-term"></span><span class="c-g" id="ks-a"></span><span class="c-p" id="ks-p"></span><span id="ks-fest"></span></div>
+      <figcaption>Der goldene Ring markiert den Ursprung. Das violette Lineal misst das Seil an einer Stelle. Zieh es im Bild oder nutze den Regler. Vereinfachte Modellwerte in Metern.</figcaption>
+    </figure>
+  </div>
+
+  <div class="ka-merke"><b>Merke</b>Der Ansatz hängt davon ab, wo der Scheitel im Koordinatensystem liegt. Scheitel im Ursprung: <span class="m">y = a · x²</span>. Scheitel auf der y-Achse in der Höhe e: <span class="m">y = a · x² + e</span>. Scheitel irgendwo bei <span class="m">S(d | e)</span>: <span class="m">y = a · (x − d)² + e</span>. Den Faktor a bekommst du immer gleich: einen zweiten Punkt einsetzen und nach a auflösen, wie beim Scheitelpunkt aufstellen in <a href="/klassenarbeit-parabeln/grundlagen/">Modul 1</a>.</div>
+
+  <div class="ka-cols even">
+    <div class="ka-warn" style="margin:0"><b>Typische Fehler beim Einsetzen</b>
+      <p><b>Ganze Breite statt halber.</b> Falsch: <span class="m">50 = a · 200²</span>, also <span class="m">a = 0,00125</span>. Richtig: Vom Scheitel bis zum Pfeiler sind es 100&nbsp;m, also <span class="m">50 = a · 100²</span>.</p>
+      <p><b>x und y vertauscht.</b> Falsch: <span class="m">100 = a · 50²</span>, also <span class="m">a = 0,04</span>. Richtig: Der Abstand 100 gehört zu x, die Höhe 50 gehört zu y.</p>
+      <p><b>Kein Ursprung festgelegt.</b> Ohne Ursprung weiß niemand, welcher Punkt gemeint ist. Schreibe immer einen Satz wie: „Ursprung im tiefsten Punkt des Seils, x und y in Metern.“</p>
+      <p>Die Probe dauert zehn Sekunden: Liegt A(100 | 50) auf deiner Kurve?</p>
+    </div>
+    <figure class="ka-figure">
+      <div id="fehler-plot"></div>
+      <p class="mo-ctl">Welche Rechnung?</p>
+      <div id="fehler-seg"></div>
+      <div class="ka-readout" aria-live="polite"><span id="fehler-rechnung"></span><span id="fehler-folge"></span></div>
+      <figcaption>So sehen die beiden Fehler am Bild aus. Die falsche Kurve verfehlt den Aufhängepunkt A am rechten Pfeiler.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks">
+
+    <article class="ka-task" data-task="heft" data-level="1">
+      <h4>Welche Brücke?</h4>
+      <p>Auf einem Arbeitsblatt sind eine Hängebrücke und eine Bogenbrücke abgebildet. Zu einer von beiden gehört die Funktion <span class="m">f(x) = 0,005x²</span>. Welche Antwort bekommt die volle Punktzahl?</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-answer="a">
+          <button data-value="a" data-fb="So begründest du in der Arbeit: Vorzeichen nennen, Öffnung nennen.">Zur Hängebrücke, da der Koeffizient vor x² positiv ist und die Parabel nach oben geöffnet ist.</button>
+          <button data-value="b" data-fb="Ein positiver Koeffizient öffnet die Parabel nach oben. Ein Bogen ist nach unten geöffnet.">Zur Bogenbrücke, da der Koeffizient vor x² positiv ist und die Parabel nach unten geöffnet ist.</button>
+          <button data-value="c" data-fb="Die Brücke stimmt, die Begründung nicht. Die Größe von a sagt nur, wie steil die Parabel ist. Über die Richtung entscheidet das Vorzeichen.">Zur Hängebrücke, da der Koeffizient vor x² sehr klein ist.</button>
+          <button data-value="d" data-fb="Ohne x und ohne Zahl liegt der Scheitel im Ursprung. Über die Richtung sagt das nichts. Schau auf das Vorzeichen vor x².">Zur Bogenbrücke, da in der Gleichung nur x² vorkommt.</button>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Stell den Regler im Bild ganz oben auf a = 0,005. Über welcher Brücke liegt die Kurve genau richtig?</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><p>Vor x² steht 0,005. Das ist positiv, also ist die Parabel nach oben geöffnet. Nach oben geöffnet ist das durchhängende Tragseil der Hängebrücke.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="satz" data-level="1" data-success="Genau dieser Satzbau steht auch in deinem Heft.">
+      <h4>Begründung wie im Heft</h4>
+      <p>Setze die Begründung für <span class="m">g(x) = −0,01x²</span> zusammen.</p>
+      <div class="mo-satz">
+        <div class="mo-zeile"><span><span class="m">g</span> gehört zur</span>
+          <div class="ka-answer" data-type="choice" data-answer="bogen" aria-label="Brückentyp wählen">
+            <button data-value="haenge" data-fb="Ein Tragseil hängt durch. Dazu passt nur eine nach oben geöffnete Parabel.">Hängebrücke,</button>
+            <button data-value="bogen">Bogenbrücke,</button>
+          </div></div>
+        <div class="mo-zeile"><span>da der Koeffizient vor x²</span>
+          <div class="ka-answer" data-type="choice" data-answer="negativ" aria-label="Vorzeichen wählen">
+            <button data-value="positiv" data-fb="Vor x² steht −0,01. Das Vorzeichen ist negativ.">positiv</button>
+            <button data-value="negativ">negativ</button>
+          </div><span>ist</span></div>
+        <div class="mo-zeile"><span>und die Parabel nach</span>
+          <div class="ka-answer" data-type="choice" data-answer="unten" aria-label="Öffnungsrichtung wählen">
+            <button data-value="oben" data-fb="Ein negativer Koeffizient öffnet die Parabel nach unten.">oben</button>
+            <button data-value="unten">unten</button>
+          </div><span>geöffnet ist.</span></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Lies zuerst das Vorzeichen vor x² ab. Daraus folgt die Öffnung, daraus der Brückentyp.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><p><span class="m">g</span> gehört zur Bogenbrücke, da der Koeffizient vor x² negativ ist und die Parabel nach unten geöffnet ist.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="bogen-a" data-level="2">
+      <h4>Bogenbrücke: Faktor a berechnen</h4>
+      <p>Modell einer Bogenbrücke mit vereinfachten Werten: Der Bogen ist am Boden <b>100&nbsp;m</b> breit und in der Mitte <b>25&nbsp;m</b> hoch. Der Ursprung liegt im höchsten Punkt des Bogens, x und y in Metern. Der Ansatz lautet <span class="m">y = a · x²</span>.</p>
+      <div class="mo-teil"><b>a)</b><div><p>Welche Koordinaten hat der rechte Fußpunkt F des Bogens?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="point" data-answer="50|-25" data-label="F" data-wrong='{"100|-25":"100 m ist die ganze Breite. Vom Scheitel bis zum Fuß ist es nur die Hälfte.","50|25":"Der Fuß liegt 25 m unter dem Scheitel. Unter dem Ursprung ist y negativ.","100|25":"Zwei Dinge: Vom Scheitel bis zum Fuß sind es nur 50 m, und der Fuß liegt unter dem Ursprung, also ist y negativ.","-50|-25":"Das ist der linke Fußpunkt. Gefragt ist der rechte."}'></div></div></div></div>
+      <div class="mo-teil"><b>b)</b><div><p>Berechne a.</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="-0.01" data-tol="0.00001" data-label="a =" data-wrong='{"0.01":"Der Betrag stimmt. Der Bogen ist aber nach unten geöffnet, also muss a negativ sein.","-0.0025":"Du hast x = 100 eingesetzt. Vom Scheitel bis zum Fuß sind es nur 50 m.","0.0025":"Du hast x = 100 eingesetzt, es sind aber nur 50 m bis zum Fuß. Außerdem muss a negativ sein.","-0.5":"Du hast durch 50 geteilt. In der Gleichung steht aber 50² = 2500.","-0.08":"Du hast x und y vertauscht. Der Abstand 50 gehört zu x, die Höhe −25 zu y.","0.08":"Du hast x und y vertauscht. Der Abstand 50 gehört zu x, die Höhe −25 zu y.","-100":"Aus −25 = a · 2500 folgt a = −25 : 2500, nicht 2500 : 25.","-0.1":"Prüfe die Division: 25 : 2500 = 1 : 100 = 0,01."}'></div></div></div></div>
+      <div class="mo-teil"><b>c)</b><div><p>Wie viel tiefer als der Scheitel liegt der Bogen 30&nbsp;m neben der Mitte?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="9" data-unit="m" data-aria="Höhenunterschied in Metern" data-wrong='{"-9":"Rechnerisch stimmt y = −9. Gefragt ist aber, wie viel tiefer der Bogen liegt: 9 m.","0.3":"Du hast 30 nicht quadriert. Es ist 30² = 900.","-0.3":"Du hast 30 nicht quadriert. Es ist 30² = 900.","90":"0,01 · 900 = 9. Das Komma wandert zwei Stellen nach links.","16":"16 m ist die Höhe über dem Boden. Gefragt ist der Abstand zum Scheitel."}'></div></div></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Skizziere den Bogen mit dem Ursprung im höchsten Punkt. Der Fuß liegt rechts unten: halbe Breite nach rechts, ganze Höhe nach unten.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Setze F in den Ansatz ein: <span class="m">−25 = a · 50²</span>, also <span class="m">−25 = a · 2500</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">a) F(50 | −25)<span class="note">halbe Breite, 25&nbsp;m unter dem Scheitel</span><br>b) −25 = a · 50²<br>−25 = a · 2500<span class="op">| : 2500</span><br>a = −<span class="frac"><span>25</span><span>2500</span></span> = −<span class="frac"><span>1</span><span>100</span></span> = <b>−0,01</b><br>c) y = −0,01 · 30² = −0,01 · 900 = −9</div><p>Antwort: 30&nbsp;m neben der Mitte liegt der Bogen 9&nbsp;m tiefer als im Scheitel. a ist negativ, das passt zum Bogen.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="fahrbahn" data-level="2">
+      <h4>Anderer Ursprung, gleiche Brücke</h4>
+      <p>Für die Hängebrücke aus dem Bild liegt der Ursprung jetzt <b>auf der Fahrbahn</b>, genau unter dem tiefsten Punkt des Seils. Das Seil hängt dort 20&nbsp;m über der Fahrbahn.</p>
+      <div class="mo-teil"><b>a)</b><div><p>Welche Gleichung beschreibt das Seil?</p>
+        <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="plus">
+          <button data-value="null" data-fb="Diese Gleichung gilt nur, wenn der Ursprung im tiefsten Punkt des Seils liegt."><span class="m">y = 0,005x²</span></button>
+          <button data-value="minus" data-fb="Der Scheitel liegt 20 m über dem Ursprung, nicht darunter."><span class="m">y = 0,005x² − 20</span></button>
+          <button data-value="plus" data-fb="Der Scheitel liegt jetzt bei S(0 | 20)."><span class="m">y = 0,005x² + 20</span></button>
+          <button data-value="rechts" data-fb="Das verschiebt die Parabel um 20 nach rechts. Das Seil liegt aber 20 höher."><span class="m">y = 0,005 · (x − 20)²</span></button>
+        </div></div></div></div>
+      <div class="mo-teil"><b>b)</b><div><p>Wie hoch über der Fahrbahn hängt das Seil 60&nbsp;m neben der Mitte?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="38" data-unit="m" data-aria="Höhe über der Fahrbahn in Metern" data-wrong='{"18":"18 m ist die Höhe über dem tiefsten Punkt des Seils. Die Fahrbahn liegt 20 m tiefer, also kommen 20 m dazu.","20.3":"Du hast 60 nicht quadriert. Es ist 60² = 3600.","200":"0,005 · 3600 = 18, nicht 180. Rechne 5 · 3600 = 18 000 und verschiebe das Komma um drei Stellen.","-2":"Die 20 m kommen dazu. Der Scheitel liegt über dem Ursprung."}'></div></div></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Die Form des Seils ändert sich nicht, a bleibt 0,005. Nur der Scheitel hat neue Koordinaten: S(0 | 20).</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">a) S(0 | 20)<br>y = 0,005x² + 20<br>b) y = 0,005 · 60² + 20<br>= 0,005 · 3600 + 20<br>= 18 + 20 = <b>38</b></div><p>Antwort: 60&nbsp;m neben der Mitte hängt das Seil 38&nbsp;m über der Fahrbahn.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="ursprung" data-level="3">
+      <h4>Wo liegt der Ursprung?</h4>
+      <p>Jemand hat für dieselbe Hängebrücke die Gleichung <span class="m">y = 0,005 · (x − 100)² + 20</span> aufgestellt. Zieh das Achsenkreuz dorthin, wo dieser Ursprung liegen muss.</p>
+      <figure class="ka-figure">
+        <div id="ursprung-plot"></div>
+        <figcaption>Zieh den Punkt in der Mitte des Achsenkreuzes oder nutze die Pfeiltasten. Ein Kästchen ist 25&nbsp;m breit und 25&nbsp;m hoch. Der Punkt rastet waagerecht alle 50&nbsp;m und senkrecht alle 10&nbsp;m ein.</figcaption>
+      </figure>
+      <div class="ka-answers"><div class="ka-answer mo-lage" data-type="custom" id="ursprung-answer"><span id="ursprung-lage" aria-live="polite"></span></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Lies den Scheitel aus der Gleichung ab: <span class="m">S(d | e) = S(100 | 20)</span>. Der Scheitel ist der tiefste Punkt des Seils.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Der tiefste Punkt soll 100&nbsp;m rechts vom Ursprung und 20&nbsp;m darüber liegen. Geh also vom tiefsten Punkt 100&nbsp;m nach links und 20&nbsp;m nach unten.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><p>Der Scheitel ist S(100 | 20). Der Ursprung liegt deshalb 100&nbsp;m links vom tiefsten Punkt und 20&nbsp;m darunter: am linken Pfeiler auf Höhe der Fahrbahn.</p><p>Probe am linken Pfeiler, also bei x = 0:</p><div class="ka-calc">y =0,005 · (0 − 100)² + 20<br>= 0,005 · 10 000 + 20<br>= 50 + 20 = 70</div><p>Die Pfeilerspitze liegt 70&nbsp;m über der Fahrbahn. Das passt: 50&nbsp;m über dem tiefsten Punkt und noch einmal 20&nbsp;m bis zur Fahrbahn.</p></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ Abschnitt 2 ============ -->
+<section class="ka-section" id="wuerfe">
+  <p class="ka-phase"><b>Minute 8 bis 15</b> · Übersetzen und rechnen</p>
+  <h2>Würfe und Bögen</h2>
+  <p>Bei Würfen, Wasserstrahlen und Torbögen steht die Funktionsgleichung meist schon in der Aufgabe. Die Punkte holst du, wenn du die Frage richtig in Mathematik übersetzt.</p>
+
+  <div class="ka-cols">
+    <div>
+      <p>Ein Ball wird vom Boden abgeschossen. Seine Flugbahn ist <span class="m c-f">f(x) = −0,25x² + 2x</span>. Dabei ist x die Entfernung vom Abschuss und f(x) die Höhe, beides in Metern. 2&nbsp;m vom Abschuss entfernt steht eine 2,5&nbsp;m hohe Mauer.</p>
+      <div class="ka-idea"><b>Beobachte</b>Stell unter dem Bild nacheinander die vier Fragen. Welcher Punkt der Parabel beantwortet welche Frage? Fliegt der Ball über die Mauer?</div>
+
+      <h3>Wörterbuch: vom Alltag zur Mathematik</h3>
+      <table class="mo-woerter">
+        <thead><tr><th scope="col">In der Aufgabe steht</th><th scope="col">Du berechnest</th></tr></thead>
+        <tbody>
+          <tr><td>höchster Punkt, größte Höhe, tiefster Punkt</td><td>Scheitelpunkt <span class="m">S(d | e)</span></td></tr>
+          <tr><td>trifft den Boden, landet, Wurfweite, Breite am Boden</td><td>Nullstellen: <span class="m">f(x) = 0</span></td></tr>
+          <tr><td>Höhe an einer bestimmten Stelle</td><td>Funktionswert: x in <span class="m">f(x)</span> einsetzen</td></tr>
+          <tr><td>An welcher Stelle ist die Höhe h?</td><td>Gleichung <span class="m">f(x) = h</span> lösen</td></tr>
+          <tr><td>zwei Bahnen treffen sich</td><td>Schnittpunkt: <span class="m">f(x) = g(x)</span></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Rechenweg: Wie weit und wie hoch fliegt der Ball?</h3>
+      <div class="ka-steps" id="steps-wurf">
+        <ol>
+          <li data-step><div class="ka-line"><span>landet &nbsp;⇒&nbsp; Höhe 0 &nbsp;⇒&nbsp; f(x) = 0</span></div><p class="ka-why"><b>Übersetzen:</b> Am Boden ist die Höhe 0. Gesucht sind die Nullstellen.</p></li>
+          <li data-step="Ausklammern"><div class="ka-line"><span>−0,25x² + 2x = 0</span></div><div class="ka-line"><span>x · (−0,25x + 2) = 0</span></div><p class="ka-why">Es gibt kein Glied ohne x, also klammerst du x aus. Ein Produkt ist 0, wenn ein Faktor 0 ist.</p></li>
+          <li data-step="Faktoren null setzen"><div class="ka-line"><span>x₁ = 0 &nbsp;oder&nbsp; −0,25x + 2 = 0</span></div><div class="ka-line"><span>0,25x = 2</span><span class="op">| · 4</span></div><div class="ka-line"><span>x₂ = 8</span></div><p class="ka-why">0,25x = 2 heißt: Ein Viertel von x ist 2. Also ist x = 8.</p></li>
+          <li data-step="Lösungen deuten"><div class="ka-line"><span>x₁ = 0: Abschuss, &nbsp;x₂ = 8: Landung</span></div><div class="ka-line"><span class="mo-antwort">Der Ball landet 8&nbsp;m vom Abschuss entfernt.</span></div><p class="ka-why"><b>Deuten:</b> Beide Lösungen haben eine Bedeutung. Die Frage zielt auf die Landung.</p></li>
+          <li data-step="Höchsten Punkt berechnen"><div class="ka-line"><span>x<sub>S</sub> = (0 + 8) : 2 = 4</span></div><div class="ka-line"><span>f(4) = −0,25 · 16 + 2 · 4 = −4 + 8 = 4</span></div><div class="ka-line"><span class="mo-antwort">Der Ball steigt höchstens 4&nbsp;m hoch.</span></div><p class="ka-why"><b>Scheitel:</b> Eine Parabel ist symmetrisch. Der Scheitel liegt genau in der Mitte zwischen den Nullstellen: S(4 | 4).</p></li>
+        </ol>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="wurf-plot"></div>
+      <p class="mo-ctl">Situation</p>
+      <div id="wurf-szene"></div>
+      <p class="mo-ctl">Frage</p>
+      <div id="wurf-frage"></div>
+      <div class="ka-controls" id="wurf-controls"></div>
+      <div class="ka-btnrow"><button type="button" class="ka-btn" id="wurf-play">▶ Flug abspielen</button></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="wurf-term"></span><span class="c-p" id="wurf-ball"></span><span id="wurf-msg"></span></div>
+      <figcaption>Der Regler bewegt den Ball entlang der Bahn. Die gestrichelten grauen Stücke gehören zur Parabel, aber nicht zum Flug.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Wenn die Höhe gegeben ist</h3>
+  <div class="ka-cols even">
+    <div>
+      <p>Frage: An welchen Stellen ist der Ball 3&nbsp;m hoch? Jetzt ist f(x) bekannt und x gesucht. Das ergibt eine quadratische Gleichung. Im Bild ist das der Schnitt der Parabel mit der waagerechten Geraden y = 3, wie in <a href="/klassenarbeit-parabeln/schnittpunkte/">Modul 4</a>.</p>
+      <div data-ka-formel style="margin:10px 0 4px"></div>
+      <div class="ka-calc">−0,25x² + 2x = 3<span class="op">| · (−4)</span><br>x² − 8x = −12<span class="op">| + 12</span><br>x² − 8x + 12 = 0<br><span data-if-formel="pq">x₁,₂ = 4 ± <span class="sqrt"><span>4² − 12</span></span> = 4 ± <span class="sqrt"><span>4</span></span><span class="note">p = −8, q = 12</span><br>x₁,₂ = 4 ± 2<br></span><span data-if-formel="abc">x₁,₂ = <span class="frac"><span>8 ± <span class="sqrt"><span>64 − 48</span></span></span><span>2</span></span> = <span class="frac"><span>8 ± 4</span><span>2</span></span><span class="note">a = 1, b = −8, c = 12</span><br></span>x₁ = 2, &nbsp;x₂ = 6</div>
+      <p>Beide Lösungen passen zur Situation: Bei x = 2 steigt der Ball durch die Höhe 3&nbsp;m, bei x = 6 fällt er wieder hindurch.</p>
+    </div>
+    <div>
+      <div class="ka-merke" style="margin-top:0"><b>Merke</b>Eine Gleichung kennt die Situation nicht. Prüfe jede Lösung: Liegt sie in dem Bereich, für den das Modell gilt? Eine negative Entfernung, Länge oder Zeit verwirfst du und schreibst kurz dazu, warum. Am Ende steht ein Antwortsatz mit Einheit.</div>
+      <div class="ka-warn"><b>Typischer Fehler</b>Schalte das Bild auf „Stoß aus 2&nbsp;m Höhe“ und „Landung“. Die Rechnung f(x) = 0 liefert x₁ = −2 und x₂ = 4. Falsch: „Die Kugel landet bei −2&nbsp;m und bei 4&nbsp;m.“ Richtig: „x = −2 entfällt, weil der Stoß erst bei x = 0 beginnt. Die Kugel landet nach 4&nbsp;m.“</div>
+    </div>
+  </div>
+
+  <h3>Passt das durch? Tore und Tunnel</h3>
+  <div class="ka-cols">
+    <div>
+      <p>Ein Tunnel hat die Form der Parabel <span class="m c-f">f(x) = −0,25x² + 4</span>. Der Ursprung liegt auf der Fahrbahn in der Mitte, alle Maße in Metern. Am Boden ist der Tunnel 8&nbsp;m breit, in der Mitte 4&nbsp;m hoch. Ein Fahrzeug ist 4&nbsp;m breit und 2,5&nbsp;m hoch und fährt genau in der Mitte.</p>
+      <div class="ka-idea"><b>Beobachte</b>Zieh an der oberen Ecke des Fahrzeugs. Welche Stelle x musst du in f einsetzen, um zu prüfen, ob es durchpasst? Ab welcher Höhe stößt ein 4&nbsp;m breites Fahrzeug an?</div>
+      <p>Eng wird es an den oberen Ecken. Das Fahrzeug reicht von x = −2 bis x = 2. Die rechte Ecke liegt also bei der <mark>halben Breite</mark>.</p>
+      <div class="ka-calc">f(2) = −0,25 · 2² + 4 = −1 + 4 = 3<br>2,5 &lt; 3<span class="note">Fahrzeughöhe kleiner als Tunnelhöhe an der Ecke</span></div>
+      <p class="mo-antwort">Das Fahrzeug passt durch. Über den Ecken bleiben 0,5&nbsp;m Luft.</p>
+      <div class="ka-warn"><b>Typischer Fehler</b>Die ganze Breite einsetzen. Falsch: <span class="m">f(4) = −0,25 · 16 + 4 = 0</span>, also „passt nicht“. Richtig: Bei x = 4 steht die Tunnelwand, nicht die Fahrzeugecke. Einsetzen musst du die halbe Breite: <span class="m">f(2) = 3</span>.</div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="tor-plot"></div>
+      <div class="ka-controls" id="tor-controls"></div>
+      <div class="ka-btnrow"><button type="button" class="ka-btn" id="tor-fehler" aria-pressed="false">Typischen Fehler einblenden</button></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-p" id="tor-ecke"></span><span class="c-f" id="tor-wert"></span><span id="tor-urteil"></span><span class="c-no" id="tor-falsch" hidden></span></div>
+      <figcaption>Zieh den violetten Punkt an der Fahrzeugecke oder nutze die Regler. Verglichen wird die Fahrzeughöhe mit der Tunnelhöhe an der Ecke.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks">
+
+    <article class="ka-task" data-task="uebersetzen" data-level="1" data-success="Drei Fragen, drei verschiedene Rechnungen.">
+      <h4>Frage übersetzen</h4>
+      <p>Der Wasserstrahl eines Brunnens folgt der Parabel <span class="m">f(x) = −0,5x² + 2x</span>. Die Düse sitzt im Ursprung, x und f(x) in Metern. Was musst du jeweils berechnen?</p>
+      <div class="mo-frage"><p><b>a)</b> Wie hoch spritzt das Wasser höchstens?</p>
+        <div class="ka-answer" data-type="choice" data-answer="s" aria-label="Rechnung für Frage a wählen">
+          <button data-value="s">Scheitelpunkt</button>
+          <button data-value="n" data-fb="Zu a): Die Nullstellen sagen, wo das Wasser am Boden ist. Gefragt ist der höchste Punkt.">Nullstellen</button>
+          <button data-value="w" data-fb="Zu a): f(1) ist die Höhe 1 m neben der Düse. Der höchste Punkt ist der Scheitel.">Funktionswert f(1)</button>
+        </div></div>
+      <div class="mo-frage"><p><b>b)</b> Wie weit von der Düse entfernt trifft das Wasser auf den Boden?</p>
+        <div class="ka-answer" data-type="choice" data-answer="n" aria-label="Rechnung für Frage b wählen">
+          <button data-value="s" data-fb="Zu b): Der Scheitel ist der höchste Punkt. Am Boden ist die Höhe 0.">Scheitelpunkt</button>
+          <button data-value="n">Nullstellen</button>
+          <button data-value="w" data-fb="Zu b): f(1) ist eine Höhe. Gesucht ist die Stelle x, an der die Höhe 0 ist.">Funktionswert f(1)</button>
+        </div></div>
+      <div class="mo-frage"><p><b>c)</b> Wie hoch ist der Strahl 1&nbsp;m von der Düse entfernt?</p>
+        <div class="ka-answer" data-type="choice" data-answer="w" aria-label="Rechnung für Frage c wählen">
+          <button data-value="s" data-fb="Zu c): Der Scheitel liegt 2 m von der Düse entfernt. Gefragt ist die Höhe bei x = 1.">Scheitelpunkt</button>
+          <button data-value="n" data-fb="Zu c): Die Stelle ist gegeben, die Höhe gesucht. Setze x = 1 ein.">Nullstellen</button>
+          <button data-value="w">Funktionswert f(1)</button>
+        </div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Schau im Wörterbuch oben nach: höchstens, trifft den Boden, Höhe an einer Stelle.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">b) x · (−0,5x + 2) = 0<br>x₁ = 0, &nbsp;x₂ = 4<br>a) x<sub>S</sub> = (0 + 4) : 2 = 2<br>f(2) = −2 + 4 = 2<br>c) f(1) = −0,5 + 2 = 1,5</div><p>Das Wasser spritzt 2&nbsp;m hoch, trifft 4&nbsp;m von der Düse entfernt auf und ist 1&nbsp;m neben der Düse 1,5&nbsp;m hoch.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="antwortsatz" data-level="1">
+      <h4>Welcher Antwortsatz ist vollständig?</h4>
+      <p>Beim Kugelstoßen ist x die Entfernung vom Abstoß in Metern. Die Rechnung <span class="m">f(x) = 0</span> ergibt <span class="m">x₁ = −1</span> und <span class="m">x₂ = 5</span>. Gefragt ist: Wie weit fliegt die Kugel?</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-answer="d">
+          <button data-value="a" data-fb="Das ist das Ergebnis der Rechnung, aber noch keine Antwort auf die Frage. Außerdem passt eine der beiden Lösungen nicht zur Situation."><span class="m">L = {−1; 5}</span></button>
+          <button data-value="b" data-fb="Fast. Es fehlen die Einheit und ein Satz zur zweiten Lösung.">Die Kugel landet bei <span class="m">x = 5</span>.</button>
+          <button data-value="c" data-fb="Eine Kugel landet nur einmal. x = −1 liegt hinter dem Abstoß und gehört nicht zum Flug.">Die Kugel landet 1&nbsp;m hinter und 5&nbsp;m vor dem Abstoß.</button>
+          <button data-value="d" data-fb="Antwortsatz, Einheit und Begründung für die verworfene Lösung: So gibt es die volle Punktzahl.">Die Kugel fliegt 5&nbsp;m weit. <span class="m">x = −1</span> entfällt, weil der Flug erst bei <span class="m">x = 0</span> beginnt.</button>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Eine vollständige Antwort hat drei Teile: ganzer Satz, Einheit, Umgang mit der Lösung, die nicht passt.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><p>Der Flug beginnt bei x = 0. Die Lösung x = −1 liegt davor und entfällt. Übrig bleibt x = 5, also: Die Kugel fliegt 5&nbsp;m weit.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="tor" data-level="2">
+      <h4>Passt der Wagen durch das Tor?</h4>
+      <p>Ein Scheunentor hat die Form der Parabel <span class="m">f(x) = −0,5x² + 4,5</span>. Der Ursprung liegt am Boden in der Mitte des Tors, alle Maße in Metern.</p>
+      <div class="mo-teil"><b>a)</b><div><p>Wie breit ist das Tor am Boden?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="6" data-unit="m" data-aria="Breite des Tors in Metern" data-wrong='{"3":"x = 3 ist nur der Abstand von der Mitte bis zum rechten Rand. Das Tor reicht von −3 bis 3.","9":"x² = 9 ist noch nicht x. Zieh die Wurzel und denk an beide Lösungen.","4.5":"4,5 m ist die Höhe in der Mitte. Für die Breite brauchst du die Nullstellen.","-3":"−3 ist der linke Rand. Die Breite ist der Abstand zwischen −3 und 3."}'></div></div></div></div>
+      <div class="mo-teil"><b>b)</b><div><p>Ein Wagen ist 4&nbsp;m breit und 3&nbsp;m hoch. Er fährt genau in der Mitte. Wie hoch ist das Tor an der oberen Ecke des Wagens?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="2.5" data-unit="m" data-aria="Torhöhe an der Wagenecke in Metern" data-wrong='{"-3.5":"Du hast x = 4 eingesetzt. Die Ecke liegt bei der halben Breite, also bei x = 2.","3.5":"0,5 · 2² ist 0,5 · 4 = 2, nicht 1. Erst quadrieren, dann mit 0,5 multiplizieren.","6.5":"Vor 0,5x² steht ein Minus. Rechne 4,5 − 2.","4.5":"4,5 m ist die Höhe in der Mitte bei x = 0. Die Ecke liegt bei x = 2.","3":"3 m ist die Höhe des Wagens. Gesucht ist die Höhe des Tors bei x = 2."}'></div></div></div></div>
+      <div class="mo-teil"><b>c)</b><div><p>Passt der Wagen durch das Tor?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="nein">
+          <button data-value="ja" data-fb="Vergleiche die Wagenhöhe 3 m mit der Torhöhe an der Ecke.">Ja, er passt durch.</button>
+          <button data-value="nein" data-fb="Der Wagen ist an den Ecken 0,5 m zu hoch.">Nein, er stößt oben an.</button>
+        </div></div></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>a) Am Boden ist die Höhe 0. Löse <span class="m">−0,5x² + 4,5 = 0</span> durch Wurzelziehen.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>b) Der Wagen reicht von x = −2 bis x = 2. Berechne <span class="m">f(2)</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">a) f(x) = 0<br>−0,5x² + 4,5 = 0<span class="op">| − 4,5</span><br>−0,5x² = −4,5<span class="op">| : (−0,5)</span><br>x² = 9, also x₁ = −3, x₂ = 3<br>Breite: 3 − (−3) = <b>6</b><br>b) f(2) = −0,5 · 2² + 4,5<br>= −2 + 4,5 = <b>2,5</b><br>c) 3 &gt; 2,5</div><p>Antwort: Das Tor ist 6&nbsp;m breit. An den Wagenecken ist es nur 2,5&nbsp;m hoch. Der 3&nbsp;m hohe Wagen passt nicht durch.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="balkon" data-level="3">
+      <h4>Wie in der Klassenarbeit: Wurf vom Balkon</h4>
+      <p>Lina wirft einen Ball von einem Balkon. Die Flugbahn wird durch <span class="m">f(x) = −0,25x² + x + 3</span> beschrieben. Dabei ist x die waagerechte Entfernung vom Balkon und f(x) die Höhe über dem Boden, beides in Metern.</p>
+      <div class="mo-teil"><b>a)</b><div><p>Aus welcher Höhe wirft Lina den Ball ab?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="3" data-unit="m" data-aria="Abwurfhöhe in Metern" data-wrong='{"0":"Beim Abwurf ist x = 0, nicht f(x) = 0. Berechne f(0).","3.75":"Das ist f(1). Beim Abwurf ist die Entfernung vom Balkon noch 0."}'></div></div></div></div>
+      <div class="mo-teil"><b>b)</b><div><p>Berechne den höchsten Punkt der Flugbahn.</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="point" data-answer="2|4" data-label="S" data-wrong='{"-2|4":"Die Höhe stimmt. Prüfe das Vorzeichen der Stelle: Aus (x − 2)² liest du d = +2 ab.","2|3":"Die Stelle stimmt. Setze x = 2 noch einmal ein: −1 + 2 + 3.","0|3":"Das ist der Abwurfpunkt. Danach steigt der Ball noch.","4|3":"Bei x = 4 ist der Ball wieder auf Abwurfhöhe. Der Scheitel liegt in der Mitte zwischen x = 0 und x = 4.","2|1":"Die Stelle stimmt. Bei f(2) fehlt noch die + 3 am Ende: −1 + 2 + 3 = 4.","2|6":"Die Stelle stimmt. Vor 0,25x² steht ein Minus: −0,25 · 4 = −1, also f(2) = −1 + 2 + 3 = 4."}'></div></div></div></div>
+      <div class="mo-teil"><b>c)</b><div><p>Wie weit vom Balkon entfernt landet der Ball?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="6" data-unit="m" data-aria="Entfernung der Landestelle in Metern" data-wrong='{"-2":"x = −2 läge 2 m hinter dem Balkon. Der Wurf beginnt erst bei x = 0. Die andere Lösung ist die Antwort.","2":"Prüfe die Vorzeichen deiner Lösungen. Die Gleichung hat die Lösungen −2 und 6.","-6":"Prüfe die Vorzeichen deiner Lösungen. Die Gleichung hat die Lösungen −2 und 6.","8":"8 m ist der Abstand zwischen den beiden Nullstellen. Der Wurf beginnt aber bei x = 0.","4":"Bei x = 4 ist der Ball wieder auf Abwurfhöhe 3 m, aber noch nicht am Boden."}'></div></div></div></div>
+      <div class="mo-teil"><b>d)</b><div><p>4&nbsp;m vom Balkon entfernt steht ein 2,5&nbsp;m hoher Zaun. Fliegt der Ball darüber?</p>
+        <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="ja">
+          <button data-value="ja" data-fb="f(4) = 3 und 3 &gt; 2,5.">Ja, er fliegt 0,5&nbsp;m über den Zaun.</button>
+          <button data-value="nein" data-fb="Berechne f(4) = −4 + 4 + 3. Das ist mehr als 2,5.">Nein, er prallt gegen den Zaun.</button>
+          <button data-value="unklar" data-fb="Doch. Vergleiche den Funktionswert f(4) mit der Zaunhöhe.">Das lässt sich ohne Zeichnung nicht entscheiden.</button>
+        </div></div></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Übersetze zuerst: a) Abwurf heißt x = 0. b) Höchster Punkt heißt Scheitel. c) Landen heißt f(x) = 0. d) Zaun heißt f(4) mit 2,5 vergleichen.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>b) f(0) = 3 und f(4) = 3 liegen gleich hoch. Der Scheitel liegt genau in der Mitte dazwischen.</p></details>
+      <details class="ka-hint"><summary>Tipp 3</summary><p>c) Multipliziere <span class="m">−0,25x² + x + 3 = 0</span> mit −4. Dann steht <span class="m">x² − 4x − 12 = 0</span> da.</p></details>
+      <details class="ka-solution" id="balkon-loesung"><summary>Lösungsweg</summary>
+        <div class="ka-calc">a) f(0) = <b>3</b><br>b) f(x)<br>= −0,25 · (x² − 4x) + 3<br>= −0,25 · [(x − 2)² − 4] + 3<br>= −0,25 · (x − 2)² + 1 + 3<br>= −0,25 · (x − 2)² + 4, also <b>S(2 | 4)</b><br>c) −0,25x² + x + 3 = 0<span class="op">| · (−4)</span><br>x² − 4x − 12 = 0<br><span data-if-formel="pq">x₁,₂ = 2 ± <span class="sqrt"><span>2² + 12</span></span> = 2 ± <span class="sqrt"><span>16</span></span><span class="note">p = −4, q = −12</span><br>x₁,₂ = 2 ± 4<br></span><span data-if-formel="abc">x₁,₂ = <span class="frac"><span>4 ± <span class="sqrt"><span>16 + 48</span></span></span><span>2</span></span> = <span class="frac"><span>4 ± 8</span><span>2</span></span><span class="note">a = 1, b = −4, c = −12</span><br></span>x₁ = −2 entfällt, &nbsp;x₂ = <b>6</b><br>d) f(4) = −0,25 · 16 + 4 + 3<br>= 3 &gt; 2,5</div>
+        <p>Antworten: a) Lina wirft aus 3&nbsp;m Höhe ab. b) Der höchste Punkt liegt 2&nbsp;m vom Balkon entfernt in 4&nbsp;m Höhe. c) Der Ball landet 6&nbsp;m vom Balkon entfernt. x = −2 entfällt, weil der Wurf erst bei x = 0 beginnt. d) Der Ball fliegt 0,5&nbsp;m über den Zaun.</p>
+        <figure class="ka-figure"><div id="balkon-plot"></div><figcaption>Die Lösung am Bild. Links vom Balkon läuft die Parabel gestrichelt weiter bis x = −2. Dort ist aber das Haus, kein Ball.</figcaption></figure>
+      </details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ Mini-Test ============ -->
+<section class="ka-section" id="minitest">
+  <p class="ka-phase"><b>Minute 15 bis 20</b> · Mini-Test</p>
+  <h2>Mini-Test: fünf Aufgaben in fünf Minuten</h2>
+  <p>Ohne Tipps. Rechne auf Papier, gib dein Ergebnis ein und öffne den Lösungsweg erst danach.</p>
+  <div class="ka-tasks">
+
+    <article class="ka-task" data-task="m1" data-level="1">
+      <p>Zu einer Brücke gehört die Funktion <span class="m">f(x) = −0,02x²</span>. Welche Aussage stimmt?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="a">
+        <button data-value="a" data-fb="Vorzeichen und Öffnung genannt, Brückentyp richtig.">Bogenbrücke, da der Koeffizient vor x² negativ ist und die Parabel nach unten geöffnet ist.</button>
+        <button data-value="b" data-fb="Ein negativer Koeffizient öffnet die Parabel nach unten, nicht nach oben.">Hängebrücke, da der Koeffizient vor x² negativ ist und die Parabel nach oben geöffnet ist.</button>
+        <button data-value="c" data-fb="Das Minus gehört zum Koeffizienten. Er ist −0,02 und damit negativ.">Hängebrücke, da 0,02 größer als 0 ist.</button>
+        <button data-value="d" data-fb="Die Brücke stimmt, die Begründung nicht. Entscheidend ist das Vorzeichen, nicht die Größe von a.">Bogenbrücke, da die Parabel sehr flach ist.</button>
+      </div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><p>Der Koeffizient vor x² ist −0,02, also negativ. Die Parabel ist nach unten geöffnet. Das passt zum Bogen einer Bogenbrücke.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="m2" data-level="2">
+      <p>Das Tragseil einer Fußgängerbrücke hängt zwischen zwei Masten, die <b>40&nbsp;m</b> auseinander stehen. An den Masten ist das Seil <b>8&nbsp;m</b> höher als an seinem tiefsten Punkt. Der Ursprung liegt im tiefsten Punkt. Bestimme a in <span class="m">y = a · x²</span>.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="0.02" data-tol="0.00001" data-label="a =" data-wrong='{"0.005":"Du hast x = 40 eingesetzt. Vom tiefsten Punkt bis zum Mast sind es nur 20 m.","0.4":"Du hast durch 20 geteilt. In der Gleichung steht aber 20² = 400.","-0.02":"Der Betrag stimmt. Das Seil hängt durch, die Parabel ist nach oben geöffnet, also ist a positiv.","50":"Aus 8 = a · 400 folgt a = 8 : 400, nicht 400 : 8.","0.2":"Prüfe die Division: 8 : 400 = 2 : 100 = 0,02.","0.3125":"Du hast x und y vertauscht. Der Abstand 20 gehört zu x, die Höhe 8 zu y."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">Mast bei x = 20: P(20 | 8)<br>8 = a · 20²<br>8 = a · 400<span class="op">| : 400</span><br>a = <span class="frac"><span>8</span><span>400</span></span> = <span class="frac"><span>2</span><span>100</span></span> = <b>0,02</b></div><p>a ist positiv. Das passt zu einem Seil, das durchhängt.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="m3" data-level="2">
+      <p>Ein Delfin springt aus dem Wasser. Seine Bahn ist <span class="m">f(x) = −0,5x² + 3x</span>, x und f(x) in Metern. Bei x = 0 taucht er auf.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="number" data-answer="6" data-label="Sprungweite:" data-unit="m" data-wrong='{"0":"x = 0 ist die Stelle, an der er auftaucht. Gesucht ist die zweite Nullstelle.","3":"Bei x = 3 ist der Delfin am höchsten Punkt. Er taucht bei der zweiten Nullstelle wieder ein.","4.5":"4,5 m ist die größte Höhe. Für die Weite brauchst du die Nullstellen."}'></div>
+        <div class="ka-answer" data-type="number" data-answer="4.5" data-label="größte Höhe:" data-unit="m" data-wrong='{"3":"x = 3 ist die Stelle des höchsten Punktes. Die Höhe ist f(3).","13.5":"Vor 0,5x² steht ein Minus. Rechne −4,5 + 9.","6":"6 m ist die Sprungweite. Die Höhe ist der Funktionswert in der Mitte, also f(3).","0":"Bei den Nullstellen ist die Höhe 0. Der höchste Punkt liegt in der Mitte dazwischen."}'></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">−0,5x² + 3x = 0<br>x · (−0,5x + 3) = 0<br>x₁ = 0, &nbsp;x₂ = 6<span class="note">0,5x = 3, also x = 6</span><br>x<sub>S</sub> = (0 + 6) : 2 = 3<br>f(3) = −0,5 · 9 + 9 = −4,5 + 9 = <b>4,5</b></div><p>Antwort: Der Delfin springt 6&nbsp;m weit und höchstens 4,5&nbsp;m hoch.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="m4" data-level="2">
+      <p>Ein Tor hat die Form der Parabel <span class="m">f(x) = −x² + 4</span>, Ursprung am Boden in der Mitte, Maße in Metern. Wie breit ist das Tor in 3&nbsp;m Höhe? Breiter darf ein 3&nbsp;m hoher Wagen nicht sein.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="2" data-unit="m" data-aria="Breite in 3 Metern Höhe" data-wrong='{"1":"x = 1 ist der Abstand von der Mitte bis zum Rand, also nur die halbe Breite.","4":"4 m ist die Breite am Boden. In 3 m Höhe ist das Tor schmaler.","-1":"x = −1 ist der linke Rand in 3 m Höhe. Die Breite ist der Abstand zwischen −1 und 1.","-5":"Du hast x = 3 eingesetzt: f(3) = −9 + 4 = −5. Die 3 ist aber die Höhe, also löst du f(x) = 3."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">−x² + 4 = 3<span class="op">| − 4</span><br>−x² = −1<span class="op">| · (−1)</span><br>x² = 1, also x₁ = −1, x₂ = 1<br>Breite: 1 − (−1) = <b>2</b></div><p>Antwort: In 3&nbsp;m Höhe ist das Tor 2&nbsp;m breit. Hier sind beide Lösungen sinnvoll: der linke und der rechte Rand.</p></details>
+    </article>
+
+    <article class="ka-task" data-task="m5" data-level="3">
+      <p>Ein Stein wird von einer 4&nbsp;m hohen Mauer geworfen. Seine Bahn ist <span class="m">h(x) = −0,5x² + x + 4</span>. Dabei ist x die Entfernung von der Mauer und h(x) die Höhe über dem Boden, beides in Metern.</p>
+      <div class="mo-teil"><b>a)</b><div><p>Wie weit von der Mauer entfernt trifft der Stein auf den Boden?</p>
+        <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="4" data-unit="m" data-aria="Entfernung der Auftreffstelle in Metern" data-wrong='{"-2":"x = −2 liegt hinter der Mauer. Der Wurf beginnt erst bei x = 0. Nimm die andere Lösung.","2":"Prüfe die Vorzeichen deiner Lösungen. Die Gleichung hat die Lösungen −2 und 4.","-4":"Prüfe die Vorzeichen deiner Lösungen. Die Gleichung hat die Lösungen −2 und 4.","6":"6 m ist der Abstand zwischen den beiden Nullstellen. Der Wurf beginnt aber bei x = 0.","1":"Bei x = 1 ist der Stein am höchsten Punkt. Am Boden ist die Höhe 0."}'></div></div></div></div>
+      <div class="mo-teil"><b>b)</b><div><p>Die Rechnung liefert noch eine zweite Lösung. Was gilt für sie?</p>
+        <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="weg">
+          <button data-value="auch" data-fb="Ein Stein trifft nur einmal auf. Die negative Lösung liegt hinter der Mauer.">Sie ist eine zweite Stelle, an der der Stein auftrifft.</button>
+          <button data-value="betrag" data-fb="Ein Minus darfst du nicht einfach weglassen. Die Lösung gehört nicht zum Wurf.">Man nimmt ihren Betrag, also 2&nbsp;m.</button>
+          <button data-value="weg" data-fb="Schreibe genau das in der Arbeit dazu.">Sie entfällt, weil der Wurf erst bei x = 0 beginnt.</button>
+        </div></div></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc">−0,5x² + x + 4 = 0<span class="op">| · (−2)</span><br>x² − 2x − 8 = 0<br><span data-if-formel="pq">x₁,₂ = 1 ± <span class="sqrt"><span>1² + 8</span></span> = 1 ± <span class="sqrt"><span>9</span></span><span class="note">p = −2, q = −8</span><br>x₁,₂ = 1 ± 3<br></span><span data-if-formel="abc">x₁,₂ = <span class="frac"><span>2 ± <span class="sqrt"><span>4 + 32</span></span></span><span>2</span></span> = <span class="frac"><span>2 ± 6</span><span>2</span></span><span class="note">a = 1, b = −2, c = −8</span><br></span>x₁ = −2 entfällt, &nbsp;x₂ = <b>4</b></div><p>Antwort: Der Stein trifft 4&nbsp;m von der Mauer entfernt auf den Boden. x = −2 entfällt, weil der Wurf erst bei x = 0 beginnt.</p></details>
+    </article>
+  </div>
+  <p class="mo-stand" id="mini-stand" role="status"></p>
+</section>
+
+<!-- ============ Spickzettel ============ -->
+<section class="ka-section" id="spickzettel">
+  <p class="ka-phase"><b>Zum Abschreiben</b> · Spickzettel</p>
+  <h2>Spickzettel: Modellieren mit Parabeln</h2>
+  <div class="mo-spick">
+    <div>
+      <h3>Vier Schritte</h3>
+      <ol>
+        <li><b>Skizze</b> mit Koordinatensystem. Ursprung in einem Satz festlegen, Einheit nennen.</li>
+        <li><b>Funktionsgleichung</b> aufstellen oder die gegebene deuten.</li>
+        <li><b>Rechnen:</b> Scheitel, Nullstelle, Funktionswert oder Gleichung.</li>
+        <li><b>Antwortsatz</b> mit Einheit. Unpassende Lösungen verwerfen und begründen.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Vorzeichen von a</h3>
+      <p>Seil hängt durch: nach oben geöffnet, <span class="m">a &gt; 0</span>.<br>Bogen, Wurf, Tor: nach unten geöffnet, <span class="m">a &lt; 0</span>.</p>
+      <p>Begründung: „… gehört zur Hängebrücke, da der Koeffizient vor x² positiv ist und die Parabel nach oben geöffnet ist.“</p>
+    </div>
+    <div>
+      <h3>Gleichung aufstellen</h3>
+      <p>Ursprung in den Scheitel legen, dann einen Punkt einsetzen:</p>
+      <div class="ka-formula">y = a · x² &nbsp;⇒&nbsp; a = <span class="frac"><span>y</span><span>x²</span></span></div>
+      <p>Beispiel: A(100 | 50) ergibt <span class="m">50 = a · 100²</span>, also <span class="m">a = 0,005</span>.<br>Scheitel bei S(d | e): <span class="m">y = a · (x − d)² + e</span>.</p>
+    </div>
+    <div>
+      <h3>Wörterbuch</h3>
+      <dl>
+        <dt>höchster oder tiefster Punkt</dt><dd>Scheitelpunkt</dd>
+        <dt>landet, Weite, Breite am Boden</dt><dd>Nullstellen: <span class="m">f(x) = 0</span></dd>
+        <dt>Höhe an einer Stelle</dt><dd><span class="m">f(x)</span> ausrechnen</dd>
+        <dt>Stelle zu einer Höhe h</dt><dd><span class="m">f(x) = h</span> lösen</dd>
+        <dt>zwei Bahnen treffen sich</dt><dd><span class="m">f(x) = g(x)</span></dd>
+      </dl>
+    </div>
+    <div class="wide">
+      <h3>Kontrolle vor dem Abgeben</h3>
+      <ul>
+        <li>Vom Scheitel bis zum Rand ist es die <b>halbe</b> Breite. Bei einer Durchfahrt setzt du die halbe Fahrzeugbreite ein.</li>
+        <li>Abstand zur Seite gehört zu x, Höhe gehört zu y.</li>
+        <li>Punktprobe: Liegt der gegebene Punkt auf deiner Kurve?</li>
+        <li>Negative Entfernung oder Länge: Lösung verwerfen, Grund dazuschreiben.</li>
+        <li>Antwortsatz mit Einheit. Ist das Ergebnis plausibel?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<nav data-ka-next></nav>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => {
+    const el = document.getElementById(id);
+    if (!el) throw new Error('Modellieren: Element #' + id + ' fehlt.');
+    return el;
+  };
+  const fmt = KA.fmt;
+  const near = (a, b) => Math.abs(a - b) < 1e-9;
+  const plotWidth = el => Math.round(Math.min(560, Math.max(340, el.clientWidth)));
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* KA.vertexForm rundet a auf zwei Stellen, deshalb eigene Schreibweise für a = 0,005. */
+  const seilTerm = (d, e) => 'y = 0,005' + (d === 0 ? 'x²' : ' · (x ' + (d > 0 ? '− ' : '+ ') + fmt(Math.abs(d)) + ')²') + (e ? ' ' + KA.signed(e) : '');
+  const C = {rot: '#bf4a30', rotDunkel: '#8e3221', rotHell: '#eab9ab', wasser: '#dcebf5', welle: '#b1cde2', stein: '#cbc1ad', steinDunkel: '#a2967e', erde: '#ddd2bb', eisen: '#5f7684', eisenDunkel: '#435763', eisenHell: '#b4c2ca'};
+
+  /* ---------- Zeichnungen ---------- */
+  function wasser(g, plot, level) {
+    const xa = g.X(plot.x[0]), xb = g.X(plot.x[1]), top = g.Y(level), bottom = g.Y(plot.y[0]);
+    if (bottom - top < 2) return;
+    g.el('rect', {x: xa, y: top, width: xb - xa, height: bottom - top, fill: C.wasser}, 'under');
+    let d = '';
+    for (let row = 0, y = top + 7; y < bottom - 2; y += 9, row++)
+      for (let x = xa + (row % 2 ? 16 : 4); x < xb - 18; x += 34) d += `M${x.toFixed(1)} ${y.toFixed(1)}q4 -3 8 0t8 0`;
+    if (d) g.el('path', {d, fill: 'none', stroke: C.welle, 'stroke-width': 1.2, 'stroke-linecap': 'round'}, 'under');
+  }
+
+  /** Hängebrücke. Lokale Maße: tiefster Seilpunkt (0|0), Pfeiler bei ±100, Seil dort 50 hoch, Fahrbahn bei −20.
+      (ox|oy) sind die Koordinaten des tiefsten Seilpunkts im gewählten Koordinatensystem. */
+  function haengebruecke(g, plot, ox, oy, o = {}) {
+    const X = u => g.X(u + ox), Y = v => g.Y(v + oy);
+    const rect = (u1, v1, u2, v2, attrs) => g.el('rect', Object.assign({x: X(u1), y: Y(v2), width: X(u2) - X(u1), height: Y(v1) - Y(v2)}, attrs), 'under');
+    const uA = plot.x[0] - ox - 10, uB = plot.x[1] - ox + 10, see = o.wasser ?? -38;
+    wasser(g, plot, see + oy);
+    for (const u of [-100, 100]) rect(u - 9, see - 9, u + 9, see + 4, {fill: C.stein, stroke: C.steinDunkel, 'stroke-width': 1, rx: 2});
+    let d = '';
+    for (let u = -95; u <= 95; u += 10) d += `M${X(u).toFixed(1)} ${Y(.005 * u * u).toFixed(1)}V${Y(-20).toFixed(1)}`;
+    for (let k = 105; k < uB; k += 10) {
+      const v = 50 - (k - 100) * 2 / 3;
+      if (v <= -20) break;
+      d += `M${X(k).toFixed(1)} ${Y(v).toFixed(1)}V${Y(-20).toFixed(1)}M${X(-k).toFixed(1)} ${Y(v).toFixed(1)}V${Y(-20).toFixed(1)}`;
+    }
+    g.el('path', {d, fill: 'none', stroke: C.rot, 'stroke-width': 1, opacity: .8}, 'under');
+    rect(uA, -24, uB, -20, {fill: C.rotDunkel});
+    let z = '';
+    for (let u = Math.ceil(uA / 5) * 5, i = 0; u <= uB; u += 5, i++) z += (i ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(i % 2 ? -20.7 : -23.3).toFixed(1);
+    g.el('path', {d: z, fill: 'none', stroke: C.rotHell, 'stroke-width': .9}, 'under');
+    for (const u of [-100, 100]) {
+      rect(u - 3.5, see - 2, u + 3.5, 52, {fill: C.rot});
+      rect(u - 5.5, 51, u + 5.5, 55, {fill: C.rotDunkel, rx: 1.5});
+      for (const v of [-6, 14, 34]) g.el('line', {x1: X(u - 3.5), x2: X(u + 3.5), y1: Y(v), y2: Y(v), stroke: C.rotDunkel, 'stroke-width': 1.6}, 'under');
+    }
+    let c = '';
+    for (let u = -100; u <= 100; u += 4) c += (u === -100 ? 'M' : 'L') + X(u).toFixed(1) + ' ' + Y(.005 * u * u).toFixed(1);
+    c += `M${X(-100)} ${Y(50)}L${X(-205)} ${Y(-20)}M${X(100)} ${Y(50)}L${X(205)} ${Y(-20)}`;
+    g.el('path', {d: c, fill: 'none', stroke: C.rotDunkel, 'stroke-width': o.seil || 2.8, 'stroke-linecap': 'round', 'stroke-linejoin': 'round'}, 'under');
+  }
+
+  /** Bogenbrücke. Lokale Maße: Scheitel des Bogens (0|0), Fußpunkte (±50|−25), obere Fahrbahn auf dem Scheitel. */
+  function bogenbruecke(g, plot) {
+    const X = g.X, Y = g.Y;
+    const rect = (u1, v1, u2, v2, attrs) => g.el('rect', Object.assign({x: X(u1), y: Y(v2), width: X(u2) - X(u1), height: Y(v1) - Y(v2)}, attrs), 'under');
+    const uA = plot.x[0] - 10, uB = plot.x[1] + 10, vB = plot.y[0] - 10;
+    const bogen = u => -.01 * u * u;
+    wasser(g, plot, -30);
+    for (const s of [-1, 1]) {
+      rect(s * 61 - 3, -30, s * 61 + 3, 0, {fill: C.stein, stroke: C.steinDunkel, 'stroke-width': 1});
+      g.el('polygon', {points: [[s * 50, vB], [s * 50, -25], [s * 58, -25], [s * 72, -15], [s * 200, -15], [s * 200, vB]].map(([u, v]) => X(u).toFixed(1) + ',' + Y(v).toFixed(1)).join(' '), fill: C.erde, stroke: C.steinDunkel, 'stroke-width': 1}, 'under');
+    }
+    rect(-50, -25, 50, -23.4, {fill: C.eisenDunkel});
+    let d = '';
+    for (let u = -40; u <= 40; u += 10) if (u) d += `M${X(u).toFixed(1)} ${Y(0)}V${Y(-23.4).toFixed(1)}`;
+    g.el('path', {d, fill: 'none', stroke: C.eisen, 'stroke-width': 1.3}, 'under');
+    let web = '';
+    for (let u = -45, i = 0; u <= 45; u += 5, i++) web += (i ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(bogen(u) - (i % 2 ? 2.5 : 0)).toFixed(1);
+    g.el('path', {d: web, fill: 'none', stroke: C.eisenHell, 'stroke-width': 1}, 'under');
+    let inner = '', outer = '';
+    for (let u = -47; u <= 47; u += 2) inner += (u === -47 ? 'M' : 'L') + X(u).toFixed(1) + ' ' + Y(bogen(u) - 2.5).toFixed(1);
+    for (let u = -50; u <= 50; u += 2) outer += (u === -50 ? 'M' : 'L') + X(u).toFixed(1) + ' ' + Y(bogen(u)).toFixed(1);
+    g.el('path', {d: inner, fill: 'none', stroke: C.eisen, 'stroke-width': 2, 'stroke-linecap': 'round'}, 'under');
+    g.el('path', {d: outer, fill: 'none', stroke: C.eisenDunkel, 'stroke-width': 3.2, 'stroke-linecap': 'round'}, 'under');
+    rect(uA, 0, uB, 3, {fill: C.eisenDunkel});
+    let z = '';
+    for (let u = Math.ceil(uA / 3) * 3, i = 0; u <= uB; u += 3, i++) z += (i ? 'L' : 'M') + X(u).toFixed(1) + ' ' + Y(i % 2 ? .4 : 2.6).toFixed(1);
+    g.el('path', {d: z, fill: 'none', stroke: C.eisenHell, 'stroke-width': .8}, 'under');
+    g.el('line', {x1: X(uA), x2: X(uB), y1: Y(4.4), y2: Y(4.4), stroke: C.eisen, 'stroke-width': 1}, 'under');
+  }
+
+  /* ---------- Kopf: eine Gleichung, zwei Brücken ---------- */
+  {
+    const ZIEL = {h: .005, b: -.01};
+    let a = .002;
+    const ph = KA.plot('#hero-haenge', {x: [-120, 120], y: [-42, 60], step: 25, labelEvery: [2, 1], minor: false, label: 'Hängebrücke im Koordinatensystem mit Parabel y = a mal x Quadrat'});
+    const pb = KA.plot('#hero-bogen', {x: [-68, 68], y: [-38, 12], step: 25, labelEvery: [2, 1], minor: false, label: 'Bogenbrücke im Koordinatensystem mit Parabel y = a mal x Quadrat'});
+    const kurve = (g, ziel) => {
+      const fit = near(a, ziel);
+      g.fn(x => a * x * x, {color: fit ? 'ok' : 'f', width: fit ? 5 : 3.2, opacity: fit ? .9 : 1});
+      g.point(0, 0, {color: fit ? 'ok' : 'f', r: 4.5});
+    };
+    ph.render(g => { haengebruecke(g, ph, 0, 0, {wasser: -32}); kurve(g, ZIEL.h); });
+    pb.render(g => { bogenbruecke(g, pb); kurve(g, ZIEL.b); });
+    const urteil = ziel => near(a, ziel) ? ['passt', 'ok'] : near(a, 0) ? ['gerade Linie', 'no'] : Math.sign(a) !== Math.sign(ziel) ? ['falsche Richtung', 'no'] : Math.abs(a) < Math.abs(ziel) ? ['zu flach', 'mid'] : ['zu steil', 'mid'];
+    const show = () => {
+      for (const [id, ziel] of [['hero-st-h', ZIEL.h], ['hero-st-b', ZIEL.b]]) {
+        const [text, state] = urteil(ziel);
+        $(id).textContent = text; $(id).dataset.state = state;
+      }
+      $('hero-term').textContent = near(a, 0) ? 'y = 0' : 'y = ' + fmt(a, 3) + 'x²';
+      $('hero-sign').textContent = near(a, 0) ? 'a = 0: keine Parabel' : a > 0 ? 'a > 0: nach oben geöffnet' : 'a < 0: nach unten geöffnet';
+      const fit = $('hero-fit');
+      fit.textContent = near(a, ZIEL.h) ? 'liegt genau auf dem Tragseil' : near(a, ZIEL.b) ? 'liegt genau auf dem Bogen' : 'passt noch zu keiner Brücke';
+      fit.className = near(a, ZIEL.h) || near(a, ZIEL.b) ? 'c-ok' : '';
+    };
+    KA.slider('#hero-controls', {label: 'a', min: -.012, max: .012, step: .001, value: a, format: v => fmt(v, 3), onInput: v => { a = Math.round(v * 1000) / 1000; ph.update(); pb.update(); show(); }});
+    show();
+  }
+
+  /* ---------- Koordinatensystem wählen ---------- */
+  {
+    const host = $('ks-plot');
+    const W = plotWidth(host);
+    const LAGE = {tief: {ox: 0, oy: 0}, bahn: {ox: 0, oy: 20}, pfeiler: {ox: 100, oy: 20}};
+    let key = 'tief', ox = 0, oy = 0, u = 40, hilfe = false, lauf = 0, plot = null;
+    const halb = v => Math.round(v * 2) / 2;
+    const draw = g => {
+      haengebruecke(g, plot, ox, oy);
+      g.fn(x => .005 * (x - ox) ** 2 + oy, {color: 'f', from: ox - 100, to: ox + 100, width: 3.4, opacity: .92});
+      g.el('circle', {cx: g.X(0), cy: g.Y(0), r: 9, fill: '#fff', 'fill-opacity': .55, stroke: KA.COLORS.gold, 'stroke-width': 3.2}, 'top');
+      const ax = 100 + ox, ay = 50 + oy;
+      if (hilfe) { g.seg(ax, 0, ax, ay, {color: 'g', dash: true, width: 2.2}); g.seg(0, ay, ax, ay, {color: 'g', dash: true, width: 2.2}); }
+      g.point(ax, ay, {color: 'g', label: u === 100 ? null : KA.point(Math.round(ax), Math.round(ay), 'A'), pos: 'nw'});
+      const px = u + ox, py = .005 * u * u + oy;
+      g.seg(px, oy - 20, px, py, {color: 'p', width: 2.6});
+      const pos = Math.abs(u) >= 70 ? (u > 0 ? 'nw' : 'ne') : Math.abs(u) <= 20 ? (u >= 0 ? 'ne' : 'nw') : 'n';
+      g.point(px, py, {color: 'p', label: KA.point(Math.round(px), halb(py), 'P'), pos});
+    };
+    const build = () => {
+      plot = KA.plot(host, {width: W, x: [-130 + ox, 130 + ox], y: [-50 + oy, 68 + oy], step: 25, labelEvery: [2, 1], minor: false, aspect: W < 430 ? 1.25 : 1, label: 'Hängebrücke mit wählbarem Ursprung des Koordinatensystems'});
+      plot.render(draw);
+      plot.onDrag(e => setU(e.x - ox), {axis: 'x'});
+    };
+    const show = () => {
+      const t = LAGE[key], y = .005 * u * u;
+      $('ks-term').textContent = seilTerm(t.ox, t.oy);
+      $('ks-a').textContent = KA.point(100 + t.ox, 50 + t.oy, 'A');
+      $('ks-p').textContent = KA.point(u + t.ox, y + t.oy, 'P');
+      $('ks-fest').textContent = `Seil am Lineal: ${fmt(y)} m über dem tiefsten Punkt, ${fmt(y + 20)} m über der Fahrbahn`;
+    };
+    const setU = v => {
+      const next = Math.min(100, Math.max(-100, Math.round(v / 10) * 10));
+      if (next === u) return;
+      u = next; lineal.set(u, true); plot.update(); show();
+    };
+    const setLage = k => {
+      if (!LAGE[k]) throw new Error('Modellieren: unbekannte Ursprungslage ' + k);
+      key = k;
+      const t = LAGE[k], fx = ox, fy = oy, id = ++lauf;
+      show();
+      KA.tween(0, 1, 650, p => { if (id !== lauf) return; ox = fx + (t.ox - fx) * p; oy = fy + (t.oy - fy) * p; build(); }, () => { if (id !== lauf) return; ox = t.ox; oy = t.oy; build(); });
+    };
+    const seg = KA.seg('#ks-origin', {label: 'Lage des Ursprungs', value: key, options: [{value: 'tief', label: 'im tiefsten Seilpunkt'}, {value: 'bahn', label: 'auf der Fahrbahn darunter'}, {value: 'pfeiler', label: 'am linken Pfeiler auf der Fahrbahn'}], onChange: setLage});
+    const lineal = KA.slider('#ks-controls', {label: 'Lineal', min: -100, max: 100, step: 10, value: u, format: v => v === 0 ? 'Mitte' : fmt(Math.abs(v)) + ' m ' + (v < 0 ? 'links' : 'rechts'), onInput: v => { u = v; plot.update(); show(); }});
+    build(); show();
+    let letzter = 0;
+    $('steps-bruecke').addEventListener('ka:step', evt => {
+      const index = evt.detail.index;
+      if (index === letzter) return;
+      letzter = index;
+      hilfe = index >= 1 && index <= 3;
+      if (index >= 4 && u !== 40) { u = 40; lineal.set(40, true); }
+      if (key !== 'tief') { seg.set('tief', true); setLage('tief'); } else { plot.update(); show(); }
+    });
+  }
+
+  /* ---------- Fehlerbild: falsch eingesetzt ---------- */
+  {
+    const FALL = {
+      breite: {a: .00125, farbe: 'no', rechnung: 'Falsch: 50 = a · 200², also a = 0,00125', folge: 'Am Pfeiler bei x = 100 erreicht diese Kurve nur 12,5 m statt 50 m. Sie ist viel zu flach.'},
+      tausch: {a: .04, farbe: 'no', rechnung: 'Falsch: 100 = a · 50², also a = 0,04', folge: 'Diese Kurve geht durch (50 | 100) statt durch A(100 | 50). Sie ist viel zu steil.'},
+      richtig: {a: .005, farbe: 'ok', rechnung: 'Richtig: 50 = a · 100², also a = 0,005', folge: 'Probe: 0,005 · 100² = 50. A liegt auf der Kurve.'},
+    };
+    let fall = 'breite';
+    const plot = KA.plot('#fehler-plot', {x: [-130, 130], y: [-42, 112], step: 25, labelEvery: [2, 1], minor: false, label: 'Hängebrücke mit richtig und falsch berechneter Parabel'});
+    plot.render(g => {
+      const f = FALL[fall];
+      haengebruecke(g, plot, 0, 0, {wasser: -32});
+      g.fn(x => f.a * x * x, {color: f.farbe === 'ok' ? 'ok' : 'f', dash: f.farbe === 'ok' ? null : '10 6', width: 3.6});
+      if (fall === 'breite') { g.seg(100, 12.5, 100, 50, {color: 'no', width: 2.4, dash: true, label: 'zu tief', pos: 'w'}); g.point(100, 12.5, {color: 'no', open: true}); }
+      if (fall === 'tausch') g.point(50, 100, {color: 'no', open: true, label: '(50 | 100)', pos: 'e'});
+      g.point(100, 50, {color: fall === 'richtig' ? 'ok' : 'g', label: 'A', pos: 'ne'});
+    });
+    const show = () => {
+      const f = FALL[fall], r = $('fehler-rechnung');
+      r.textContent = f.rechnung; r.className = f.farbe === 'ok' ? 'c-ok' : 'c-no';
+      $('fehler-folge').textContent = f.folge;
+    };
+    KA.seg('#fehler-seg', {label: 'Rechnung auswählen', value: fall, options: [{value: 'breite', label: 'ganze Breite eingesetzt'}, {value: 'tausch', label: 'x und y vertauscht'}, {value: 'richtig', label: 'richtig'}], onChange: v => { fall = v; plot.update(); show(); }});
+    show();
+  }
+
+  /* ---------- Aufgabe: Ursprung an die richtige Stelle ziehen ---------- */
+  {
+    const answer = $('ursprung-answer'), task = answer.closest('.ka-task');
+    const plot = KA.plot('#ursprung-plot', {x: [-130, 130], y: [-50, 68], step: 25, minor: false, label: 'Hängebrücke mit verschiebbarem Achsenkreuz'});
+    let geprueft = false;
+    const lage = (x, y) => {
+      if (x === 0 && y === 0) return 'genau im tiefsten Seilpunkt';
+      if (x === 0) return fmt(Math.abs(y)) + ' m genau ' + (y < 0 ? 'unter' : 'über') + ' dem tiefsten Seilpunkt';
+      const quer = fmt(Math.abs(x)) + ' m ' + (x < 0 ? 'links' : 'rechts') + ' vom tiefsten Seilpunkt';
+      return quer + ', ' + (y === 0 ? 'auf gleicher Höhe' : fmt(Math.abs(y)) + ' m ' + (y < 0 ? 'darunter' : 'darüber'));
+    };
+    const show = () => {
+      answer.kaValue = H.x + '|' + H.y;
+      const box = $('ursprung-lage');
+      box.textContent = '';
+      box.append('Dein Ursprung liegt ', KA.h('b', {text: lage(H.x, H.y)}), '.');
+      if (geprueft) box.append(' Dazu gehört die Gleichung ', KA.h('span', {class: 'm', text: seilTerm(-H.x, -H.y)}), '.');
+    };
+    const H = plot.handle({x: 0, y: 0, snap: [50, 10], color: 'gold', name: 'Ursprung verschieben', bounds: {x: [-100, 100], y: [-40, 60]}, onMove: () => show()});
+    plot.render(g => {
+      haengebruecke(g, plot, 0, 0);
+      const ink = '#42574f', xa = g.X(plot.x[0]), xb = g.X(plot.x[1]), ya = g.Y(plot.y[0]), yb = g.Y(plot.y[1]), px = g.X(H.x), py = g.Y(H.y);
+      g.el('path', {d: `M${xa} ${py}H${xb + 12}M${px} ${ya}V${yb - 12}`, stroke: ink, 'stroke-width': 1.8, fill: 'none'}, 'top');
+      g.el('path', {d: `M${xb + 18} ${py}l-9 -4.5v9zM${px} ${yb - 18}l-4.5 9h9z`, fill: ink}, 'top');
+      g.el('text', {x: xb + 14, y: py + 19, 'text-anchor': 'middle', 'font-style': 'italic', 'font-size': 14, 'font-weight': 600, fill: '#4c5f57'}, 'top', 'x');
+      g.el('text', {x: px + 12, y: yb - 9, 'text-anchor': 'start', 'font-style': 'italic', 'font-size': 14, 'font-weight': 600, fill: '#4c5f57'}, 'top', 'y');
+      g.point(0, 0, {color: 'p', r: 5});
+      g.el('text', {x: g.X(0) + (H.x === 0 && H.y === 0 ? 20 : 10), y: g.Y(0) - (H.x === 0 && H.y === 0 ? 18 : 10), 'font-size': 14, 'font-weight': 700, fill: KA.COLORS.p, stroke: '#fff', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round'}, 'top', 'S');
+    });
+    answer.kaJudge = value => {
+      const [x, y] = value.split('|').map(Number);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('Modellieren: Ursprungslage nicht lesbar: ' + value);
+      if (x === -100 && y === -20) return {ok: true, msg: 'Der Ursprung liegt am linken Pfeiler auf Höhe der Fahrbahn. Von dort aus liegt der Scheitel bei S(100 | 20).'};
+      const eigene = ' Zu deinem Ursprung gehört ' + seilTerm(-x, -y) + '.';
+      if (x === 0 && y === 0) return {ok: false, msg: 'Hier liegt der Ursprung im Scheitel. In der Gleichung steht aber der Scheitel S(100 | 20).' + eigene};
+      if (x === 0 && y === -20) return {ok: false, msg: 'Die Höhe stimmt, der Ursprung liegt auf der Fahrbahn. Es fehlt die Verschiebung: Der Scheitel soll 100 m rechts vom Ursprung liegen.' + eigene};
+      if (x === 100 && y === -20) return {ok: false, msg: 'Vom rechten Pfeiler aus liegt der Scheitel 100 m links, also bei S(−100 | 20).' + eigene};
+      if (x === -100) return {ok: false, msg: 'Waagerecht stimmt es: Der Scheitel liegt 100 m rechts vom Ursprung. Er soll aber auch 20 m über dem Ursprung liegen.' + eigene};
+      if (y === -20) return {ok: false, msg: 'Die Höhe stimmt, der Ursprung liegt auf der Fahrbahn. Der Scheitel soll aber 100 m rechts vom Ursprung liegen.' + eigene};
+      return {ok: false, msg: 'Lies den Scheitel aus der Gleichung ab: S(100 | 20). Der tiefste Seilpunkt liegt also 100 m rechts vom Ursprung und 20 m darüber.' + eigene};
+    };
+    answer.addEventListener('ka:restore', evt => {
+      if (!evt.detail) return;
+      const [x, y] = evt.detail.split('|').map(Number);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('Modellieren: gespeicherte Ursprungslage nicht lesbar: ' + evt.detail);
+      geprueft = true;
+      H.set(x, y, true); show();
+    });
+    for (const type of ['ka:solved', 'ka:missed']) task.addEventListener(type, () => { geprueft = true; show(); });
+    show();
+  }
+
+  /* ---------- Wurf ---------- */
+  {
+    const SZENE = {
+      boden: {f: x => -.25 * x * x + 2 * x, term: 'f(x) = −0,25x² + 2x', land: 8, sx: 4, sy: 4, h: 3, hx: [2, 6], ghost: null, ding: 'Der Ball'},
+      stoss: {f: x => -.25 * x * x + .5 * x + 2, term: 'f(x) = −0,25x² + 0,5x + 2', land: 4, sx: 1, sy: 2.25, h: 2, hx: [0, 2], ghost: -2, ding: 'Die Kugel'},
+    };
+    const plot = KA.plot('#wurf-plot', {x: [-3, 9], y: [-1.5, 5], label: 'Flugbahn als Parabel mit Ball'});
+    let sz = 'boden', frage = 'stelle', x = 2, raf = 0, lauf = 0;
+    const S = () => SZENE[sz];
+    plot.render(g => {
+      const s = S(), f = s.f, y = f(x), ux = g.X(1) - g.X(0);
+      if (sz === 'boden') {
+        g.el('rect', {x: g.X(1.9), y: g.Y(2.5), width: .2 * ux, height: g.Y(0) - g.Y(2.5), fill: '#e6b9a6', stroke: KA.COLORS.g, 'stroke-width': 1.4}, 'under');
+        g.label(2, 1.1, 'Mauer 2,5 m', {pos: 'e', color: 'g', size: 12.5});
+      } else {
+        const ink = '#7b8a82', bx = g.X(-.42);
+        g.el('path', {d: `M${bx} ${g.Y(1.45)}V${g.Y(.72)}M${bx} ${g.Y(.72)}L${g.X(-.62)} ${g.Y(0)}M${bx} ${g.Y(.72)}L${g.X(-.2)} ${g.Y(0)}M${bx} ${g.Y(1.35)}L${g.X(-.05)} ${g.Y(1.9)}`, stroke: ink, 'stroke-width': 3.2, 'stroke-linecap': 'round', fill: 'none'}, 'under');
+        g.el('circle', {cx: bx, cy: g.Y(1.66), r: .17 * ux, fill: ink}, 'under');
+      }
+      g.fn(x => f(x) >= -.6 ? f(x) : NaN, {from: plot.x[0], to: 0, color: 'dim', dash: true, width: 1.8});
+      g.fn(x => f(x) >= -.6 ? f(x) : NaN, {from: s.land, to: plot.x[1], color: 'dim', dash: true, width: 1.8});
+      g.fn(f, {from: 0, to: s.land, color: 'f', width: 3, opacity: .3});
+      if (x > 0) g.fn(f, {from: 0, to: x, color: 'f', width: 3.6});
+      if (frage === 'stelle') { g.seg(0, y, x, y, {color: 'p', dash: true, width: 1.6}); g.seg(x, 0, x, y, {color: 'p', width: 2.6}); }
+      if (frage === 'hoch') {
+        g.seg(s.sx, 0, s.sx, s.sy, {color: 'p', dash: true}); g.seg(0, s.sy, s.sx, s.sy, {color: 'p', dash: true});
+        g.point(s.sx, s.sy, {label: KA.point(s.sx, s.sy, 'S'), pos: sz === 'boden' ? 'n' : 'ne'});
+      }
+      if (frage === 'weit') {
+        g.seg(0, -.9, s.land, -.9, {color: 'ok', arrow: true, width: 2.2, clip: false});
+        g.seg(0, -1.05, 0, -.75, {color: 'ok', width: 2.2, clip: false});
+        g.label(s.land, -.9, fmt(s.land) + ' m', {pos: 'e', color: 'ok', size: 13});
+        g.point(s.land, 0, {color: 'ok'});
+        if (s.ghost != null) {
+          const gx = g.X(s.ghost), gy = g.Y(0);
+          g.point(s.ghost, 0, {color: 'no', open: true});
+          g.el('path', {d: `M${gx - 9} ${gy - 9}l18 18M${gx + 9} ${gy - 9}l-18 18`, stroke: KA.COLORS.no, 'stroke-width': 2.4, 'stroke-linecap': 'round'}, 'top');
+          g.label(s.ghost, 0, 'entfällt', {pos: 'nw', color: 'no', size: 13});
+        } else g.point(0, 0, {color: 'dim', open: true});
+      }
+      if (frage === 'hoehe') {
+        g.hline(s.h, {color: 'gold', width: 2});
+        for (const hx of s.hx) { g.seg(hx, 0, hx, s.h, {color: 'gold', dash: true}); g.point(hx, s.h, {color: 'gold'}); }
+        g.label(plot.x[1], s.h, 'Höhe ' + fmt(s.h) + ' m', {pos: 'nw', color: 'gold', size: 12.5});
+      }
+      const bx = g.X(x), by = g.Y(y);
+      if (sz === 'boden') {
+        g.el('circle', {cx: bx, cy: by, r: 8, fill: '#fff', stroke: '#1f3a34', 'stroke-width': 2}, 'top');
+        g.el('path', {d: `M${bx} ${by - 3.6}l3.4 2.5l-1.3 4h-4.2l-1.3 -4z`, fill: '#1f3a34'}, 'top');
+      } else g.el('circle', {cx: bx, cy: by, r: 7, fill: '#4b5a63', stroke: '#fff', 'stroke-width': 2}, 'top');
+    });
+    const show = () => {
+      // Angezeigt wird die gerundete Stelle, also auch der Funktionswert an genau dieser Stelle.
+      const s = S(), xr = +x.toFixed(1), y = s.f(xr);
+      $('wurf-term').textContent = s.term;
+      $('wurf-ball').textContent = KA.point(xr, +y.toFixed(2), 'P');
+      let msg;
+      if (frage === 'stelle') msg = sz === 'boden' && near(x, 2) ? 'f(2) = 3 und 3 > 2,5: Der Ball fliegt 0,5 m über die Mauer.' : `Höhe an der Stelle x = ${fmt(xr)}: f(${fmt(xr)}) = ${fmt(y)} m`;
+      else if (frage === 'hoch') msg = `Höchster Punkt ist der Scheitel ${KA.point(s.sx, s.sy, 'S')}: ${s.ding} steigt ${fmt(s.sy)} m hoch.`;
+      else if (frage === 'weit') msg = s.ghost == null ? `Landung heißt f(x) = 0: x = 0 ist der Abschuss, x = ${fmt(s.land)} die Landung. Weite ${fmt(s.land)} m.` : `f(x) = 0 bei x = ${fmt(s.ghost)} und x = ${fmt(s.land)}. Der Stoß beginnt bei x = 0, also entfällt x = ${fmt(s.ghost)}. Weite ${fmt(s.land)} m.`;
+      else if (frage === 'hoehe') msg = sz === 'boden' ? 'f(x) = 3 bei x = 2 und x = 6: einmal beim Steigen, einmal beim Fallen.' : 'f(x) = 2 bei x = 0 und x = 2: beim Abstoß und noch einmal beim Fallen.';
+      else throw new Error('Modellieren: unbekannte Frage ' + frage);
+      $('wurf-msg').textContent = msg;
+    };
+    const stop = () => { cancelAnimationFrame(raf); raf = 0; lauf++; };
+    const place = v => { x = v; plot.update(); show(); };
+    const goto = (ziel, ms = 450) => {
+      stop();
+      const id = lauf, von = x;
+      regler.set(Math.round(ziel), true);
+      KA.tween(von, ziel, ms, v => { if (id === lauf) place(v); }, () => { if (id === lauf) place(ziel); });
+    };
+    const ziel = () => frage === 'hoch' ? S().sx : frage === 'weit' ? S().land : frage === 'hoehe' ? S().hx[S().hx.length - 1] : Math.min(x, S().land);
+    const regler = KA.slider('#wurf-controls', {label: 'x', min: 0, max: 8, step: 1, value: x, format: v => fmt(v) + ' m', onInput: v => { stop(); place(v); }});
+    const szSeg = KA.seg('#wurf-szene', {label: 'Situation wählen', value: sz, options: [{value: 'boden', label: 'Schuss vom Boden'}, {value: 'stoss', label: 'Stoß aus 2 m Höhe'}], onChange: v => setSzene(v)});
+    const frSeg = KA.seg('#wurf-frage', {label: 'Frage wählen', value: frage, options: [{value: 'stelle', label: 'Höhe an einer Stelle'}, {value: 'hoch', label: 'Höchster Punkt'}, {value: 'weit', label: 'Landung'}, {value: 'hoehe', label: 'Stelle zu einer Höhe'}], onChange: v => { frage = v; goto(ziel()); }});
+    function setSzene(v) {
+      if (!SZENE[v]) throw new Error('Modellieren: unbekannte Situation ' + v);
+      stop();
+      sz = v;
+      regler.input.max = S().land;
+      x = Math.min(Math.round(x), S().land);
+      if (frage !== 'stelle') x = ziel();
+      regler.set(x, true);
+      place(x);
+    }
+    $('wurf-play').addEventListener('click', () => {
+      stop();
+      const id = lauf, land = S().land;
+      if (reduced()) { regler.set(land, true); place(land); return; }
+      const start = performance.now(), dauer = 280 * land;
+      const tick = now => {
+        if (id !== lauf) return;
+        const p = Math.min(1, (now - start) / dauer);
+        place(land * p);
+        if (p < 1) raf = requestAnimationFrame(tick); else { raf = 0; regler.set(land, true); }
+      };
+      raf = requestAnimationFrame(tick);
+    });
+    show();
+    let letzter = 0;
+    $('steps-wurf').addEventListener('ka:step', evt => {
+      const index = evt.detail.index;
+      if (index === letzter) return;
+      letzter = index;
+      if (sz !== 'boden') { szSeg.set('boden', true); setSzene('boden'); }
+      frage = index >= 4 ? 'hoch' : 'weit';
+      frSeg.set(frage, true);
+      goto(index >= 4 ? 4 : index >= 2 ? 8 : 0);
+    });
+  }
+
+  /* ---------- Durchfahrt ---------- */
+  {
+    const f = x => -.25 * x * x + 4;
+    const plot = KA.plot('#tor-plot', {x: [-6, 6], y: [-1.9, 5.5], label: 'Tunnel als Parabel mit Fahrzeug'});
+    let fehler = false;
+    const H = plot.handle({x: 2, y: 2.5, snap: [1, .25], color: 'p', name: 'Obere rechte Ecke des Fahrzeugs verschieben', bounds: {x: [1, 3], y: [1, 4.5]}, onMove: () => { breite.set(H.x * 2, true); hoehe.set(H.y, true); show(); }});
+    plot.render(g => {
+      const X = g.X, Y = g.Y, half = H.x, hgt = H.y, top = f(half), luft = top - hgt, passt = luft > 0;
+      const farbe = passt ? KA.COLORS.ok : KA.COLORS.no;
+      let bogen = '';
+      for (let i = 0; i <= 80; i++) { const x = -4 + i / 10; bogen += (i ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(f(x)).toFixed(1); }
+      g.el('path', {d: `M${X(-6)} ${Y(0)}V${Y(5.5)}H${X(6)}V${Y(0)}Z${bogen}Z`, 'fill-rule': 'evenodd', fill: '#ddd5c4'}, 'under');
+      g.el('path', {d: bogen, fill: 'none', stroke: '#a2967e', 'stroke-width': 7, 'stroke-linejoin': 'round'}, 'under');
+      g.el('rect', {x: X(-6), y: Y(0), width: X(6) - X(-6), height: Y(-1.9) - Y(0), fill: '#eceee6'}, 'under');
+      // Fahrzeug von vorn
+      const u = X(1) - X(0), wx = X(-half), ww = 2 * half * u, wy = Y(hgt), wh = Y(.28) - Y(hgt);
+      for (const s of [-1, 1]) g.el('rect', {x: X(s * (half - .32)) - .3 * u, y: Y(.55), width: .6 * u, height: Y(0) - Y(.55), rx: 3, fill: '#2f3d3a'}, 'under');
+      g.el('rect', {x: wx, y: wy, width: ww, height: wh, rx: 5, fill: passt ? '#dff1e6' : '#fbe1dd', stroke: farbe, 'stroke-width': 2.2}, 'under');
+      if (hgt >= 1.5) g.el('rect', {x: wx + .22 * u, y: wy + .2 * u, width: ww - .44 * u, height: Math.max(4, (hgt - .28) * .38 * u), rx: 3, fill: '#fff', stroke: farbe, 'stroke-width': 1.3, opacity: .9}, 'under');
+      for (const s of [-1, 1]) g.el('circle', {cx: X(s * (half - .38)), cy: Y(.62), r: .13 * u, fill: '#fff', stroke: farbe, 'stroke-width': 1.3}, 'under');
+      g.fn(f, {color: 'f', from: -4, to: 4, width: 3.2});
+      g.seg(half, 0, half, Math.min(hgt, top), {color: 'p', dash: true, width: 1.8});
+      g.seg(half, hgt, half, top, {color: passt ? 'ok' : 'no', width: 3.4});
+      // Beschriftungen rechts neben der Ecke, mit Abstand zum ziehbaren Punkt und zur y-Achse
+      // Breites Fahrzeug: rechts ist kein Platz mehr, dann steht die Angabe links über dem Fahrzeugdach.
+      const rechts = half <= 2;
+      g.label(half + (rechts ? .6 : -.6), (hgt + top) / 2, luft === 0 ? 'berührt' : fmt(Math.abs(luft)) + ' m ' + (passt ? 'Luft' : 'zu hoch'), {pos: rechts ? 'e' : 'w', color: passt ? 'ok' : 'no', size: 13});
+      g.point(half, top, {color: 'f', label: `f(${fmt(half)}) = ${fmt(top)}`, pos: passt ? 'ne' : 'se'});
+      g.seg(-half, -1.45, half, -1.45, {color: 'p', width: 2, clip: false});
+      for (const s of [-1, 1]) g.seg(s * half, -1.6, s * half, -1.3, {color: 'p', width: 2, clip: false});
+      g.label(0, -1.45, 'Breite ' + fmt(2 * half) + ' m', {pos: 's', color: 'p', size: 12.5});
+      if (fehler) {
+        const xf = 2 * half, yf = Math.max(f(xf), plot.y[0]);
+        g.seg(xf, 0, xf, 5.5, {color: 'no', dash: true, width: 2});
+        if (f(xf) >= 0) g.point(xf, yf, {color: 'no', open: true});
+        g.label(xf, 5.1, 'x = ' + fmt(xf) + '?', {pos: xf >= 5 ? 'w' : 'e', color: 'no', size: 13});
+      }
+    });
+    function show() {
+      const half = H.x, hgt = H.y, top = f(half), luft = top - hgt;
+      $('tor-ecke').textContent = `Breite ${fmt(2 * half)} m, also Ecke bei x = ${fmt(half)}`;
+      $('tor-wert').textContent = `Tunnelhöhe dort: f(${fmt(half)}) = ${fmt(top)} m`;
+      const u = $('tor-urteil');
+      u.textContent = luft > 0 ? `${fmt(hgt)} < ${fmt(top)}: passt, ${fmt(luft)} m Luft` : luft === 0 ? `${fmt(hgt)} = ${fmt(top)}: Die Ecken berühren den Bogen. Das passt nicht.` : `${fmt(hgt)} > ${fmt(top)}: passt nicht, ${fmt(-luft)} m zu hoch`;
+      u.className = luft > 0 ? 'c-ok' : 'c-no';
+      const falsch = $('tor-falsch');
+      falsch.hidden = !fehler;
+      falsch.textContent = `Fehler: f(${fmt(2 * half)}) = ${fmt(f(2 * half))} gehört zur Stelle x = ${fmt(2 * half)}. Die Ecke liegt aber bei x = ${fmt(half)}.`;
+    }
+    const breite = KA.slider('#tor-controls', {label: 'Breite', min: 2, max: 6, step: 2, value: 4, format: v => fmt(v) + ' m', onInput: v => { H.set(v / 2, H.y, true); show(); }});
+    const hoehe = KA.slider('#tor-controls', {label: 'Höhe', min: 1, max: 4.5, step: .25, value: 2.5, format: v => fmt(v) + ' m', onInput: v => { H.set(H.x, v, true); show(); }});
+    const knopf = $('tor-fehler');
+    knopf.addEventListener('click', () => { fehler = !fehler; knopf.setAttribute('aria-pressed', String(fehler)); plot.update(); show(); });
+    show();
+  }
+
+  /* ---------- Lösung am Bild: Wurf vom Balkon ---------- */
+  {
+    const box = $('balkon-loesung');
+    let fertig = false;
+    box.addEventListener('toggle', () => {
+      if (!box.open || fertig) return;
+      fertig = true;
+      const f = x => -.25 * x * x + x + 3;
+      const plot = KA.plot('#balkon-plot', {width: Math.min(480, plotWidth(box)), x: [-3, 8], y: [-1, 5], label: 'Flugbahn des Balls vom Balkon mit Zaun'});
+      plot.render(g => {
+        const u = g.X(1) - g.X(0);
+        g.el('rect', {x: g.X(-3), y: g.Y(5), width: 3 * u, height: g.Y(0) - g.Y(5), fill: '#efe9dc'}, 'under');
+        g.el('rect', {x: g.X(-.9), y: g.Y(3), width: 1.2 * u, height: 5, fill: '#a2967e'}, 'under');
+        g.el('rect', {x: g.X(3.94), y: g.Y(2.5), width: .12 * u, height: g.Y(0) - g.Y(2.5), fill: '#c9a37c', stroke: '#8a6a45', 'stroke-width': 1}, 'under');
+        g.label(4, 1.1, 'Zaun 2,5 m', {pos: 'e', color: 'gold', size: 12.5});
+        g.fn(f, {from: -2, to: 0, color: 'dim', dash: true, width: 1.8});
+        g.fn(f, {from: 0, to: 6, color: 'f', width: 3.4});
+        const gx = g.X(-2), gy = g.Y(0);
+        g.point(-2, 0, {color: 'no', open: true});
+        g.el('path', {d: `M${gx - 9} ${gy - 9}l18 18M${gx + 9} ${gy - 9}l-18 18`, stroke: KA.COLORS.no, 'stroke-width': 2.4, 'stroke-linecap': 'round'}, 'top');
+        g.label(-2, 0, 'entfällt', {pos: 'nw', color: 'no', size: 13});
+        g.point(0, 3, {color: 'f'});
+        g.label(-.4, 3, 'Abwurf', {pos: 'nw', color: 'f'});
+        g.point(2, 4, {label: 'S(2 | 4)', pos: 'n'});
+        g.point(4, 3, {color: 'gold', label: 'f(4) = 3', pos: 'ne'});
+        g.point(6, 0, {color: 'ok', label: 'Landung', pos: 'ne'});
+      });
+    });
+  }
+
+  /* ---------- Lernziele abhaken, Stand im Mini-Test ---------- */
+  {
+    const solved = id => {
+      const task = document.querySelector(`.ka-task[data-task="${id}"]`);
+      if (!task) throw new Error('Modellieren: Lernziel verweist auf unbekannte Aufgabe ' + id);
+      return task.classList.contains('is-solved');
+    };
+    const paint = () => {
+      for (const li of document.querySelectorAll('#ziele li')) li.classList.toggle('is-done', li.dataset.tasks.split(' ').every(solved));
+      const mini = [...document.querySelectorAll('#minitest .ka-task')], done = mini.filter(t => t.classList.contains('is-solved')).length;
+      $('mini-stand').textContent = done === 0 ? '' : done === mini.length ? `Alle ${mini.length} Aufgaben gelöst. Du bist bereit für die Probearbeit.` : `${done} von ${mini.length} Aufgaben gelöst.`;
+    };
+    document.addEventListener('ka:solved', paint);
+    document.addEventListener('ka:missed', paint);
+    document.addEventListener('DOMContentLoaded', paint);
+  }
+})();
+</script>
+</body>
+</html>

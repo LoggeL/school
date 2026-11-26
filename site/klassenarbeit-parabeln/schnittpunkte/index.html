@@ -1,0 +1,1400 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<title>Schnittpunkte berechnen · Klassenarbeit Klasse 10 · school</title>
+<meta name="description" content="Schnittpunkte von Parabel und x-Achse, Parabel und Gerade und von zwei Parabeln berechnen: eine feste Routine in vier Schritten, interaktive Bilder und Übungen ohne Taschenrechner.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+<style>
+/* Seitenspezifisch: Modul 4 · Schnittpunkte */
+.ka .ka-readout>.c-no{background:var(--no-wash)}
+.ka .ka-readout>.c-gold{background:#f6edd6}
+.ka .ka-controls>.ka-seg{justify-self:start}
+.ka .sp-taskplot{max-width:440px;margin:10px 0 4px}
+.ka .sp-found{margin-top:8px;font-size:14px;font-weight:650;color:var(--dim);line-height:1.5}
+.ka .sp-found b{color:var(--p);font-family:var(--math);font-size:1.08em;font-weight:600;white-space:nowrap}
+.ka .sp-found.is-done{color:var(--ok)}
+
+/* Der Viererschritt als Leiste über jeder Schrittfolge */
+.ka .ka-section .sp-route{list-style:none;padding:0;margin:14px 0 6px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.ka .ka-section .sp-route li{position:relative;margin:0;padding:33px 3px 0;text-align:center;font-size:12.5px;font-weight:700;line-height:1.25;color:var(--soft)}
+.ka .sp-route li i{position:absolute;left:50%;top:0;transform:translateX(-50%);width:27px;height:27px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:800;background:var(--paper);border:2px solid var(--line);color:var(--soft);z-index:1;transition:background .2s,border-color .2s}
+.ka .sp-route li+li::before{content:"";position:absolute;top:12.5px;right:50%;width:100%;height:2px;background:var(--line)}
+.ka .sp-route li.is-past{color:var(--brand)}
+.ka .sp-route li.is-past i{background:var(--brand);border-color:var(--brand);color:#fff}
+.ka .sp-route li.is-past+li::before{background:var(--brand)}
+.ka .sp-route li.is-on{color:var(--ink)}
+.ka .sp-route li.is-on i{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px #bd6b3026}
+.ka .sp-tag{display:inline-flex;align-items:center;gap:7px;justify-self:start;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);margin-bottom:1px}
+.ka .sp-tag i,.ka .sp-n{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--brand);color:#fff;font:800 11px/1 School,system-ui,sans-serif;font-style:normal;letter-spacing:0}
+
+/* Die Routine als vier Karten */
+.ka .ka-section .sp-cards{list-style:none;padding:0;margin:14px 0 8px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ka .ka-section .sp-cards li{position:relative;margin:0;padding:14px 14px 12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.ka .sp-cards li+li::before{content:"→";position:absolute;left:-13px;top:20px;width:14px;text-align:center;color:var(--accent);font-weight:800;font-size:14px}
+.ka .sp-cards .n{display:block;font:italic 500 30px/1 var(--math);color:var(--accent)}
+.ka .sp-cards b{display:block;font-size:15.5px;margin:6px 0 2px}
+.ka .sp-cards p{font-size:13.5px;color:var(--dim);line-height:1.45}
+.ka .sp-cards .ex{display:block;margin-top:9px;padding-top:8px;border-top:1px dashed var(--karo);font-family:var(--math);font-size:16px;line-height:1.55}
+.ka .sp-cards .ex span{display:block;white-space:nowrap}
+
+/* Lösungswege mit den Nummern der Routine */
+.ka .ka-calc.sp-calc{white-space:normal}
+.ka .sp-calc>div{display:grid;grid-template-columns:27px minmax(0,1fr);align-items:baseline}
+.ka .sp-calc>div>.sp-n{align-self:start;margin-top:.42em}
+.ka .sp-calc>div>span:last-child,.ka .sp-calc>div>div{grid-column:2}
+.ka .sp-calc .op{white-space:nowrap}
+.ka .sp-calc .nw{white-space:nowrap}
+
+/* Falltabelle Öffnung und Scheitellage */
+.ka .sp-cases{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:5px;margin:14px 0 6px;font-size:13px}
+.ka .sp-cases>div{padding:8px 5px;border-radius:9px;text-align:center;line-height:1.25}
+.ka .sp-cases .h{font-weight:700;color:var(--dim);font-size:12px;align-self:end;padding-bottom:3px}
+.ka .sp-cases .r{text-align:left;font-weight:700;align-self:center;padding-left:0}
+.ka .sp-cases .c{background:var(--bg);border:1.5px solid var(--line2);font:500 23px/1.1 var(--math);transition:background .2s,border-color .2s}
+.ka .sp-cases .c small{display:block;font:650 11px/1.2 School,system-ui,sans-serif;color:var(--soft);margin-top:3px}
+.ka .sp-cases .c.is-seen{background:var(--brand-wash);border-color:#c5dccb}
+.ka .sp-cases .c.is-now{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px #bd6b3026}
+
+/* Mitlaufende Rechnung unter einem Bild */
+.ka .sp-live{margin-top:12px;padding:10px 14px;border-radius:11px;background:var(--bg);border:1px dashed var(--karo);font-family:var(--math);font-size:17px;line-height:1.55}
+.ka .sp-live>div{display:flex;flex-wrap:wrap;gap:0 10px;align-items:baseline;padding:2px 0}
+.ka .sp-live small{font-family:School,system-ui,sans-serif;font-size:12px;font-weight:650;color:var(--dim);min-width:8.6em}
+.ka .sp-live>div>span{white-space:nowrap}
+.ka .sp-live .sp-verdict{display:block;font-family:School,system-ui,sans-serif;font-size:14px;font-weight:700;line-height:1.45;margin-top:6px;padding-top:7px;border-top:1px dashed var(--karo)}
+.ka .sp-live .sp-verdict.ok{color:var(--ok)}.ka .sp-live .sp-verdict.no{color:var(--no)}.ka .sp-live .sp-verdict.one{color:var(--gold)}
+.ka .sp-live s{color:var(--no);text-decoration-thickness:2px}
+.ka .sp-gauge{position:relative;height:30px;margin:12px 0 0;--zero:30.77%;--pos:50%}
+.ka .sp-gauge .bar{position:absolute;left:0;right:0;top:10px;height:10px;border-radius:5px;background:linear-gradient(90deg,#f3c9c3 0,#f3c9c3 var(--zero),#bfe3cc var(--zero))}
+.ka .sp-gauge .zero{position:absolute;left:var(--zero);top:3px;width:2px;height:24px;margin-left:-1px;background:var(--ink)}
+.ka .sp-gauge .thumb{position:absolute;left:var(--pos);top:6px;width:18px;height:18px;margin-left:-9px;border-radius:50%;border:2px solid #fff;background:var(--ok);box-shadow:0 1px 4px #0004;transition:left .15s}
+.ka .sp-gauge.no .thumb{background:var(--no)}.ka .sp-gauge.one .thumb{background:var(--gold)}
+.ka .sp-gauge-legend{position:relative;height:18px;font-size:11.5px;font-weight:650;color:var(--dim);--zero:30.77%}
+.ka .sp-gauge-legend span{position:absolute;top:0;white-space:nowrap}
+.ka .sp-gauge-legend span:nth-child(1){left:0;color:var(--no)}
+.ka .sp-gauge-legend span:nth-child(2){left:var(--zero);transform:translateX(-50%)}
+.ka .sp-gauge-legend span:nth-child(3){right:0;color:var(--ok)}
+
+/* Drei Fälle als kleine Karten */
+.ka .sp-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0 6px}
+.ka .sp-three article{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 14px 12px;display:grid;gap:5px;align-content:start}
+.ka .sp-three svg{width:100%;height:auto;border-radius:8px;background:var(--bg)}
+.ka .sp-three h4{margin:4px 0 0}
+.ka .sp-three p{font-size:13.5px;color:var(--dim);line-height:1.45}
+.ka .sp-three .m{display:block;font-size:16px;white-space:nowrap;line-height:1.5}
+.ka .sp-three .res{font-weight:700;color:var(--ink)}
+.ka .sp-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px 10px}
+.ka .sp-card>p{font-size:14.5px}
+.ka .sp-three .fg{font-size:13.5px;line-height:1.5;color:var(--ink)}
+.ka .sp-three .fg .m{display:inline;font-size:15px}
+
+/* Tabelle der Rechenwege */
+.ka .sp-ways{font-family:School,system-ui,sans-serif;font-size:15.5px;line-height:1.5}
+.ka .sp-ways td,.ka .sp-ways th{text-align:left;vertical-align:top;padding:8px 12px}
+.ka .sp-ways .m{font-size:1.1em}
+.ka .sp-ways td small{display:block;color:var(--dim);font-size:13.5px;font-weight:650}
+
+/* Fehlerbild */
+.ka .sp-errcase .ka-calc{margin:6px 0}
+.ka .sp-errcase .bad{border-left-color:var(--no);color:var(--no)}
+.ka .sp-errcase .good{border-left-color:var(--ok)}
+.ka .sp-errcase h4{margin-top:12px}
+.ka .sp-errlabel{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin-top:10px}
+.ka .sp-errlabel.bad{color:var(--no)}.ka .sp-errlabel.good{color:var(--ok)}
+
+/* Spickzettel */
+.ka .sp-sheet{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.ka .sp-sheet>div{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:
+  linear-gradient(var(--karo2) 1px,transparent 1px) 0 0/100% 22px,
+  linear-gradient(90deg,var(--karo2) 1px,transparent 1px) 0 0/22px 100%,#fff}
+.ka .sp-sheet h3{margin:0 0 8px;font-size:17px}
+.ka .sp-sheet ol,.ka .sp-sheet ul{padding-left:1.25em;font-size:15px;line-height:1.55}
+.ka .sp-sheet .wide{grid-column:1/-1}
+.ka .sp-sheet .ka-formula{background:#fff;margin:6px 0 0;font-size:clamp(18px,2.6vw,23px)}
+.ka .sp-sheet .ka-table{font-size:15.5px;background:#fff}
+.ka .sp-sheet .ka-table td,.ka .sp-sheet .ka-table th{text-align:left;padding:6px 10px}
+.ka .sp-check{list-style:none;padding:0!important;display:grid;gap:5px}
+.ka .ka-section .sp-check li{margin:0;padding-left:26px;position:relative}
+.ka .sp-check li::before{content:"";position:absolute;left:0;top:.28em;width:15px;height:15px;border:2px solid var(--brand);border-radius:4px;background:#fff}
+
+@media(max-width:900px){
+  .ka .ka-section .sp-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ka .sp-cards li+li::before{display:none}
+}
+@media(max-width:820px){
+  .ka .ka-figure{max-width:560px;margin-inline:auto}
+  .ka .sp-three{grid-template-columns:minmax(0,1fr)}
+  .ka .sp-three article{grid-template-columns:116px minmax(0,1fr);column-gap:14px}
+  .ka .sp-three article>*{grid-column:1/-1}
+  .ka .sp-three article>div:first-child{grid-column:1;grid-row:1/span 2;align-self:start}
+  .ka .sp-three article>h4,.ka .sp-three article>.fg{grid-column:2}
+  .ka .sp-three h4{margin-top:0}
+  .ka .sp-sheet{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:520px){
+  .ka .ka-section .sp-cards{grid-template-columns:minmax(0,1fr)}
+  .ka .ka-section .sp-cards li{display:grid;grid-template-columns:34px minmax(0,1fr);column-gap:8px}
+  .ka .sp-cards li>*{grid-column:2}
+  .ka .sp-cards .n{grid-column:1;grid-row:1/span 3}
+  .ka .sp-cards b{margin-top:2px}
+  .ka .ka-section .sp-route li{font-size:11.5px}
+  .ka .sp-cases{font-size:12px}
+  .ka .sp-cases .h{font-size:11px}
+  .ka .ka-calc.sp-calc{font-size:16px;padding-inline:10px}
+  .ka .sp-live{font-size:16px;padding-inline:11px}
+}
+</style>
+</head>
+<body class="ka" data-ka-page="schnittpunkte">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<header class="ka-hero">
+  <div>
+    <p class="ka-kicker">Modul 4 · Teil 2 · 30 Minuten</p>
+    <h1>Schnittpunkte: gleiche Stelle, <em>gleiche Höhe.</em></h1>
+    <p class="ka-lead">Zwei Graphen schneiden sich dort, wo sie an derselben Stelle x gleich hoch sind. Aus diesem einen Gedanken wird eine Routine in vier Schritten. Sie läuft für die x-Achse, für Geraden und für zwei Parabeln immer gleich ab.</p>
+    <ul class="ka-goals" id="goals">
+      <li data-sec="idee">Du erklärst, warum im Schnittpunkt f(x) = g(x) gilt, und gibst jeden Schnittpunkt mit x und y an.</li>
+      <li data-sec="x-achse">Du berechnest Nullstellen und schreibst die Schnittpunkte mit der x-Achse als N(x | 0).</li>
+      <li data-sec="gerade">Du berechnest die Schnittpunkte von Parabel und Gerade und erkennst am Wurzelinhalt, ob es zwei, einen oder keinen gibt.</li>
+      <li data-sec="parabeln">Du berechnest die Schnittpunkte zweier Parabeln und siehst vorher, ob x² wegfällt.</li>
+    </ul>
+    <p class="ka-small" style="margin-top:14px">Die Minuten sind ein Richtwert. Wird es knapp, lass die Aufgaben mit dem Etikett „Knobeln“ zuerst aus und hol sie später nach.</p>
+  </div>
+  <figure class="ka-figure">
+    <div id="hero-plot"></div>
+    <div class="ka-controls" id="hero-controls"></div>
+    <div class="ka-readout" aria-live="polite"><span class="c-f" id="hero-f"></span><span class="c-g" id="hero-g"></span><span id="hero-gap"></span></div>
+    <p class="sp-found" id="hero-found" role="status"></p>
+    <figcaption>Zieh das Lineal über das Bild oder nutze den Regler. Es misst an der Stelle x beide Höhen. Suche die zwei Stellen, an denen der Abstand null wird.</figcaption>
+  </figure>
+</header>
+
+<!-- ================= 1 · DIE IDEE ================= -->
+<section class="ka-section" id="idee">
+  <p class="ka-phase"><b>Minute 0 bis 4</b> · Entdecken</p>
+  <h2>Gleiche Höhe heißt: gleichsetzen</h2>
+  <div class="ka-cols">
+    <div>
+      <p>Das Lineal oben misst an jeder Stelle <span class="m">x</span> zwei Höhen: <span class="m c-f">f(x)</span> und <span class="m c-g">g(x)</span>. Im Schnittpunkt sind beide gleich groß. Als Gleichung geschrieben: <mark><span class="m">f(x) = g(x)</span></mark>.</p>
+      <p>Ablesen klappt nur, wenn der Schnittpunkt genau auf einem Gitterpunkt liegt. Rechnen klappt immer. Dazu bringst du alles auf eine Seite, sodass rechts 0 steht. Was das im Bild bedeutet, zeigt das Bild mit dem Regler „abgezogen“.</p>
+      <div class="ka-idea"><b>Beobachte</b>Schiebe den Regler langsam nach rechts. Dabei wird von beiden Graphen <span class="m c-g">g(x)</span> abgezogen. Was wird aus der Geraden? Wandern die beiden violetten Punkte dabei zur Seite?</div>
+      <div class="ka-merke"><b>Merke</b>Die Stelle <span class="m">x</span> eines Schnittpunkts ist eine Lösung von <span class="m">f(x) − g(x) = 0</span>. Die Höhe <span class="m">y</span> steckt in dieser Gleichung nicht mehr. Deshalb setzt du <span class="m">x</span> danach in <span class="m c-f">f</span> oder <span class="m c-g">g</span> ein.</div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="diff-plot"></div>
+      <div class="ka-controls" id="diff-controls"></div>
+      <div class="ka-btnrow"><button type="button" class="ka-btn" id="diff-play">g(x) abziehen ▶</button></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="diff-f"></span><span class="c-g" id="diff-g"></span><span class="c-p" id="diff-s"></span></div>
+      <figcaption>Von beiden Graphen wird derselbe Term abgezogen. Die Stellen der Schnittpunkte bleiben stehen, nur ihre Höhe geht verloren.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Die Routine: immer dieselben vier Schritte</h3>
+  <p>Diese vier Schritte begegnen dir auf dieser Seite in jeder Rechnung wieder, immer mit denselben Nummern. Hier stehen sie für <span class="m c-f">f(x) = x²</span> und <span class="m c-g">g(x) = x + 2</span> aus dem Bild oben.</p>
+  <ol class="sp-cards">
+    <li><span class="n">1</span><b>Gleichsetzen</b><p>Beide Funktionsterme mit einem Gleichheitszeichen verbinden.</p><span class="ex"><span>x² = x + 2</span></span></li>
+    <li><span class="n">2</span><b>x ausrechnen</b><p>Alles auf eine Seite bringen und die Gleichung lösen.</p><span class="ex"><span>x² − x − 2 = 0</span><span>x₁ = −1, &nbsp;x₂ = 2</span></span></li>
+    <li><span class="n">3</span><b>y berechnen</b><p>Jedes x in eine der beiden Funktionen einsetzen.</p><span class="ex"><span>f(−1) = (−1)² = 1</span><span>f(2) = 2² = 4</span></span></li>
+    <li><span class="n">4</span><b>Punkt und Probe</b><p>Punkte notieren. Mit der anderen Funktion prüfen.</p><span class="ex"><span>S₁(−1 | 1), &nbsp;S₂(2 | 4)</span><span>g(2) = 2 + 2 = 4 ✓</span></span></li>
+  </ol>
+  <div class="ka-warn"><b>Typischer Fehler: y vergessen</b>Falsch: „Die Schnittpunkte sind <span class="m">x₁ = −1</span> und <span class="m">x₂ = 2</span>.“ Das sind nur zwei Stellen auf der x-Achse. Ein Punkt braucht zwei Koordinaten. Richtig: <span class="m">S₁(−1 | 1)</span> und <span class="m">S₂(2 | 4)</span>.</div>
+
+  <h3>Kurz prüfen</h3>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="idee-einsetzen" data-level="1">
+      <h4>Wo steckt die Höhe?</h4>
+      <p>Du hast <span class="m">x² = x + 2</span> zu <span class="m">x² − x − 2 = 0</span> umgeformt und <span class="m">x = 2</span> gefunden. Womit berechnest du jetzt <span class="m">y</span>?</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-answer="a">
+          <button data-value="b" data-fb="Dieser Term ergibt für deine Lösung immer 0, denn genau dafür hast du x ausgerechnet. Die Höhe steckt nur in f und g.">mit dem Term <span class="m">x² − x − 2</span></button>
+          <button data-value="a" data-fb="f(2) = 2² = 4. Mit g kommt dasselbe heraus: g(2) = 2 + 2 = 4.">mit <span class="m">f(x) = x²</span> oder mit <span class="m">g(x) = x + 2</span></button>
+          <button data-value="c" data-fb="y = 0 gilt nur für Schnittpunkte mit der x-Achse. Hier treffen sich eine Parabel und eine schräge Gerade.">gar nicht, denn <span class="m">y</span> ist immer 0</button>
+        </div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Schau auf das Bild mit dem Regler: Bei 100 % liegen beide Punkte auf der x-Achse. Welche Graphen zeigen die echte Höhe?</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">3</i><span>f(2) = 2² = <b>4</b></span></div>
+        <div><i class="sp-n">4</i><span>S(2 | 4), Probe: g(2) = 2 + 2 = 4 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="idee-hoehe" data-level="1">
+      <h4>Höhe berechnen, Probe machen</h4>
+      <p>Die Graphen von <span class="m c-f">f(x) = x² − 2x</span> und <span class="m c-g">g(x) = x + 4</span> schneiden sich an der Stelle <span class="m">x = 4</span>. Berechne die Höhe mit <span class="m c-f">f</span>, mache die Probe mit <span class="m c-g">g</span> und notiere den Punkt.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="number" data-answer="8" data-label="f(4) =" data-wrong='{"24":"Du hast 2 · 4 addiert statt abgezogen. Richtig ist 16 − 8.","0":"4² ist 16, nicht 8. Dann rechnest du 16 − 8.","4":"Das ist die Stelle x. Gesucht ist die Höhe: 4² − 2 · 4."}'></div>
+        <div class="ka-answer" data-type="number" data-answer="8" data-label="g(4) =" data-wrong='{"4":"Das ist die Stelle x. Die Höhe ist 4 + 4.","0":"g(4) heißt: für x die Zahl 4 einsetzen, also 4 + 4."}'></div>
+        <div class="ka-answer" data-type="point" data-answer="4|8" data-label="S" data-wrong='{"4|0":"Die Höhe 0 hat nur ein Punkt auf der x-Achse. Hier ist die Höhe f(4) = 8.","4|4":"Die zweite Koordinate ist die Höhe, also der Funktionswert f(4)."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Setze für jedes <span class="m">x</span> die Zahl 4 ein: <span class="m">f(4) = 4² − 2 · 4</span>. Kommt bei <span class="m">g(4)</span> dieselbe Zahl heraus, stimmt die Stelle.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">3</i><span>f(4) = 4² − 2 · 4 = 16 − 8 = <b>8</b></span></div>
+        <div><i class="sp-n">4</i><span>Probe: g(4) = 4 + 4 = 8 ✓</span></div>
+        <div><i></i><span><b>S(4 | 8)</b></span></div>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 2 · PARABEL UND X-ACHSE ================= -->
+<section class="ka-section" id="x-achse">
+  <p class="ka-phase"><b>Minute 4 bis 10</b> · Entdecken, rechnen, üben</p>
+  <h2>Parabel und x-Achse: die Nullstellen</h2>
+  <div class="ka-cols">
+    <div>
+      <p>Die x-Achse ist selbst eine Gerade. Jeder Punkt auf ihr hat die Höhe 0, ihre Gleichung ist <span class="m c-g">y = 0</span>. Schritt 1 der Routine heißt hier also einfach <mark><span class="m">f(x) = 0</span></mark>.</p>
+      <div class="ka-idea"><b>Beobachte</b>Zieh den Scheitel <span class="m c-p">S</span> und wechsle die Öffnung. Bringe die Parabel in alle sechs Felder der Tabelle. In welchen Feldern gibt es keine Nullstelle? Was haben die beiden mittleren Felder gemeinsam?</div>
+      <div class="sp-cases" id="nst-cases" role="table" aria-label="Anzahl der Nullstellen nach Öffnung und Lage des Scheitels">
+        <div></div><div class="h">Scheitel unter der Achse</div><div class="h">Scheitel auf der Achse</div><div class="h">Scheitel über der Achse</div>
+        <div class="r">nach oben<br>geöffnet</div>
+        <div class="c" data-a="1" data-col="0">2<small>Nullstellen</small></div><div class="c" data-a="1" data-col="1">1<small>Nullstelle</small></div><div class="c" data-a="1" data-col="2">0<small>Nullstellen</small></div>
+        <div class="r">nach unten<br>geöffnet</div>
+        <div class="c" data-a="-1" data-col="0">0<small>Nullstellen</small></div><div class="c" data-a="-1" data-col="1">1<small>Nullstelle</small></div><div class="c" data-a="-1" data-col="2">2<small>Nullstellen</small></div>
+      </div>
+      <p class="ka-small" id="nst-seen" role="status"></p>
+      <div class="sp-live" id="nst-live" aria-live="polite"></div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="nst-plot"></div>
+      <div class="ka-controls" id="nst-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="nst-term"></span><span class="c-p" id="nst-vertex"></span><span id="nst-zeros"></span></div>
+      <figcaption>Der violette Punkt ist der Scheitel. Das orange umrandete Feld der Tabelle zeigt, in welchem Fall du gerade bist. Die Rechnung darunter läuft mit.</figcaption>
+    </figure>
+  </div>
+  <div class="ka-merke"><b>Merke</b>Eine <b>Nullstelle</b> ist eine Zahl: das <span class="m">x</span> mit <span class="m">f(x) = 0</span>. Ein <b>Schnittpunkt mit der x-Achse</b> ist ein Punkt: <span class="m">N(x | 0)</span>. Öffnet sich die Parabel zur Achse hin, gibt es zwei Nullstellen. Liegt der Scheitel auf der Achse, gibt es eine. Öffnet sie sich von der Achse weg, gibt es keine.</div>
+
+  <h3>Rechnung Schritt für Schritt</h3>
+  <p>Beispiel: <span class="m c-f">f(x) = x² − 2x − 3</span>. Ausmultipliziert ist das dieselbe Parabel wie <span class="m">(x − 1)² − 4</span>, mit der das Bild oben startet. Wähle zuerst die Lösungsformel deiner Klasse. Die Wahl gilt für die ganze Seite.</p>
+  <div data-ka-formel style="margin-top:10px"></div>
+  <div class="ka-cols">
+    <div>
+      <ol class="sp-route" data-for="steps-nst" aria-label="Die vier Schritte der Routine">
+        <li><i>1</i>Gleichsetzen</li><li><i>2</i>x ausrechnen</li><li><i>3</i>y berechnen</li><li><i>4</i>Punkt und Probe</li>
+      </ol>
+      <div class="ka-steps" id="steps-nst">
+        <ol>
+          <li data-step data-s="1" data-show="1"><span class="sp-tag"><i>1</i>Gleichsetzen</span><div class="ka-line"><span>x² − 2x − 3 = 0</span></div><p class="ka-why">Die zweite Funktion ist die x-Achse mit y = 0. Gleichsetzen heißt hier: f(x) = 0.</p></li>
+          <li data-step="Formel ansetzen" data-s="2" data-show="1"><span class="sp-tag"><i>2</i>x ausrechnen</span>
+            <div class="ka-line" data-if-formel="pq"><span>x₁,₂ = 1 ± <span class="sqrt"><span>1 + 3</span></span></span><span class="op">p = −2, q = −3</span></div>
+            <div class="ka-line" data-if-formel="abc"><span>x₁,₂ = <span class="frac"><span>2 ± <span class="sqrt"><span>4 + 12</span></span></span><span>2</span></span></span><span class="op">a = 1, b = −2, c = −3</span></div>
+            <p class="ka-why" data-if-formel="pq">Vor der Wurzel steht −p/2 = 1. Unter der Wurzel steht 1² − (−3) = 1 + 3.</p>
+            <p class="ka-why" data-if-formel="abc">Im Zähler steht −b = 2. Unter der Wurzel steht (−2)² − 4 · 1 · (−3) = 4 + 12.</p></li>
+          <li data-step="Ausrechnen" data-s="2" data-show="2">
+            <div class="ka-line" data-if-formel="pq"><span>x₁,₂ = 1 ± 2</span></div>
+            <div class="ka-line" data-if-formel="abc"><span>x₁,₂ = <span class="frac"><span>2 ± 4</span><span>2</span></span></span></div>
+            <div class="ka-line"><span>x₁ = −1, &nbsp;x₂ = 3</span></div>
+            <p class="ka-why">Das sind die Nullstellen: zwei Zahlen auf der x-Achse. Punkte sind es noch nicht.</p></li>
+          <li data-step="y berechnen" data-s="3" data-show="3"><span class="sp-tag"><i>3</i>y berechnen</span><div class="ka-line"><span>y = 0</span></div><p class="ka-why">Auf der x-Achse ist die Höhe immer 0. Zu rechnen gibt es nichts, aber hinschreiben musst du es.</p></li>
+          <li data-step="Punkte notieren" data-s="4" data-show="4"><span class="sp-tag"><i>4</i>Punkt und Probe</span><div class="ka-line"><span>N₁(−1 | 0), &nbsp;N₂(3 | 0)</span></div><p class="ka-why">Probe: f(−1) = 1 + 2 − 3 = 0 und f(3) = 9 − 6 − 3 = 0.</p></li>
+        </ol>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="nst-step-plot"></div>
+      <figcaption>Das Bild wächst mit der Rechnung: erst die Stellen, dann die Höhe 0, zum Schluss die Punkte mit ihren Namen.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Welcher Rechenweg passt?</h3>
+  <p>Schritt 2 geht je nach Form der Gleichung unterschiedlich schnell. Es sind die drei Wege aus <a href="/klassenarbeit-parabeln/gleichungen/">Modul 3</a>. Ein Blick vor dem Rechnen spart Zeit.</p>
+  <table class="ka-table sp-ways">
+    <tr><th>Gleichung</th><th>schnellster Weg in Schritt 2</th></tr>
+    <tr><td><span class="m">(x − 1)² − 4 = 0</span></td><td>Wurzel ziehen: <span class="m">(x − 1)² = 4</span>, <span class="m">x − 1 = ±2</span><small>Nullstellen −1 und 3</small></td></tr>
+    <tr><td><span class="m">x² − 4x = 0</span></td><td>x ausklammern: <span class="m">x · (x − 4) = 0</span><small>Nullstellen 0 und 4</small></td></tr>
+    <tr><td><span class="m">x² − 2x − 3 = 0</span></td><td>Lösungsformel, wie oben gerechnet<small>Nullstellen −1 und 3</small></td></tr>
+  </table>
+
+  <div class="ka-warn"><b>Typische Fehler</b>
+    <p><b>Zahl statt Punkt.</b> Gefragt sind die Schnittpunkte mit der x-Achse. Falsch: <span class="m">x₁ = −1; x₂ = 3</span>. Richtig: <span class="m">N₁(−1 | 0), N₂(3 | 0)</span>.</p>
+    <p><b>Minus beim Quadrieren.</b> Probe mit <span class="m">x = −1</span>. Falsch: <span class="m">−1² + 2 − 3 = −1 + 2 − 3 = −2</span>. Richtig: <span class="m">(−1)² + 2 − 3 = 1 + 2 − 3 = 0</span>. Setze negative Zahlen immer mit Klammer ein.</p>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="nst-wurzel" data-level="1">
+      <h4>Nullstellen und Schnittpunkte mit der x-Achse</h4>
+      <div class="ka-given"><span>f(x) = (x − 2)² − 9</span></div>
+      <p>Gib zuerst die Nullstellen als Lösungsmenge an, dann die Schnittpunkte mit der x-Achse.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="set" data-answer="-1;5" data-wrong='{"5":"Beim Wurzelziehen gibt es zwei Möglichkeiten: x − 2 = 3 oder x − 2 = −3.","-5;1":"Aus x − 2 = 3 folgt x = 5, aus x − 2 = −3 folgt x = −1.","-7;11":"Du hast vergessen, die Wurzel aus 9 zu ziehen. Aus (x − 2)² = 9 folgt x − 2 = 3 oder x − 2 = −3."}'></div>
+        <div class="ka-answer" data-type="points" data-answer="-1|0;5|0" data-names="N₁,N₂" data-wrong='{"-1|-9;5|-9":"−9 ist die Höhe des Scheitels. Punkte auf der x-Achse haben die Höhe 0."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Setze <span class="m">f(x) = 0</span> und bringe die 9 nach rechts: <span class="m">(x − 2)² = 9</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Beim Wurzelziehen entstehen zwei Gleichungen: <span class="m">x − 2 = 3</span> oder <span class="m">x − 2 = −3</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">(x − 2)² − 9 = 0</span> <span class="op">| + 9</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">(x − 2)² = 9</span> <span class="op">| √</span></span></div>
+        <div><i></i><span>x − 2 = 3 &nbsp;oder&nbsp; x − 2 = −3</span></div>
+        <div><i></i><span>x₁ = −1, &nbsp;x₂ = 5, &nbsp;L = {−1; 5}</span></div>
+        <div><i class="sp-n">3</i><span>y = 0</span></div>
+        <div><i class="sp-n">4</i><span><b>N₁(−1 | 0), N₂(5 | 0)</b></span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="nst-formel" data-level="2">
+      <h4>Schnittpunkte mit der x-Achse</h4>
+      <div class="ka-given"><span>f(x) = x² + 2x − 8</span></div>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="-4|0;2|0" data-names="N₁,N₂" data-wrong='{"-2|0;4|0":"Die Beträge stimmen, die Vorzeichen nicht. Vor dem ± steht bei der p-q-Formel −p/2 = −1, bei der abc-Formel −b = −2.","-4|-8;2|-8":"Punkte auf der x-Achse haben die Höhe 0. Die −8 ist nur die Zahl ohne x im Term."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Setze <span class="m">f(x) = 0</span>. Die Gleichung <span class="m">x² + 2x − 8 = 0</span> ist ein Fall für die Lösungsformel.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p data-if-formel="pq">Mit <span class="m">p = 2</span> und <span class="m">q = −8</span> steht unter der Wurzel <span class="m">1 + 8 = 9</span>.</p><p data-if-formel="abc">Mit <span class="m">a = 1, b = 2, c = −8</span> steht unter der Wurzel <span class="m">4 + 32 = 36</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span>x² + 2x − 8 = 0</span></div>
+        <div data-if-formel="pq"><i class="sp-n">2</i><span>x₁,₂ = −1 ± <span class="sqrt"><span>1 + 8</span></span> = −1 ± 3</span></div>
+        <div data-if-formel="abc"><i class="sp-n">2</i><span>x₁,₂ = <span class="frac"><span>−2 ± <span class="sqrt"><span>4 + 32</span></span></span><span>2</span></span> = <span class="frac"><span>−2 ± 6</span><span>2</span></span></span></div>
+        <div><i></i><span>x₁ = −4, &nbsp;x₂ = 2</span></div>
+        <div><i class="sp-n">3</i><span>y = 0</span></div>
+        <div><i class="sp-n">4</i><span><b>N₁(−4 | 0), N₂(2 | 0)</b></span></div>
+        <div><i></i><span>Probe: f(2) = 4 + 4 − 8 = 0 ✓</span></div>
+        <div><i></i><span>f(−4) = 16 − 8 − 8 = 0 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="nst-schieben" data-level="2">
+      <h4>Rückwärts gedacht: Parabel an die Nullstellen schieben</h4>
+      <p>Eine verschobene Normalparabel <span class="m c-f">f(x) = (x − d)² + e</span> soll die x-Achse genau in <span class="m c-ok">N₁(1 | 0)</span> und <span class="m c-ok">N₂(5 | 0)</span> schneiden. Zieh den Scheitel an die passende Stelle.</p>
+      <div class="sp-taskplot" id="schieben-plot"></div>
+      <div class="ka-readout"><span class="c-f" id="schieben-term"></span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="custom" id="schieben-answer"></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Eine Parabel ist symmetrisch. Der Scheitel liegt genau in der Mitte zwischen den beiden Nullstellen.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Von der Mitte bis zu jeder Nullstelle sind es 2 Schritte. Zwei Schritte neben dem Scheitel liegt die Normalparabel <span class="m">2² = 4</span> höher als im Scheitel.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i></i><span>Mitte der Nullstellen: d = 3</span></div>
+        <div><i></i><span>2 Schritte daneben: 2² = 4 höher, also e = −4</span></div>
+        <div><i></i><span><b>S(3 | −4)</b>, f(x) = (x − 3)² − 4</span></div>
+        <div><i></i><span>Probe: (x − 3)² = 4, also x = 3 ± 2 ✓</span></div>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 3 · PARABEL UND GERADE ================= -->
+<section class="ka-section" id="gerade">
+  <p class="ka-phase"><b>Minute 10 bis 18</b> · Entdecken, rechnen, üben</p>
+  <h2>Parabel und Gerade: zwei, ein oder kein Punkt</h2>
+  <div class="ka-cols">
+    <div>
+      <p>Eine Gerade kann eine Parabel zweimal schneiden, sie genau einmal berühren oder an ihr vorbeilaufen. Welcher Fall vorliegt, verrät dir die Zahl unter der Wurzel, noch bevor du die Wurzel ziehst.</p>
+      <div class="ka-idea"><b>Beobachte</b>Stelle <span class="m">m = 2</span> ein. Zieh dann den orangen Punkt langsam nach unten und achte auf den Wurzelinhalt. Bei welchem <span class="m">b</span> verschmelzen die zwei Schnittpunkte zu einem? Was passiert, wenn du noch tiefer gehst?</div>
+      <div class="sp-live" id="ger-live" aria-live="polite"></div>
+      <div class="sp-gauge" id="ger-gauge" aria-hidden="true"><div class="bar"></div><div class="zero"></div><div class="thumb"></div></div>
+      <div class="sp-gauge-legend" aria-hidden="true"><span>negativ</span><span>0</span><span>positiv</span></div>
+      <p class="ka-small" data-if-formel="abc" style="margin-top:10px">Achtung, zwei verschiedene b: Das b der Geraden und das b der abc-Formel sind nicht dieselbe Zahl. Lies a, b und c erst ab, wenn rechts 0 steht.</p>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="ger-plot"></div>
+      <div class="ka-controls" id="ger-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f">f(x) = x²</span><span class="c-g" id="ger-term"></span><span class="c-p" id="ger-points"></span></div>
+      <figcaption>Der orange Punkt schiebt die Gerade nach oben und unten, der Regler m dreht sie. Links läuft die Gleichung mit, die beim Gleichsetzen entsteht.</figcaption>
+    </figure>
+  </div>
+
+  <div class="sp-three">
+    <article>
+      <div id="thumb-sekante"></div>
+      <h4>Sekante: zwei Schnittpunkte</h4>
+      <p class="fg"><span class="m c-f">f(x) = x² − 4x + 6</span><br><span class="m c-g">g(x) = 2x − 2</span></p>
+      <span class="m">x² − 6x + 8 = 0</span>
+      <p>Wurzelinhalt <span data-if-formel="pq">9 − 8 = 1</span><span data-if-formel="abc">36 − 32 = 4</span>, also positiv.</p>
+      <span class="m res">S₁(2 | 2), S₂(4 | 6)</span>
+    </article>
+    <article>
+      <div id="thumb-tangente"></div>
+      <h4>Tangente: ein Berührpunkt</h4>
+      <p class="fg"><span class="m c-f">f(x) = x²</span><br><span class="m c-g">g(x) = 2x − 1</span></p>
+      <span class="m">x² − 2x + 1 = 0</span>
+      <p>Wurzelinhalt <span data-if-formel="pq">1 − 1 = 0</span><span data-if-formel="abc">4 − 4 = 0</span>, also genau null.</p>
+      <span class="m res">B(1 | 1)</span>
+    </article>
+    <article>
+      <div id="thumb-passante"></div>
+      <h4>Passante: kein Punkt</h4>
+      <p class="fg"><span class="m c-f">f(x) = x² + 2</span><br><span class="m c-g">g(x) = x</span></p>
+      <span class="m">x² − x + 2 = 0</span>
+      <p>Wurzelinhalt <span data-if-formel="pq">0,25 − 2 = −1,75</span><span data-if-formel="abc">1 − 8 = −7</span>, also negativ.</p>
+      <span class="m res">L = { }</span>
+    </article>
+  </div>
+  <div class="ka-merke"><b>Merke</b>Nach dem Gleichsetzen entscheidet der Wurzelinhalt der Lösungsformel: <b>positiv</b> heißt zwei Schnittpunkte (Sekante), <b>null</b> heißt ein Berührpunkt (Tangente), <b>negativ</b> heißt kein gemeinsamer Punkt (Passante).</div>
+
+  <h3>Rechnung Schritt für Schritt</h3>
+  <p>Beispiel: <span class="m c-f">f(x) = x² − 4x + 6</span> und <span class="m c-g">g(x) = 2x − 2</span>. Das Bild zeigt die Schnittpunkte erst, wenn du sie berechnet hast.</p>
+  <div class="ka-cols">
+    <div>
+      <ol class="sp-route" data-for="steps-ger" aria-label="Die vier Schritte der Routine">
+        <li><i>1</i>Gleichsetzen</li><li><i>2</i>x ausrechnen</li><li><i>3</i>y berechnen</li><li><i>4</i>Punkt und Probe</li>
+      </ol>
+      <div class="ka-steps" id="steps-ger">
+        <ol>
+          <li data-step data-s="1" data-show="1"><span class="sp-tag"><i>1</i>Gleichsetzen</span><div class="ka-line"><span>x² − 4x + 6 = 2x − 2</span><span class="op">| − 2x + 2</span></div><p class="ka-why">Gleiche Höhe an derselben Stelle: f(x) = g(x).</p></li>
+          <li data-step="Alles nach links" data-s="2" data-show="1"><span class="sp-tag"><i>2</i>x ausrechnen</span><div class="ka-line"><span>x² − 6x + 8 = 0</span></div><p class="ka-why">Rechts muss 0 stehen. Aus 2x wird −2x, aus −2 wird +2. Beide Glieder wechseln das Vorzeichen.</p></li>
+          <li data-step="Formel ansetzen" data-s="2" data-show="1">
+            <div class="ka-line" data-if-formel="pq"><span>x₁,₂ = 3 ± <span class="sqrt"><span>9 − 8</span></span></span><span class="op">p = −6, q = 8</span></div>
+            <div class="ka-line" data-if-formel="abc"><span>x₁,₂ = <span class="frac"><span>6 ± <span class="sqrt"><span>36 − 32</span></span></span><span>2</span></span></span><span class="op">a = 1, b = −6, c = 8</span></div>
+            <p class="ka-why">Der Wurzelinhalt ist positiv. Es gibt also zwei Stellen, die Gerade ist eine Sekante.</p></li>
+          <li data-step="Ausrechnen" data-s="2" data-show="2">
+            <div class="ka-line" data-if-formel="pq"><span>x₁,₂ = 3 ± 1</span></div>
+            <div class="ka-line" data-if-formel="abc"><span>x₁,₂ = <span class="frac"><span>6 ± 2</span><span>2</span></span></span></div>
+            <div class="ka-line"><span>x₁ = 2, &nbsp;x₂ = 4</span></div>
+            <p class="ka-why">Im Bild stehen jetzt die zwei Stellen. Die Höhen fehlen noch.</p></li>
+          <li data-step="y berechnen" data-s="3" data-show="3"><span class="sp-tag"><i>3</i>y berechnen</span><div class="ka-line"><span>g(2) = 2 · 2 − 2 = 2</span><span>g(4) = 2 · 4 − 2 = 6</span></div><p class="ka-why">Setze in die einfachere Funktion ein. Das ist meistens die Gerade.</p></li>
+          <li data-step="Punkte notieren" data-s="4" data-show="4"><span class="sp-tag"><i>4</i>Punkt und Probe</span><div class="ka-line"><span>S₁(2 | 2), &nbsp;S₂(4 | 6)</span></div><p class="ka-why">Probe mit f: f(2) = 4 − 8 + 6 = 2 und f(4) = 16 − 16 + 6 = 6. Beide Punkte liegen auf beiden Graphen.</p></li>
+        </ol>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="ger-step-plot"></div>
+      <figcaption>Nach Schritt 2 kennst du nur die Stellen (senkrechte Linien). Erst Schritt 3 liefert die Höhen und damit die Punkte.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Vier Fehler, die Punkte kosten</h3>
+  <p>Aufgabe: Schnittpunkte von <span class="m c-f">f(x) = x² − 3</span> und <span class="m c-g">g(x) = 2x</span>. Wähle einen Fehler aus. Das Bild zeigt in Rot, wo das falsche Ergebnis landet.</p>
+  <div class="ka-cols">
+    <div>
+      <div id="err-seg"></div>
+      <div class="ka-warn" id="err-box" aria-live="polite">
+        <b>Typischer Fehler</b>
+        <div class="sp-errcase" data-err="y">
+          <h4>y vergessen</h4>
+          <span class="sp-errlabel bad">Falsch</span>
+          <div class="ka-calc sp-calc bad"><div><i></i><span>x² − 2x − 3 = 0</span></div><div><i></i><span>x₁ = −1, x₂ = 3. Fertig.</span></div></div>
+          <p>Das sind zwei Stellen auf der x-Achse. Die Schnittpunkte liegen aber auf den Graphen. Schritt 3 fehlt.</p>
+          <span class="sp-errlabel good">Richtig</span>
+          <div class="ka-calc sp-calc good"><div><i></i><span>g(−1) = −2 und g(3) = 6</span></div><div><i></i><span>S₁(−1 | −2), S₂(3 | 6)</span></div></div>
+        </div>
+        <div class="sp-errcase" data-err="vz" hidden>
+          <h4>Vorzeichenfehler beim Rüberbringen</h4>
+          <span class="sp-errlabel bad">Falsch</span>
+          <div class="ka-calc sp-calc bad"><div><i></i><span>x² − 3 = 2x</span></div><div><i></i><span>x² + 2x − 3 = 0</span></div><div><i></i><span>x₁ = −3, x₂ = 1</span></div><div><i></i><span>S₁(−3 | 6), S₂(1 | −2)</span></div></div>
+          <p>Die roten Punkte liegen auf der Parabel, aber nicht auf der Geraden. Die Probe deckt es auf: g(1) = 2, nicht −2.</p>
+          <span class="sp-errlabel good">Richtig</span>
+          <div class="ka-calc sp-calc good"><div><i></i><span><span class="nw">x² − 3 = 2x</span> <span class="op">| − 2x</span></span></div><div><i></i><span>x² − 2x − 3 = 0</span></div></div>
+        </div>
+        <div class="sp-errcase" data-err="quad" hidden>
+          <h4>(−1)² falsch gerechnet</h4>
+          <span class="sp-errlabel bad">Falsch</span>
+          <div class="ka-calc sp-calc bad"><div><i></i><span>f(−1) = −1² − 3 = −1 − 3 = −4</span></div><div><i></i><span>S₁(−1 | −4)</span></div></div>
+          <p>Der rote Punkt liegt auf keinem der beiden Graphen. Die Probe zeigt es: g(−1) = −2.</p>
+          <span class="sp-errlabel good">Richtig</span>
+          <div class="ka-calc sp-calc good"><div><i></i><span>f(−1) = (−1)² − 3 = 1 − 3 = −2</span></div><div><i></i><span>S₁(−1 | −2)</span></div></div>
+        </div>
+        <div class="sp-errcase" data-err="eine" hidden>
+          <h4>Nur eine Lösung notiert</h4>
+          <span class="sp-errlabel bad">Falsch</span>
+          <div class="ka-calc sp-calc bad"><div><i></i><span>x = 1 + 2 = 3</span></div><div><i></i><span>S(3 | 6). Fertig.</span></div></div>
+          <p>Das Zeichen ± steht für zwei Rechnungen. Der zweite Schnittpunkt im Bild wurde nie berechnet.</p>
+          <span class="sp-errlabel good">Richtig</span>
+          <div class="ka-calc sp-calc good"><div><i></i><span>x₁ = 1 − 2 = −1, &nbsp;x₂ = 1 + 2 = 3</span></div><div><i></i><span>S₁(−1 | −2), S₂(3 | 6)</span></div></div>
+        </div>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="err-plot"></div>
+      <figcaption>Die Probe im Bild: Ein Schnittpunkt muss auf <span class="c-f">beiden</span> <span class="c-g">Graphen</span> liegen. Grün ist richtig, Rot ist das falsche Ergebnis.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="ger-waagrecht" data-level="1">
+      <h4>Parabel und waagrechte Gerade</h4>
+      <div class="ka-given"><span class="c-f">f(x) = x² − 1</span><span class="c-g">g(x) = 8</span></div>
+      <p>Berechne die beiden Schnittpunkte.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="-3|8;3|8" data-names="S₁,S₂" data-wrong='{"-3|0;3|0":"Die Stellen stimmen. Die Punkte liegen aber auf der Geraden mit der Höhe 8, nicht auf der x-Achse.","-9|8;9|8":"Aus x² = 9 folgt x = 3 oder x = −3. Du musst noch die Wurzel ziehen."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Gleichsetzen: <span class="m">x² − 1 = 8</span>. Bring die 1 nach rechts und zieh die Wurzel. Die Höhe musst du nicht ausrechnen, sie steht schon in <span class="m c-g">g</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² − 1 = 8</span> <span class="op">| + 1</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">x² = 9</span> <span class="op">| √</span></span></div>
+        <div><i></i><span>x₁ = −3, &nbsp;x₂ = 3</span></div>
+        <div><i class="sp-n">3</i><span>g(−3) = 8 und g(3) = 8</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(−3 | 8), S₂(3 | 8)</b></span></div>
+        <div><i></i><span>Probe: f(3) = 9 − 1 = 8 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="ger-sekante" data-level="2">
+      <h4>Die ganze Routine</h4>
+      <div class="ka-given"><span class="c-f">f(x) = x² + 3x − 1</span><span class="c-g">g(x) = x + 2</span></div>
+      <p>Wie viele Schnittpunkte gibt es? Berechne sie.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="choice" data-answer="2" aria-label="Anzahl der Schnittpunkte">
+          <button data-value="0" data-fb="Der Wurzelinhalt ist nicht negativ. Achte auf minus mal minus.">keinen</button>
+          <button data-value="1" data-fb="Für einen einzigen Punkt müsste der Wurzelinhalt genau 0 sein.">einen</button>
+          <button data-value="2" data-fb="Der Wurzelinhalt ist positiv.">zwei</button>
+        </div>
+        <div class="ka-answer" data-type="points" data-answer="-3|-1;1|3" data-names="S₁,S₂" data-wrong='{"-1|1;3|5":"Die Lösungen der Gleichung sind x = −3 und x = 1. Prüfe das Vorzeichen am Anfang der Lösungsformel.","-3|0;1|0":"Die Stellen stimmen. Die Höhe ist aber nicht 0. Setze x in g ein.","-3|5;1|3":"g(−3) = −3 + 2 = −1. Achte auf das Minus der Stelle."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Gleichsetzen und alles nach links: <span class="m">x² + 3x − 1 = x + 2</span> wird zu <span class="m">x² + 2x − 3 = 0</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p data-if-formel="pq">Mit <span class="m">p = 2</span> und <span class="m">q = −3</span> steht unter der Wurzel <span class="m">1 + 3 = 4</span>.</p><p data-if-formel="abc">Mit <span class="m">a = 1, b = 2, c = −3</span> steht unter der Wurzel <span class="m">4 + 12 = 16</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 3x − 1 = x + 2</span> <span class="op">| − x − 2</span></span></div>
+        <div><i class="sp-n">2</i><span>x² + 2x − 3 = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>x₁,₂ = −1 ± <span class="sqrt"><span>1 + 3</span></span> = −1 ± 2</span></div>
+        <div data-if-formel="abc"><i></i><span>x₁,₂ = <span class="frac"><span>−2 ± <span class="sqrt"><span>4 + 12</span></span></span><span>2</span></span> = <span class="frac"><span>−2 ± 4</span><span>2</span></span></span></div>
+        <div><i></i><span>x₁ = −3, &nbsp;x₂ = 1</span></div>
+        <div><i class="sp-n">3</i><span>g(−3) = −3 + 2 = −1</span></div>
+        <div><i></i><span>g(1) = 1 + 2 = 3</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(−3 | −1), S₂(1 | 3)</b></span></div>
+        <div><i></i><span>Probe: f(−3) = 9 − 9 − 1 = −1 ✓</span></div>
+        <div><i></i><span>f(1) = 1 + 3 − 1 = 3 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="ger-tangente" data-level="2">
+      <h4>Gerade zur Tangente machen</h4>
+      <p>Die Gerade <span class="m c-g">g(x) = −2x + b</span> soll die Normalparabel <span class="m c-f">f(x) = x²</span> nur berühren. Zieh den orangen Punkt, bis das stimmt. Gib dann den Berührpunkt an.</p>
+      <div class="sp-taskplot" id="tangente-plot"></div>
+      <div class="ka-readout"><span class="c-g" id="tangente-term"></span></div>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="custom" id="tangente-answer"></div>
+        <div class="ka-answer" data-type="point" data-answer="-1|1" data-label="B" data-wrong='{"1|1":"Die Gerade fällt. Sie berührt die Parabel deshalb links vom Scheitel: x² + 2x + 1 = 0 hat die Lösung x = −1.","-1|-1":"(−1)² ist +1. Der Berührpunkt liegt über der x-Achse.","-1|0":"Die Stelle stimmt. Die Höhe ist f(−1) = (−1)² = 1."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Eine Tangente hat genau einen gemeinsamen Punkt mit der Parabel. Schiebe so lange, bis die zwei Schnittpunkte zu einem verschmelzen.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Rechnerisch: <span class="m">x² = −2x + b</span> wird zu <span class="m">x² + 2x − b = 0</span>. Der Wurzelinhalt <span data-if-formel="pq" class="m">1 + b</span><span data-if-formel="abc" class="m">4 + 4b</span> muss 0 sein.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² = −2x + b</span> <span class="op">| + 2x − b</span></span></div>
+        <div><i class="sp-n">2</i><span>x² + 2x − b = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>Wurzelinhalt 1 + b = 0, also <b>b = −1</b></span></div>
+        <div data-if-formel="abc"><i></i><span>Wurzelinhalt 4 + 4b = 0, also <b>b = −1</b></span></div>
+        <div><i></i><span>x² + 2x + 1 = 0, also (x + 1)² = 0, x = −1</span></div>
+        <div><i class="sp-n">3</i><span>f(−1) = (−1)² = 1</span></div>
+        <div><i class="sp-n">4</i><span><b>B(−1 | 1)</b>, Probe: g(−1) = 2 − 1 = 1 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="ger-knobeln" data-level="3">
+      <h4>Tangente ohne Bild</h4>
+      <p>Die Gerade <span class="m c-g">g(x) = 4x + b</span> soll Tangente an <span class="m c-f">f(x) = x²</span> sein. Bestimme <span class="m">b</span> und den Berührpunkt <span class="m">B</span>.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="number" data-answer="-4" data-label="b =" data-wrong='{"4":"Der Wurzelinhalt enthält + b. Er wird für b = −4 null, nicht für b = 4.","-16":"Löse die Gleichung für den Wurzelinhalt ganz auf. Am Ende steht b = −4.","0":"Für b = 0 schneidet die Gerade die Parabel in zwei Punkten, bei x = 0 und x = 4."}'></div>
+        <div class="ka-answer" data-type="point" data-answer="2|4" data-label="B" data-wrong='{"-2|4":"x² − 4x + 4 ist (x − 2)². Die Lösung ist also x = +2.","2|0":"Die Stelle stimmt. Die Höhe ist f(2) = 2² = 4.","4|16":"x = 4 ist die Steigung der Geraden, nicht die Stelle. Löse x² − 4x + 4 = 0."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Tangente heißt: Die Gleichung hat genau eine Lösung. Der Wurzelinhalt muss also 0 sein.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Gleichsetzen und sortieren ergibt <span class="m">x² − 4x − b = 0</span>. Schreibe den Wurzelinhalt mit dem Buchstaben <span class="m">b</span> auf und setze ihn gleich 0.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² = 4x + b</span> <span class="op">| − 4x − b</span></span></div>
+        <div><i class="sp-n">2</i><span>x² − 4x − b = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>Wurzelinhalt 4 + b = 0, also <b>b = −4</b></span></div>
+        <div data-if-formel="abc"><i></i><span>Wurzelinhalt 16 + 4b = 0, also <b>b = −4</b></span></div>
+        <div><i></i><span>x² − 4x + 4 = 0, also (x − 2)² = 0, x = 2</span></div>
+        <div><i class="sp-n">3</i><span>f(2) = 2² = 4</span></div>
+        <div><i class="sp-n">4</i><span><b>B(2 | 4)</b>, Probe: g(2) = 8 − 4 = 4 ✓</span></div>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 4 · ZWEI PARABELN ================= -->
+<section class="ka-section" id="parabeln">
+  <p class="ka-phase"><b>Minute 18 bis 25</b> · Entdecken, rechnen, üben</p>
+  <h2>Zwei Parabeln: Fällt x² weg?</h2>
+  <div class="ka-cols">
+    <div>
+      <p>Bei zwei Parabeln läuft die Routine genauso. Neu ist nur eine Frage vor Schritt 2: Steht vor <span class="m">x²</span> in beiden Termen <mark>derselbe Faktor</mark>? Davon hängt ab, welche Art von Gleichung übrig bleibt.</p>
+      <div class="ka-idea"><b>Beobachte</b>Stelle den Faktor von <span class="m c-g">g</span> auf 1. Versuche, die beiden Scheitel so zu ziehen, dass sich die Parabeln zweimal schneiden. Wechsle danach auf −1 und versuche es noch einmal. Was ändert sich in der Zeile „Alles nach links“?</div>
+      <div class="sp-live" id="par-live" aria-live="polite"></div>
+      <div class="ka-btnrow" id="par-presets" role="group" aria-label="Beispiele einstellen">
+        <button type="button" class="ka-btn" data-preset="a">Beispiel A</button>
+        <button type="button" class="ka-btn" data-preset="b">Beispiel B</button>
+        <button type="button" class="ka-btn" data-preset="t">Berührung</button>
+        <button type="button" class="ka-btn" data-preset="n">nur verschoben</button>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="par-plot"></div>
+      <div class="ka-controls" id="par-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="par-f"></span><span class="c-g" id="par-g"></span><span class="c-p" id="par-points"></span></div>
+      <figcaption>Beide Scheitel lassen sich ziehen. Der Umschalter ändert den Faktor vor x² bei g. Bei gleichem Faktor haben beide Parabeln dieselbe Form.</figcaption>
+    </figure>
+  </div>
+  <div class="ka-merke"><b>Merke</b><b>Gleicher Faktor vor x²:</b> x² fällt beim Gleichsetzen weg. Übrig bleibt eine lineare Gleichung, es gibt höchstens einen Schnittpunkt. <b>Verschiedene Faktoren:</b> Es bleibt eine quadratische Gleichung, es gibt zwei, einen oder keinen Schnittpunkt.</div>
+
+  <h3>Rechnung Schritt für Schritt</h3>
+  <p>Beispiel A: <span class="m c-f">f(x) = x² − 4x + 5</span> und <span class="m c-g">g(x) = −x² + 4x − 1</span>. Die Faktoren 1 und −1 sind verschieden.</p>
+  <div class="ka-cols">
+    <div>
+      <ol class="sp-route" data-for="steps-par" aria-label="Die vier Schritte der Routine">
+        <li><i>1</i>Gleichsetzen</li><li><i>2</i>x ausrechnen</li><li><i>3</i>y berechnen</li><li><i>4</i>Punkt und Probe</li>
+      </ol>
+      <div class="ka-steps" id="steps-par">
+        <ol>
+          <li data-step data-s="1" data-show="1"><span class="sp-tag"><i>1</i>Gleichsetzen</span><div class="ka-line"><span>x² − 4x + 5 = −x² + 4x − 1</span><span class="op">| + x² − 4x + 1</span></div><p class="ka-why">Gleiche Höhe an derselben Stelle, wie immer.</p></li>
+          <li data-step="Alles nach links" data-s="2" data-show="1"><span class="sp-tag"><i>2</i>x ausrechnen</span><div class="ka-line"><span>2x² − 8x + 6 = 0</span><span class="op">| : 2</span></div><p class="ka-why">x² fällt nicht weg, aus x² + x² wird 2x². Die ganze rechte Seite wechselt beim Rüberbringen das Vorzeichen.</p></li>
+          <li data-step="Durch 2 teilen" data-s="2" data-show="1"><div class="ka-line"><span>x² − 4x + 3 = 0</span><span class="op" data-if-formel="pq">p = −4, q = 3</span><span class="op" data-if-formel="abc">a = 1, b = −4, c = 3</span></div>
+            <p class="ka-why" data-if-formel="pq">Die p-q-Formel gilt nur, wenn vor x² eine 1 steht. Deshalb erst teilen.</p>
+            <p class="ka-why" data-if-formel="abc">Teilen ist bei der abc-Formel nicht nötig, macht die Zahlen aber kleiner.</p></li>
+          <li data-step="Lösungsformel" data-s="2" data-show="2">
+            <div class="ka-line" data-if-formel="pq"><span>x₁,₂ = 2 ± <span class="sqrt"><span>4 − 3</span></span></span><span>= 2 ± 1</span></div>
+            <div class="ka-line" data-if-formel="abc"><span>x₁,₂ = <span class="frac"><span>4 ± <span class="sqrt"><span>16 − 12</span></span></span><span>2</span></span></span><span>= <span class="frac"><span>4 ± 2</span><span>2</span></span></span></div>
+            <div class="ka-line"><span>x₁ = 1, &nbsp;x₂ = 3</span></div>
+            <p class="ka-why">Zwei Stellen, also zwei Schnittpunkte.</p></li>
+          <li data-step="y berechnen" data-s="3" data-show="3"><span class="sp-tag"><i>3</i>y berechnen</span><div class="ka-line"><span>f(1) = 1 − 4 + 5 = 2</span><span>f(3) = 9 − 12 + 5 = 2</span></div><p class="ka-why">Nimm die Funktion ohne Minus vor x². Das ist weniger fehleranfällig.</p></li>
+          <li data-step="Punkte notieren" data-s="4" data-show="4"><span class="sp-tag"><i>4</i>Punkt und Probe</span><div class="ka-line"><span>S₁(1 | 2), &nbsp;S₂(3 | 2)</span></div><p class="ka-why">Probe mit g: g(1) = −1 + 4 − 1 = 2 und g(3) = −9 + 12 − 1 = 2.</p></li>
+        </ol>
+      </div>
+    </div>
+    <figure class="ka-figure sticky">
+      <div id="par-step-plot"></div>
+      <figcaption>Beide Schnittpunkte liegen auf derselben Höhe, weil beide Parabeln dieselbe Symmetrieachse x = 2 haben.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Wenn x² wegfällt</h3>
+  <div class="ka-cols even">
+    <div class="sp-card">
+      <h4>Beispiel B: gleicher Faktor</h4>
+      <p><span class="m c-f">f(x) = x² + 4x − 1</span>, <span class="m c-g">g(x) = x² − 2x + 5</span></p>
+      <div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 4x − 1 = x² − 2x + 5</span> <span class="op">| − x²</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">4x − 1 = −2x + 5</span> <span class="op">| + 2x + 1</span></span></div>
+        <div><i></i><span><span class="nw">6x = 6</span> <span class="op">| : 6</span></span></div>
+        <div><i></i><span>x = 1</span></div>
+        <div><i class="sp-n">3</i><span>f(1) = 1 + 4 − 1 = 4</span></div>
+        <div><i class="sp-n">4</i><span><b>S(1 | 4)</b>, Probe: g(1) = 1 − 2 + 5 = 4 ✓</span></div>
+      </div>
+    </div>
+    <div class="sp-card">
+      <h4>Sonderfall: nur senkrecht verschoben</h4>
+      <p><span class="m c-f">f(x) = x² + 1</span>, <span class="m c-g">g(x) = x² − 2</span></p>
+      <div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 1 = x² − 2</span> <span class="op">| − x²</span></span></div>
+        <div><i class="sp-n">2</i><span>1 = −2</span></div>
+        <div><i></i><span>Das stimmt für kein x.</span></div>
+        <div><i></i><span><b>L = { }</b>, kein Schnittpunkt</span></div>
+      </div>
+      <p class="ka-small">Auch x fällt hier weg. Die Parabeln liegen überall 3 Einheiten übereinander.</p>
+    </div>
+  </div>
+
+  <div class="ka-warn"><b>Typische Fehler</b>
+    <p><b>Nur halb rübergebracht.</b> Aus <span class="m">x² − 4x + 5 = −x² + 4x − 1</span> wird falsch <span class="m">2x² + 4 = 0</span>, wenn 4x und −1 ihr Vorzeichen behalten. Richtig: <span class="m">2x² − 8x + 6 = 0</span>.</p>
+    <p><b>Minus vor x².</b> In <span class="m">g(x) = −x² + 4x − 1</span> wird zuerst quadriert, dann kommt das Minus. Falsch: <span class="m">g(3) = 9 + 12 − 1 = 20</span>. Richtig: <span class="m">g(3) = −9 + 12 − 1 = 2</span>.</p>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="par-linear" data-level="1">
+      <h4>Erst hinschauen, dann rechnen</h4>
+      <div class="ka-given"><span class="c-f">f(x) = x² + 3x</span><span class="c-g">g(x) = x² − x + 4</span></div>
+      <p>Was passiert beim Gleichsetzen? Berechne danach den Schnittpunkt.</p>
+      <div class="ka-answers">
+        <div class="ka-answer stack" data-type="choice" data-answer="a" aria-label="Art der Gleichung">
+          <button data-value="b" data-fb="Beide Parabeln haben den Faktor 1 vor x². Ziehst du x² auf beiden Seiten ab, ist es weg.">Es bleibt eine quadratische Gleichung, also bis zu zwei Schnittpunkte.</button>
+          <button data-value="a" data-fb="x² fällt weg, es bleibt 3x = −x + 4.">x² fällt weg. Es bleibt eine lineare Gleichung, also höchstens ein Schnittpunkt.</button>
+          <button data-value="c" data-fb="Das gilt nur, wenn auch der Teil mit x gleich ist. Hier bleibt 3x = −x + 4 übrig.">Parabeln mit gleichem Faktor schneiden sich nie.</button>
+        </div>
+        <div class="ka-answer" data-type="point" data-answer="1|4" data-label="S" data-wrong='{"-1|-2":"Aus 4x = 4 folgt x = +1.","2|10":"3x + x sind 4x. Aus 4x = 4 folgt x = 1.","1|0":"Die Stelle stimmt. Die Höhe ist f(1) = 1 + 3 = 4."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Zieh auf beiden Seiten <span class="m">x²</span> ab. Bring dann alle Glieder mit <span class="m">x</span> nach links.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 3x = x² − x + 4</span> <span class="op">| − x²</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">3x = −x + 4</span> <span class="op">| + x</span></span></div>
+        <div><i></i><span><span class="nw">4x = 4</span> <span class="op">| : 4</span></span></div>
+        <div><i></i><span>x = 1</span></div>
+        <div><i class="sp-n">3</i><span>f(1) = 1 + 3 = 4</span></div>
+        <div><i class="sp-n">4</i><span><b>S(1 | 4)</b>, Probe: g(1) = 1 − 1 + 4 = 4 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="par-ausklammern" data-level="2">
+      <h4>Verschiedene Faktoren, kurzer Weg</h4>
+      <div class="ka-given"><span class="c-f">f(x) = x² − 4x + 1</span><span class="c-g">g(x) = −x² + 2x + 1</span></div>
+      <p>Berechne die Schnittpunkte. Schau dir die Gleichung genau an, bevor du zur Lösungsformel greifst.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="0|1;3|-2" data-names="S₁,S₂" data-wrong='{"0|1;3|16":"In g wird zuerst quadriert, dann kommt das Minus: g(3) = −9 + 6 + 1 = −2.","0|0;3|0":"Die Stellen stimmen. Die Höhen bekommst du durch Einsetzen: f(0) = 1 und f(3) = 9 − 12 + 1.","0|1;3|2":"f(3) = 9 − 12 + 1. Das Ergebnis ist negativ."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Nach dem Sortieren steht da <span class="m">2x² − 6x = 0</span>. Die Zahl ohne x ist weggefallen.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p>Klammere aus: <span class="m">2x · (x − 3) = 0</span>. Teile nicht durch x, sonst verlierst du die Lösung <span class="m">x = 0</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² − 4x + 1 = −x² + 2x + 1</span> <span class="op">| + x² − 2x − 1</span></span></div>
+        <div><i class="sp-n">2</i><span>2x² − 6x = 0</span></div>
+        <div><i></i><span>2x · (x − 3) = 0</span></div>
+        <div><i></i><span>x₁ = 0, &nbsp;x₂ = 3</span></div>
+        <div><i class="sp-n">3</i><span>f(0) = 1</span></div>
+        <div><i></i><span>f(3) = 9 − 12 + 1 = −2</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(0 | 1), S₂(3 | −2)</b></span></div>
+        <div><i></i><span>Probe: g(3) = −9 + 6 + 1 = −2 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="par-formel" data-level="3">
+      <h4>Verschiedene Faktoren, ganze Routine</h4>
+      <div class="ka-given"><span class="c-f">f(x) = x² − x − 5</span><span class="c-g">g(x) = −x² + 3x + 11</span></div>
+      <p>Berechne beide Schnittpunkte.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="-2|1;4|7" data-names="S₁,S₂" data-wrong='{"-4|15;2|-3":"Die Lösungen der Gleichung sind x = −2 und x = 4. Prüfe das Vorzeichen am Anfang der Lösungsformel.","-2|-7;4|7":"(−2)² ist +4, nicht −4. Also f(−2) = 4 + 2 − 5 = 1.","-2|0;4|0":"Die Stellen stimmen. Die Höhen bekommst du durch Einsetzen in f oder g."}'></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Alles nach links ergibt <span class="m">2x² − 4x − 16 = 0</span>. Teile die ganze Gleichung durch 2.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p data-if-formel="pq">Für <span class="m">x² − 2x − 8 = 0</span> ist <span class="m">p = −2</span> und <span class="m">q = −8</span>. Unter der Wurzel steht <span class="m">1 + 8 = 9</span>.</p><p data-if-formel="abc">Für <span class="m">x² − 2x − 8 = 0</span> ist <span class="m">a = 1, b = −2, c = −8</span>. Unter der Wurzel steht <span class="m">4 + 32 = 36</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² − x − 5 = −x² + 3x + 11</span> <span class="op">| + x² − 3x − 11</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">2x² − 4x − 16 = 0</span> <span class="op">| : 2</span></span></div>
+        <div><i></i><span>x² − 2x − 8 = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>x₁,₂ = 1 ± <span class="sqrt"><span>1 + 8</span></span> = 1 ± 3</span></div>
+        <div data-if-formel="abc"><i></i><span>x₁,₂ = <span class="frac"><span>2 ± <span class="sqrt"><span>4 + 32</span></span></span><span>2</span></span> = <span class="frac"><span>2 ± 6</span><span>2</span></span></span></div>
+        <div><i></i><span>x₁ = −2, &nbsp;x₂ = 4</span></div>
+        <div><i class="sp-n">3</i><span>f(−2) = 4 + 2 − 5 = 1</span></div>
+        <div><i></i><span>f(4) = 16 − 4 − 5 = 7</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(−2 | 1), S₂(4 | 7)</b></span></div>
+        <div><i></i><span>Probe: g(−2) = −4 − 6 + 11 = 1 ✓</span></div>
+        <div><i></i><span>g(4) = −16 + 12 + 11 = 7 ✓</span></div>
+      </div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ================= 5 · MINI-TEST ================= -->
+<section class="ka-section" id="mini-test">
+  <p class="ka-phase"><b>Minute 25 bis 30</b> · Mini-Test</p>
+  <h2>Mini-Test: fünf Aufgaben, fünf Minuten</h2>
+  <p>Jetzt ohne Tipps und ohne Bilder. Rechne auf Papier und trag nur die Ergebnisse ein. Den Lösungsweg öffnest du erst, nachdem du geprüft hast.</p>
+  <div class="ka-tasks">
+    <article class="ka-task" data-task="test-achse" data-level="2" data-sec="x-achse">
+      <p>Berechne die Schnittpunkte von <span class="m c-f">f(x) = x² − 8x + 7</span> mit der x-Achse.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="1|0;7|0" data-names="N₁,N₂" data-wrong='{"-7|0;-1|0":"Die Beträge stimmen, die Vorzeichen nicht. Vor dem ± steht bei der p-q-Formel −p/2 = 4, bei der abc-Formel −b = 8.","1|7;7|7":"Punkte auf der x-Achse haben die Höhe 0. Die 7 ist nur die Zahl ohne x im Term.","2|0;14|0":"Bei der abc-Formel teilst du den ganzen Zähler noch durch 2a = 2: (8 + 6) : 2 = 7 und (8 − 6) : 2 = 1."}'></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span>x² − 8x + 7 = 0</span></div>
+        <div data-if-formel="pq"><i class="sp-n">2</i><span>x₁,₂ = 4 ± <span class="sqrt"><span>16 − 7</span></span> = 4 ± 3</span></div>
+        <div data-if-formel="abc"><i class="sp-n">2</i><span>x₁,₂ = <span class="frac"><span>8 ± <span class="sqrt"><span>64 − 28</span></span></span><span>2</span></span> = <span class="frac"><span>8 ± 6</span><span>2</span></span></span></div>
+        <div><i></i><span>x₁ = 1, &nbsp;x₂ = 7</span></div>
+        <div><i class="sp-n">3</i><span>y = 0</span></div>
+        <div><i class="sp-n">4</i><span><b>N₁(1 | 0), N₂(7 | 0)</b></span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="test-anzahl" data-level="1" data-sec="x-achse">
+      <p>Wie viele Schnittpunkte hat <span class="m c-f">f(x) = (x + 1)² + 2</span> mit der x-Achse? Entscheide ohne Rechnung.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="choice" data-answer="0" aria-label="Anzahl der Schnittpunkte">
+          <button data-value="0" data-fb="Der Scheitel S(−1 | 2) liegt über der Achse und die Parabel öffnet sich nach oben, also von der Achse weg.">keinen</button>
+          <button data-value="1" data-fb="Einen einzigen gäbe es nur, wenn der Scheitel genau auf der Achse läge. Er liegt bei S(−1 | 2).">einen</button>
+          <button data-value="2" data-fb="Dafür müsste der Scheitel unter der Achse liegen. Er liegt bei S(−1 | 2), und die Parabel öffnet sich nach oben.">zwei</button>
+        </div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i></i><span>Scheitel S(−1 | 2), nach oben geöffnet</span></div>
+        <div><i></i><span>(x + 1)² = −2 hat keine Lösung</span></div>
+        <div><i></i><span><b>kein Schnittpunkt</b></span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="test-gerade" data-level="2" data-sec="gerade">
+      <p>Berechne die Schnittpunkte von <span class="m c-f">f(x) = x² + 3x</span> und <span class="m c-g">g(x) = −x − 3</span>.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="-3|0;-1|-2" data-names="S₁,S₂" data-wrong='{"1|-4;3|-6":"Die Lösungen der Gleichung sind x = −3 und x = −1. Prüfe das Vorzeichen am Anfang der Lösungsformel.","-3|-6;-1|-4":"−(−3) ist +3. Also g(−3) = 3 − 3 = 0 und g(−1) = 1 − 3 = −2.","-3|0;-1|0":"Nur S₁ liegt auf der x-Achse. Für x = −1 ist g(−1) = 1 − 3 = −2."}'></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 3x = −x − 3</span> <span class="op">| + x + 3</span></span></div>
+        <div><i class="sp-n">2</i><span>x² + 4x + 3 = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>x₁,₂ = −2 ± <span class="sqrt"><span>4 − 3</span></span> = −2 ± 1</span></div>
+        <div data-if-formel="abc"><i></i><span>x₁,₂ = <span class="frac"><span>−4 ± <span class="sqrt"><span>16 − 12</span></span></span><span>2</span></span> = <span class="frac"><span>−4 ± 2</span><span>2</span></span></span></div>
+        <div><i></i><span>x₁ = −3, &nbsp;x₂ = −1</span></div>
+        <div><i class="sp-n">3</i><span>g(−3) = 3 − 3 = 0</span></div>
+        <div><i></i><span>g(−1) = 1 − 3 = −2</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(−3 | 0), S₂(−1 | −2)</b></span></div>
+        <div><i></i><span>Probe: f(−3) = 9 − 9 = 0 ✓, f(−1) = 1 − 3 = −2 ✓</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="test-passante" data-level="2" data-sec="gerade">
+      <p>Wie viele gemeinsame Punkte haben <span class="m c-f">f(x) = x² + 4</span> und <span class="m c-g">g(x) = 2x</span>?</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="choice" data-answer="0" aria-label="Anzahl der gemeinsamen Punkte">
+          <button data-value="0" data-fb="Der Wurzelinhalt von x² − 2x + 4 = 0 ist negativ. Die Gerade ist eine Passante.">keinen</button>
+          <button data-value="1" data-fb="Für eine Tangente müsste der Wurzelinhalt von x² − 2x + 4 = 0 genau 0 sein. Er ist negativ.">einen</button>
+          <button data-value="2" data-fb="Rechne den Wurzelinhalt von x² − 2x + 4 = 0 aus. Er ist negativ.">zwei</button>
+        </div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">x² + 4 = 2x</span> <span class="op">| − 2x</span></span></div>
+        <div><i class="sp-n">2</i><span>x² − 2x + 4 = 0</span></div>
+        <div data-if-formel="pq"><i></i><span>Wurzelinhalt: 1 − 4 = −3</span></div>
+        <div data-if-formel="abc"><i></i><span>Wurzelinhalt: 4 − 16 = −12</span></div>
+        <div><i></i><span>negativ, also <b>L = { }</b>, kein gemeinsamer Punkt</span></div>
+      </div></details>
+    </article>
+
+    <article class="ka-task" data-task="test-parabeln" data-level="2" data-sec="parabeln">
+      <p>Berechne die Schnittpunkte von <span class="m c-f">f(x) = 0,5x²</span> und <span class="m c-g">g(x) = −0,5x² + 4</span>.</p>
+      <div class="ka-answers">
+        <div class="ka-answer" data-type="points" data-answer="-2|2;2|2" data-names="S₁,S₂" data-wrong='{"-2|-2;2|2":"(−2)² ist +4. Also f(−2) = 0,5 · 4 = 2.","-4|8;4|8":"Aus x² = 4 folgt x = 2 oder x = −2. Du musst noch die Wurzel ziehen.","-2|4;2|4":"Vergiss den Faktor 0,5 nicht: f(2) = 0,5 · 4 = 2.","-2|0;2|0":"Die Stellen stimmen. Die Höhe ist f(2) = 0,5 · 4 = 2."}'></div>
+      </div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="ka-calc sp-calc">
+        <div><i class="sp-n">1</i><span><span class="nw">0,5x² = −0,5x² + 4</span> <span class="op">| + 0,5x²</span></span></div>
+        <div><i class="sp-n">2</i><span><span class="nw">x² = 4</span> <span class="op">| √</span></span></div>
+        <div><i></i><span>x₁ = −2, &nbsp;x₂ = 2</span></div>
+        <div><i class="sp-n">3</i><span>f(−2) = 0,5 · 4 = 2 und f(2) = 0,5 · 4 = 2</span></div>
+        <div><i class="sp-n">4</i><span><b>S₁(−2 | 2), S₂(2 | 2)</b></span></div>
+        <div><i></i><span>Probe: g(2) = −2 + 4 = 2 ✓</span></div>
+      </div></details>
+    </article>
+  </div>
+  <div class="ka-merke" id="mini-result" role="status" hidden></div>
+</section>
+
+<!-- ================= SPICKZETTEL ================= -->
+<section class="ka-section" id="spickzettel">
+  <p class="ka-phase"><b>Zum Abschreiben</b> · Spickzettel</p>
+  <h2>Spickzettel: Schnittpunkte auf einer Seite</h2>
+  <p>Schreib dir diese Seite einmal von Hand ab. Was du selbst geschrieben hast, weißt du in der Arbeit noch.</p>
+  <div class="sp-sheet">
+    <div>
+      <h3>Die Routine</h3>
+      <ol>
+        <li><b>Gleichsetzen:</b> <span class="m">f(x) = g(x)</span></li>
+        <li><b>x ausrechnen:</b> alles auf eine Seite, rechts steht 0, Gleichung lösen</li>
+        <li><b>y berechnen:</b> jedes x in <span class="m">f</span> oder <span class="m">g</span> einsetzen</li>
+        <li><b>Punkt und Probe:</b> <span class="m">S(x | y)</span> notieren, mit der anderen Funktion prüfen</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Wie viele Schnittpunkte?</h3>
+      <ul>
+        <li>Wurzelinhalt <b>positiv</b>: zwei Schnittpunkte</li>
+        <li>Wurzelinhalt <b>null</b>: ein Berührpunkt</li>
+        <li>Wurzelinhalt <b>negativ</b>: kein gemeinsamer Punkt</li>
+      </ul>
+      <div class="ka-formula" data-if-formel="pq">x₁,₂ = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span><small>für x² + px + q = 0</small></div>
+      <div class="ka-formula" data-if-formel="abc">x₁,₂ = <span class="frac"><span>−b ± <span class="sqrt"><span>b² − 4ac</span></span></span><span>2a</span></span><small>für ax² + bx + c = 0</small></div>
+    </div>
+    <div class="wide">
+      <h3>Wer trifft wen?</h3>
+      <table class="ka-table">
+        <tr><th>Gesucht</th><th>Schritt 1</th><th>Das musst du wissen</th></tr>
+        <tr><td>Parabel und x-Achse</td><td>f(x) = 0</td><td>y ist immer 0. Antwort als Punkt: N(x | 0).</td></tr>
+        <tr><td>Parabel und Gerade</td><td>f(x) = g(x)</td><td>Sekante, Tangente oder Passante. y mit der Geraden berechnen.</td></tr>
+        <tr><td>zwei Parabeln</td><td>f(x) = g(x)</td><td>Gleicher Faktor vor x²: x² fällt weg, höchstens ein Punkt. Sonst quadratische Gleichung.</td></tr>
+      </table>
+    </div>
+    <div class="wide">
+      <h3>Fünf Fragen vor dem Abgeben</h3>
+      <ul class="sp-check">
+        <li>Steht rechts 0, bevor ich die Lösungsformel benutze? Haben beim Rüberbringen alle Glieder das Vorzeichen gewechselt?</li>
+        <li>Habe ich beide Lösungen notiert (das Zeichen ± steht für zwei Rechnungen)?</li>
+        <li>Habe ich zu jedem x ein y berechnet und Punkte hingeschrieben, keine einzelnen Zahlen?</li>
+        <li>Habe ich negative Zahlen mit Klammer eingesetzt, zum Beispiel <span class="m">(−1)² = 1</span>?</li>
+        <li>Habe ich die Probe mit der anderen Funktion gemacht?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<nav data-ka-next></nav>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => {
+    const el = document.getElementById(id);
+    if (!el) throw new Error('Schnittpunkte: Element #' + id + ' fehlt.');
+    return el;
+  };
+  const fmt = KA.fmt, h = KA.h;
+  const setText = (id, text) => { $(id).textContent = text; };
+  const formel = () => KA.pref('formel') || 'pq';
+  const exact = v => Math.abs(v * 100 - Math.round(v * 100)) < 1e-7;
+  const num = v => (exact(v) ? '' : '≈ ') + fmt(v);
+  const pt = (x, y, name) => name + '(' + num(x) + ' | ' + num(y) + ')';
+  const inside = (plot, x, y) => x >= plot.x[0] - 1e-9 && x <= plot.x[1] + 1e-9 && y >= plot.y[0] - 1e-9 && y <= plot.y[1] + 1e-9;
+  const row = (label, ...content) => h('div', {}, h('small', {text: label}), h('span', {}, ...content));
+  const frac = (top, bottom) => h('span', {class: 'frac'}, h('span', {text: top}), h('span', {text: bottom}));
+
+  /* Schrittfolge mit der Leiste des Viererschritts und der Ausbaustufe eines Bildes koppeln.
+     Jeder Schritt trägt data-s (Station 1 bis 4) und data-show (was das Bild schon zeigen darf). */
+  function hookSteps(stepsId, onLevel) {
+    const box = $(stepsId);
+    const items = [...box.querySelectorAll('[data-step]')];
+    const track = document.querySelector('.sp-route[data-for="' + stepsId + '"]');
+    if (!track) throw new Error('Schnittpunkte: Leiste für ' + stepsId + ' fehlt.');
+    box.addEventListener('ka:step', evt => {
+      const li = items[evt.detail.index];
+      const station = +li.dataset.s, last = evt.detail.index === items.length - 1;
+      [...track.children].forEach((el, i) => {
+        el.classList.toggle('is-past', i + 1 < station || (last && i + 1 === station));
+        el.classList.toggle('is-on', i + 1 === station && !last);
+      });
+      onLevel(+li.dataset.show);
+    });
+  }
+  function stepFigure(target, opts, stepsId, draw) {
+    const plot = KA.plot(target, opts);
+    let level = 0;
+    plot.render(c => draw(c, level));
+    hookSteps(stepsId, value => { level = value; plot.update(); });
+  }
+
+  /* ---------- Kopf: das Lineal ---------- */
+  {
+    const f = x => x * x, g = x => x + 2;
+    const plot = KA.plot('#hero-plot', {x: [-3, 4], y: [-1, 8], aspect: .75, label: 'Normalparabel f und Gerade g mit einem senkrechten Lineal, das beide Höhen misst'});
+    const targets = [{x: -1, name: 'S₁', pos: 'nw'}, {x: 2, name: 'S₂', pos: 'se'}];
+    const found = new Set();
+    let t = 0.5;
+    const slider = KA.slider('#hero-controls', {label: 'x', aria: 'Stelle x des Lineals', min: -3, max: 4, step: .1, value: t, format: v => fmt(v, 1), onInput: v => move(v, true)});
+    function move(value, fromSlider) {
+      t = Math.min(4, Math.max(-3, Math.round(value * 10) / 10));
+      if (!fromSlider) slider.set(t, true);
+      for (const s of targets) if (s.x === t) found.add(s.x);
+      plot.update();
+    }
+    plot.onDrag(p => move(p.x), {axis: 'x'});
+    plot.render(c => {
+      const yf = f(t), yg = g(t), gap = Math.abs(yf - yg), hit = gap < 1e-9;
+      const top = plot.y[1], low = plot.y[0];
+      c.el('rect', {x: c.X(t) - 10, y: c.Y(top), width: 20, height: c.Y(low) - c.Y(top), fill: KA.COLORS.gold, opacity: .13}, 'under');
+      for (let y = Math.ceil(low); y <= top; y += .5) c.el('line', {x1: c.X(t) - 10, x2: c.X(t) - (Number.isInteger(y) ? 3 : 6), y1: c.Y(y), y2: c.Y(y), stroke: KA.COLORS.gold, 'stroke-width': 1, opacity: .55}, 'under');
+      c.seg(t, low, t, top, {color: 'gold', width: 1.4});
+      c.fn(f, {color: 'f', label: 'f', labelAt: -2.55, pos: 'w'});
+      c.fn(g, {color: 'g', label: 'g', labelAt: 3.55, pos: 'se'});
+      if (yf <= top) c.seg(0, yf, t, yf, {color: 'f', dash: true, width: 1.5, opacity: .6});
+      if (yg <= top) c.seg(0, yg, t, yg, {color: 'g', dash: true, width: 1.5, opacity: .6});
+      if (!hit) {
+        c.seg(t, yf, t, yg, {color: 'gold', width: 6});
+        const mid = (Math.min(yf, top) + Math.min(yg, top)) / 2;
+        c.label(t, mid, 'Abstand ' + fmt(gap), {color: 'gold', pos: t > 1.6 ? 'w' : 'e', size: 13});
+      }
+      for (const s of targets) if (found.has(s.x) && s.x !== t) c.point(s.x, f(s.x), {color: 'ok', label: s.name, pos: s.pos});
+      if (hit) {
+        const s = targets.find(s => s.x === t);
+        c.el('circle', {cx: c.X(t), cy: c.Y(yf), r: 15, fill: KA.COLORS.ok, opacity: .18});
+        c.point(t, yf, {color: 'ok', r: 7, label: s.name, pos: s.pos});
+      } else {
+        if (yf <= top) c.point(t, yf, {color: 'f'});
+        if (yg <= top) c.point(t, yg, {color: 'g'});
+      }
+      setText('hero-f', 'f(' + fmt(t, 1) + ') = ' + fmt(yf));
+      setText('hero-g', 'g(' + fmt(t, 1) + ') = ' + fmt(yg));
+      const gapEl = $('hero-gap');
+      gapEl.textContent = hit ? 'Abstand 0: gleiche Höhe' : 'Abstand ' + fmt(gap);
+      gapEl.className = hit ? 'c-ok' : 'c-gold';
+      const box = $('hero-found');
+      box.textContent = '';
+      box.classList.toggle('is-done', found.size === targets.length);
+      if (!found.size) box.append('Noch kein Schnittpunkt gefunden. Es gibt zwei.');
+      else {
+        box.append(found.size === targets.length ? 'Beide gefunden: ' : 'Gefunden: ');
+        targets.filter(s => found.has(s.x)).forEach((s, i) => box.append(i ? ' und ' : '', h('b', {text: KA.point(s.x, f(s.x), s.name)})));
+        box.append(found.size === targets.length ? '. Dort gilt f(x) = g(x).' : '. Einer fehlt noch.');
+      }
+    });
+  }
+
+  /* ---------- Abschnitt 1: g(x) auf beiden Seiten abziehen ---------- */
+  {
+    const f = x => x * x, g = x => x + 2;
+    const plot = KA.plot('#diff-plot', {x: [-3, 4], y: [-3, 8], aspect: .75, label: 'Parabel und Gerade, von denen schrittweise g abgezogen wird, bis die Gerade auf der x-Achse liegt'});
+    let t = 0, playing = false;
+    const button = $('diff-play');
+    const slider = KA.slider('#diff-controls', {label: 'abgezogen', aria: 'Anteil von g, der schon abgezogen ist', min: 0, max: 1, step: .05, value: 0, format: v => Math.round(v * 100) + ' %', onInput: v => { if (playing) return; t = v; plot.update(); }});
+    button.addEventListener('click', () => {
+      if (playing) return;
+      playing = true;
+      const to = t >= .999 ? 0 : 1;
+      KA.tween(t, to, 1700, v => { t = v; slider.set(Math.round(v * 20) / 20, true); plot.update(); }, () => { t = to; playing = false; slider.set(to, true); plot.update(); });
+    });
+    plot.render(c => {
+      const done = t >= .999, start = t <= .001;
+      if (!start) { c.fn(f, {color: 'f', dash: '4 6', width: 1.8, opacity: .35}); c.fn(g, {color: 'g', dash: '4 6', width: 1.8, opacity: .35}); }
+      c.vline(-1, {color: 'p', opacity: .6}); c.vline(2, {color: 'p', opacity: .6});
+      c.fn(x => f(x) - t * g(x), {color: 'f', label: start ? 'f' : done ? 'f − g' : null, labelAt: -2.45, pos: 'e'});
+      c.fn(x => (1 - t) * g(x), {color: 'g', width: done ? 4 : 3, label: start ? 'g' : null, labelAt: 3.4, pos: 'se'});
+      if (done) c.label(3.2, 0, 'y = 0', {color: 'g', pos: 'n'});
+      c.point(-1, (1 - t) * 1, {color: done ? 'ok' : 'p', label: start ? 'S₁' : null, pos: 'w'});
+      c.point(2, (1 - t) * 4, {color: done ? 'ok' : 'p', label: start ? 'S₂' : null, pos: 'se'});
+      if (done) { c.label(-1, -0.8, 'x₁ = −1', {color: 'ok', pos: 'w'}); c.label(2, -0.8, 'x₂ = 2', {color: 'ok', pos: 'e'}); }
+      setText('diff-f', start ? 'f(x) = x²' : done ? 'f(x) − g(x) = x² − x − 2' : 'x² − ' + fmt(t) + ' · (x + 2)');
+      setText('diff-g', start ? 'g(x) = x + 2' : done ? 'g(x) − g(x) = 0' : fmt(1 - t) + ' · (x + 2)');
+      setText('diff-s', (done ? 'Nullstellen' : 'gleiche Höhe') + ' bei x = −1 und x = 2');
+      button.textContent = done ? '↺ Zurück zum Anfang' : 'g(x) abziehen ▶';
+    });
+  }
+
+  /* ---------- Abschnitt 2: Parabel und x-Achse ---------- */
+  {
+    const E = [-4, -1, -0.25, 0, 0.25, 1, 4];
+    let a = 1, d = 1, ei = 0;
+    const seen = new Set();
+    const nearest = y => E.reduce((best, v) => Math.abs(v - y) < Math.abs(best - y) ? v : best, E[0]);
+    const plot = KA.plot('#nst-plot', {x: [-5, 5], y: [-5, 5], label: 'Verschiebbare Parabel mit Scheitel S und ihren Nullstellen'});
+    const S = plot.handle({x: d, y: E[ei], snap: [.5, 0], color: 'p', name: 'Scheitel S verschieben', bounds: {x: [-3, 3], y: [-4, 4]}, constrain: (x, y) => [x, nearest(y)],
+      onMove: item => { d = item.x; ei = E.indexOf(item.y); sd.set(d, true); se.set(ei, true); paint(); }});
+    KA.seg('#nst-controls', {label: 'Öffnung der Parabel', value: '1', options: [{value: '1', label: 'nach oben geöffnet'}, {value: '-1', label: 'nach unten geöffnet'}], onChange: v => { a = +v; plot.update(); paint(); }});
+    const sd = KA.slider('#nst-controls', {label: 'd', aria: 'Verschiebung d nach rechts oder links', min: -3, max: 3, step: .5, value: d, onInput: v => { d = v; S.set(d, E[ei], true); plot.update(); paint(); }});
+    const se = KA.slider('#nst-controls', {label: 'e', aria: 'Verschiebung e nach oben oder unten', min: 0, max: E.length - 1, step: 1, value: ei, format: i => fmt(E[i]), onInput: i => { ei = i; S.set(d, E[ei], true); plot.update(); paint(); }});
+    // Die Höhen e liegen nicht gleichmäßig. Pfeil hoch und runter springen deshalb zur nächsten Stufe.
+    plot.svg.addEventListener('keydown', evt => {
+      const dir = {ArrowUp: 1, ArrowDown: -1}[evt.key];
+      if (!dir || !evt.target.closest('.ka-handle')) return;
+      evt.preventDefault(); evt.stopPropagation();
+      S.set(d, E[Math.min(E.length - 1, Math.max(0, ei + dir))]);
+    }, true);
+    plot.render(c => {
+      const e = E[ei], f = x => a * (x - d) ** 2 + e, r = a === 1 ? -e : e, root = Math.sqrt(Math.max(r, 0));
+      if (r > 0) c.area(f, 0, d - root, d + root, {color: 'f', opacity: .1});
+      c.vline(d, {color: 'p', opacity: .4});
+      c.fn(f, {color: 'f'});
+      c.label(d, e, 'S', {color: 'p', pos: e === 0 ? 'nw' : Math.abs(e) <= .25 ? 'n' : a === 1 ? 's' : 'n'});
+      if (r > 0) { c.point(d - root, 0, {color: 'ok', label: 'N₁', pos: 'nw'}); c.point(d + root, 0, {color: 'ok', label: 'N₂', pos: 'ne'}); }
+      else if (r === 0) c.point(d, 0, {color: 'ok', label: 'N', pos: 'ne'});
+    });
+    function paint() {
+      const e = E[ei], r = a === 1 ? -e : e, n = r > 0 ? 2 : r === 0 ? 1 : 0, root = Math.sqrt(Math.max(r, 0));
+      se.input.setAttribute('aria-valuetext', fmt(e));
+      setText('nst-term', 'f(x) = ' + KA.vertexForm(a, d, e));
+      setText('nst-vertex', KA.point(d, e, 'S') + (e < 0 ? ' unter der Achse' : e > 0 ? ' über der Achse' : ' auf der Achse'));
+      const zeros = $('nst-zeros');
+      zeros.textContent = n === 2 ? KA.point(d - root, 0, 'N₁') + ', ' + KA.point(d + root, 0, 'N₂') : n === 1 ? KA.point(d, 0, 'N') + ', Berührpunkt' : 'keine Nullstelle';
+      zeros.className = n ? 'c-ok' : 'c-no';
+      const col = e < 0 ? 0 : e === 0 ? 1 : 2;
+      seen.add(a + '/' + col);
+      document.querySelectorAll('#nst-cases .c').forEach(cell => {
+        const key = cell.dataset.a + '/' + cell.dataset.col;
+        cell.classList.toggle('is-now', key === a + '/' + col);
+        cell.classList.toggle('is-seen', seen.has(key));
+      });
+      setText('nst-seen', seen.size < 6 ? seen.size + ' von 6 Feldern besucht.' : 'Alle sechs Felder besucht. Keine Nullstelle gibt es genau dann, wenn sich die Parabel von der Achse weg öffnet.');
+      const square = d === 0 ? 'x²' : '(x ' + (d > 0 ? '− ' : '+ ') + fmt(Math.abs(d)) + ')²';
+      const live = $('nst-live');
+      live.textContent = '';
+      live.append(row('f(x) = 0', '0 = ' + KA.vertexForm(a, d, e)), row('umstellen', square + ' = ' + fmt(r)));
+      if (n === 2) live.append(row('Wurzel ziehen', 'x = ' + (d === 0 ? '±' + fmt(root) : fmt(d) + ' ± ' + fmt(root))));
+      if (n === 1) live.append(row('Wurzel ziehen', 'x = ' + fmt(d)));
+      live.append(h('span', {class: 'sp-verdict ' + (n === 2 ? 'ok' : n === 1 ? 'one' : 'no'), text:
+        n === 2 ? 'Zwei Lösungen: x₁ = ' + fmt(d - root) + ' und x₂ = ' + fmt(d + root) + '.'
+        : n === 1 ? 'Genau eine Lösung. Die Parabel berührt die Achse mit ihrem Scheitel.'
+        : 'Ein Quadrat ist nie negativ. Keine Lösung, also keine Nullstelle.'}));
+    }
+    paint();
+  }
+
+  /* Rechenbeispiel x-Achse: f(x) = x² − 2x − 3 */
+  stepFigure('#nst-step-plot', {x: [-3, 5], y: [-5, 6], aspect: .8, label: 'Parabel f(x) = x² − 2x − 3, die Nullstellen erscheinen mit der Rechnung'}, 'steps-nst', (c, level) => {
+    const f = x => x * x - 2 * x - 3;
+    if (level >= 1) c.seg(-3, 0, 5, 0, {color: 'g', width: 4, opacity: .55});
+    if (level >= 1 && level < 4) c.label(4.3, 0, 'y = 0', {color: 'g', pos: 'n', size: 13});
+    if (level >= 2) {
+      c.vline(-1, {color: 'p'}); c.vline(3, {color: 'p'});
+      c.label(-1, -2.6, 'x₁ = −1', {color: 'p', pos: 'w'}); c.label(3, -2.6, 'x₂ = 3', {color: 'p', pos: 'e'});
+    }
+    c.fn(f, {color: 'f', label: 'f', labelAt: -2, pos: 'w'});
+    if (level < 3) { c.point(-1, 0, {color: 'dim', open: true, label: level < 2 ? '?' : null, pos: 'nw'}); c.point(3, 0, {color: 'dim', open: true, label: level < 2 ? '?' : null, pos: 'ne'}); }
+    if (level >= 3) {
+      c.point(-1, 0, {color: 'ok', label: level >= 4 ? 'N₁(−1 | 0)' : null, pos: 'nw'});
+      c.point(3, 0, {color: 'ok', label: level >= 4 ? 'N₂(3 | 0)' : null, pos: 'ne'});
+    }
+  });
+
+  /* ---------- Abschnitt 3: Parabel und Gerade ---------- */
+  {
+    const f = x => x * x;
+    let m = 2, b = 3;
+    const plot = KA.plot('#ger-plot', {x: [-4, 4], y: [-3, 10], aspect: .65, labelEvery: [1, 2], label: 'Normalparabel und eine Gerade, die sich verschieben und drehen lässt'});
+    const A = plot.handle({x: 0, y: b, axis: 'y', snap: [0, .25], color: 'g', name: 'Gerade nach oben oder unten schieben', bounds: {y: [-3, 6]}, onMove: item => { b = item.y; sb.set(b, true); paint(); }});
+    KA.slider('#ger-controls', {label: 'm', aria: 'Steigung m der Geraden', min: -3, max: 3, step: 1, value: m, onInput: v => { m = v; plot.update(); paint(); }});
+    const sb = KA.slider('#ger-controls', {label: 'b', aria: 'y-Achsenabschnitt b der Geraden', min: -3, max: 6, step: .25, value: b, onInput: v => { b = v; A.set(0, b, true); plot.update(); paint(); }});
+    const cuts = () => {
+      const D = m * m + 4 * b;
+      if (D < -1e-9) return [];
+      if (D <= 1e-9) return [m / 2];
+      return [(m - Math.sqrt(D)) / 2, (m + Math.sqrt(D)) / 2];
+    };
+    plot.render(c => {
+      const g = x => m * x + b, xs = cuts();
+      c.fn(f, {color: 'f', label: 'f', labelAt: -2.9, pos: 'w'});
+      c.fn(g, {color: 'g'});
+      xs.forEach((x, i) => {
+        if (!inside(plot, x, f(x))) return;
+        c.seg(x, 0, x, f(x), {color: 'p', dash: true, width: 1.6});
+        c.point(x, f(x), {color: xs.length === 1 ? 'gold' : 'p', label: xs.length === 1 ? 'B' : 'S' + '₁₂'[i], pos: xs.length === 1 ? (m >= 0 ? 'se' : 'sw') : i === 0 ? (m < 0 ? 'sw' : 'w') : (m < 0 ? 'e' : 'se')});
+      });
+    });
+    function paint() {
+      const D4 = m * m + 4 * b, pq = formel() === 'pq', D = pq ? D4 / 4 : D4, xs = cuts(), n = xs.length;
+      setText('ger-term', 'g(x) = ' + KA.linear(m, b));
+      setText('ger-points', n === 2 ? pt(xs[0], f(xs[0]), 'S₁') + ', ' + pt(xs[1], f(xs[1]), 'S₂') : n === 1 ? pt(xs[0], f(xs[0]), 'B') + ', Berührpunkt' : 'kein gemeinsamer Punkt');
+      const live = $('ger-live');
+      live.textContent = '';
+      live.append(row('Gleichsetzen', 'x² = ' + KA.linear(m, b)), row('Alles nach links', KA.quad(1, -m, -b) + ' = 0'));
+      live.append(pq
+        ? row('Wurzelinhalt', '(', frac('p', '2'), ')² − q = ' + fmt(m * m / 4) + ' ' + KA.signed(b) + ' = ' + fmt(D))
+        : row('Wurzelinhalt', 'b² − 4ac = ' + fmt(m * m) + ' ' + KA.signed(4 * b) + ' = ' + fmt(D)));
+      const tone = n === 2 ? 'ok' : n === 1 ? 'one' : 'no';
+      live.append(h('span', {class: 'sp-verdict ' + tone, text:
+        n === 2 ? 'Positiv: zwei Lösungen, zwei Schnittpunkte. Die Gerade ist eine Sekante.'
+        : n === 1 ? 'Genau null: eine Lösung. Die Gerade berührt die Parabel, sie ist eine Tangente.'
+        : 'Negativ: keine Lösung, kein gemeinsamer Punkt. Die Gerade ist eine Passante.'}));
+      const gauge = $('ger-gauge');
+      gauge.className = 'sp-gauge ' + tone;
+      gauge.style.setProperty('--pos', (Math.min(1, Math.max(0, (D4 / 4 + 4) / 13)) * 100).toFixed(2) + '%');
+    }
+    document.addEventListener('ka:formel', paint);
+    paint();
+  }
+
+  /* Drei kleine Bilder: Sekante, Tangente, Passante */
+  function thumb(id, label, f, g, xr, yr, points) {
+    const NS = 'http://www.w3.org/2000/svg', W = 160, H = 112;
+    const X = x => (x - xr[0]) / (xr[1] - xr[0]) * W, Y = y => H - (y - yr[0]) / (yr[1] - yr[0]) * H;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label);
+    const add = (tag, attrs) => { const el = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v); svg.append(el); };
+    const path = fn => { let d = ''; for (let i = 0; i <= 60; i++) { const x = xr[0] + (xr[1] - xr[0]) * i / 60; d += (i ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(fn(x)).toFixed(1); } return d; };
+    add('path', {d: 'M0 ' + Y(0).toFixed(1) + 'H' + W + 'M' + X(0).toFixed(1) + ' 0V' + H, stroke: '#a9b8ae', 'stroke-width': 1, fill: 'none'});
+    add('path', {d: path(f), stroke: KA.COLORS.f, 'stroke-width': 2.6, fill: 'none', 'stroke-linecap': 'round'});
+    add('path', {d: path(g), stroke: KA.COLORS.g, 'stroke-width': 2.6, fill: 'none', 'stroke-linecap': 'round'});
+    for (const [x, y] of points) add('circle', {cx: X(x).toFixed(1), cy: Y(y).toFixed(1), r: 5, fill: KA.COLORS.p, stroke: '#fff', 'stroke-width': 1.8});
+    $(id).append(svg);
+  }
+  thumb('thumb-sekante', 'Gerade schneidet die Parabel in zwei Punkten', x => x * x - 4 * x + 6, x => 2 * x - 2, [-0.5, 5.5], [-1.5, 9], [[2, 2], [4, 6]]);
+  thumb('thumb-tangente', 'Gerade berührt die Parabel in einem Punkt', x => x * x, x => 2 * x - 1, [-2.5, 3.5], [-2.5, 6], [[1, 1]]);
+  thumb('thumb-passante', 'Gerade läuft unter der Parabel vorbei', x => x * x + 2, x => x, [-3, 3], [-2.5, 7], []);
+
+  /* Rechenbeispiel Gerade: f(x) = x² − 4x + 6, g(x) = 2x − 2 */
+  stepFigure('#ger-step-plot', {x: [-1, 6], y: [-3, 8], aspect: .75, label: 'Parabel f und Gerade g, die Schnittpunkte erscheinen mit der Rechnung'}, 'steps-ger', (c, level) => {
+    const f = x => x * x - 4 * x + 6, g = x => 2 * x - 2;
+    if (level >= 2) {
+      c.vline(2, {color: 'p'}); c.vline(4, {color: 'p'});
+      c.label(2, -2.3, 'x₁ = 2', {color: 'p', pos: 'w'}); c.label(4, -2.3, 'x₂ = 4', {color: 'p', pos: 'e'});
+    }
+    if (level >= 3) { c.seg(0, 2, 2, 2, {color: 'p', dash: true, width: 1.6}); c.seg(0, 6, 4, 6, {color: 'p', dash: true, width: 1.6}); }
+    c.fn(f, {color: 'f', label: 'f', labelAt: .3, pos: 'e'});
+    c.fn(g, {color: 'g', label: 'g', labelAt: .55, pos: 'se'});
+    if (level >= 3) {
+      c.point(2, 2, {color: 'ok', label: level >= 4 ? 'S₁(2 | 2)' : null, pos: 'se'});
+      c.point(4, 6, {color: 'ok', label: level >= 4 ? 'S₂(4 | 6)' : null, pos: 'nw'});
+    }
+  });
+
+  /* Fehlerbild: f(x) = x² − 3, g(x) = 2x */
+  {
+    const f = x => x * x - 3, g = x => 2 * x;
+    let mode = 'y';
+    const plot = KA.plot('#err-plot', {x: [-4, 4], y: [-5, 7], aspect: .65, label: 'Parabel und Gerade mit richtigem und falschem Ergebnis'});
+    KA.seg('#err-seg', {label: 'Fehler auswählen', value: mode, options: [{value: 'y', label: 'y vergessen'}, {value: 'vz', label: 'Vorzeichen'}, {value: 'quad', label: '(−1)²'}, {value: 'eine', label: 'nur eine Lösung'}], onChange: v => {
+      mode = v;
+      document.querySelectorAll('#err-box .sp-errcase').forEach(el => { el.hidden = el.dataset.err !== v; });
+      plot.update();
+    }});
+    plot.render(c => {
+      c.fn(f, {color: 'f', label: 'f', labelAt: -2.3, pos: 'w'});
+      c.fn(g, {color: 'g', label: 'g', labelAt: 3.3, pos: 'se'});
+      const right = (x, name, pos) => c.point(x, f(x), {color: 'ok', label: name, pos});
+      if (mode === 'y') {
+        c.seg(-1, 0, -1, -2, {color: 'ok', dash: true, arrow: true}); c.seg(3, 0, 3, 6, {color: 'ok', dash: true, arrow: true});
+        c.point(-1, 0, {color: 'no', open: true, label: 'nur x₁', pos: 'nw'}); c.point(3, 0, {color: 'no', open: true, label: 'nur x₂', pos: 'nw'});
+        right(-1, 'S₁(−1 | −2)', 'w'); right(3, 'S₂(3 | 6)', 'nw');
+      } else if (mode === 'vz') {
+        c.seg(-3, 6, -3, -5, {color: 'no', dash: true}); c.seg(1, -2, 1, 2, {color: 'no', dash: true});
+        c.point(1, 2, {color: 'g', open: true, label: 'g(1) = 2', pos: 'nw'});
+        c.point(-3, 6, {color: 'no', label: '(−3 | 6)', pos: 'e'}); c.point(1, -2, {color: 'no', label: '(1 | −2)', pos: 'se'});
+        right(-1, 'S₁', 'w'); right(3, 'S₂', 'nw');
+      } else if (mode === 'quad') {
+        c.seg(-1, -4, -1, -2, {color: 'ok', dash: true, arrow: true});
+        c.point(-1, -4, {color: 'no', label: '(−1 | −4)', pos: 'se'});
+        right(-1, 'S₁(−1 | −2)', 'w'); right(3, 'S₂', 'nw');
+      } else {
+        c.el('circle', {cx: c.X(-1), cy: c.Y(-2), r: 15, fill: 'none', stroke: KA.COLORS.no, 'stroke-width': 2.4, 'stroke-dasharray': '5 4'});
+        c.label(-1, -2, 'vergessen', {color: 'no', pos: 'w'});
+        c.point(-1, -2, {color: 'no', open: true});
+        right(3, 'S(3 | 6)', 'nw');
+      }
+    });
+  }
+
+  /* ---------- Abschnitt 4: zwei Parabeln ---------- */
+  {
+    let a2 = -1;
+    const plot = KA.plot('#par-plot', {x: [-5, 5], y: [-6, 7], aspect: .75, label: 'Zwei Parabeln mit verschiebbaren Scheiteln'});
+    const F = plot.handle({x: 2, y: 1, snap: 1, color: 'f', name: 'Scheitel der blauen Parabel f verschieben', bounds: {x: [-4, 4], y: [-5, 6]}, constrain: (x, y) => x === G.x && y === G.y ? [F.x, F.y] : [x, y], onMove: paint});
+    const G = plot.handle({x: 2, y: 3, snap: 1, color: 'g', name: 'Scheitel der orangen Parabel g verschieben', bounds: {x: [-4, 4], y: [-5, 6]}, constrain: (x, y) => x === F.x && y === F.y ? [G.x, G.y] : [x, y], onMove: paint});
+    const seg = KA.seg('#par-controls', {label: 'Faktor vor x² bei g', value: '-1', options: [{value: '1', label: 'g mit Faktor 1 (wie f)'}, {value: '0.5', label: 'Faktor 0,5'}, {value: '-1', label: 'Faktor −1'}], onChange: v => { a2 = +v; plot.update(); paint(); }});
+    const f = x => (x - F.x) ** 2 + F.y, g = x => a2 * (x - G.x) ** 2 + G.y;
+    function solve() {
+      const A = 1 - a2, B = -2 * F.x + 2 * a2 * G.x, C = F.x ** 2 + F.y - a2 * G.x ** 2 - G.y;
+      if (A !== 0) {
+        const D = B * B - 4 * A * C;
+        return {A, B, C, kind: 'quad', xs: D > 1e-9 ? [(-B - Math.sqrt(D)) / (2 * A), (-B + Math.sqrt(D)) / (2 * A)].sort((p, q) => p - q) : D >= -1e-9 ? [-B / (2 * A)] : []};
+      }
+      if (B !== 0) return {A, B, C, kind: 'lin', xs: [-C / B]};
+      return {A, B, C, kind: C === 0 ? 'same' : 'shift', xs: []};
+    }
+    plot.render(c => {
+      const {xs, kind} = solve();
+      c.fn(f, {color: 'f'});
+      c.fn(g, {color: 'g', dash: kind === 'same' ? '10 7' : null});
+      c.label(F.x, F.y, 'f', {color: 'f', pos: 's'});
+      c.label(G.x, G.y, 'g', {color: 'g', pos: a2 > 0 ? 's' : 'n'});
+      xs.forEach((x, i) => { if (inside(plot, x, f(x))) c.point(x, f(x), {color: 'p', label: xs.length === 1 ? (kind === 'quad' ? 'B' : 'S') : 'S' + '₁₂'[i], pos: xs.length === 1 ? (kind === 'quad' ? 'se' : 'nw') : i === 0 ? 'w' : 'e'}); });
+    });
+    function paint() {
+      const {A, B, C, xs, kind} = solve();
+      const tf = KA.quad(1, -2 * F.x, F.x ** 2 + F.y), tg = KA.quad(a2, -2 * a2 * G.x, a2 * G.x ** 2 + G.y);
+      setText('par-f', 'f(x) = ' + tf);
+      setText('par-g', 'g(x) = ' + tg);
+      setText('par-points', kind === 'same' ? 'alle Punkte gemeinsam' : xs.length === 2 ? pt(xs[0], f(xs[0]), 'S₁') + ', ' + pt(xs[1], f(xs[1]), 'S₂') : xs.length === 1 ? pt(xs[0], f(xs[0]), kind === 'quad' ? 'B' : 'S') : 'kein Schnittpunkt');
+      const live = $('par-live');
+      live.textContent = '';
+      live.append(row('Gleichsetzen', tf + ' = ' + tg));
+      if (kind === 'quad') live.append(row('Alles nach links', KA.quad(A, B, C) + ' = 0'));
+      else live.append(row('Alles nach links', h('s', {text: 'x² − x²'}), ' ', kind === 'lin' ? KA.linear(B, C) + ' = 0' : fmt(C) + ' = 0'));
+      const tone = kind === 'quad' ? (xs.length === 2 ? 'ok' : xs.length === 1 ? 'one' : 'no') : kind === 'lin' ? 'ok' : kind === 'same' ? 'one' : 'no';
+      live.append(h('span', {class: 'sp-verdict ' + tone, text:
+        kind === 'quad' ? 'Verschiedene Faktoren: Es bleibt eine quadratische Gleichung. ' + (xs.length === 2 ? 'Hier hat sie zwei Lösungen, also zwei Schnittpunkte.' : xs.length === 1 ? 'Hier hat sie genau eine Lösung: Die Parabeln berühren sich.' : 'Hier ist der Wurzelinhalt negativ: kein Schnittpunkt.')
+        : kind === 'lin' ? 'Gleicher Faktor: x² fällt weg. Eine lineare Gleichung hat genau eine Lösung, also gibt es einen Schnittpunkt.'
+        : kind === 'shift' ? 'Gleicher Faktor und gleiche Stelle des Scheitels: Auch x fällt weg. ' + fmt(C) + ' = 0 ist falsch, also kein Schnittpunkt.'
+        : 'Beide Terme sind gleich. Die Parabeln liegen aufeinander.'}));
+    }
+    const presets = {a: [2, 1, -1, 2, 3], b: [-2, -5, 1, 1, 4], t: [0, 0, -1, 2, 2], n: [0, 1, 1, 0, -2]};
+    $('par-presets').addEventListener('click', evt => {
+      const button = evt.target.closest('[data-preset]');
+      if (!button) return;
+      const [fx, fy, factor, gx, gy] = presets[button.dataset.preset];
+      // Erst auseinanderziehen, damit sich die Scheitel unterwegs nicht gegenseitig blockieren.
+      G.set(4, 6, true); F.set(fx, fy, true); G.set(gx, gy, true);
+      a2 = factor; seg.set(String(factor), true);
+      plot.update(); paint();
+    });
+    paint();
+  }
+
+  /* Rechenbeispiel zwei Parabeln: f(x) = x² − 4x + 5, g(x) = −x² + 4x − 1 */
+  stepFigure('#par-step-plot', {x: [-1, 5], y: [-2, 6], aspect: .8, label: 'Zwei Parabeln, die Schnittpunkte erscheinen mit der Rechnung'}, 'steps-par', (c, level) => {
+    const f = x => x * x - 4 * x + 5, g = x => -x * x + 4 * x - 1;
+    if (level >= 2) {
+      c.vline(1, {color: 'p'}); c.vline(3, {color: 'p'});
+      c.label(1, 5.45, 'x₁ = 1', {color: 'p', pos: 'e'}); c.label(3, 5.45, 'x₂ = 3', {color: 'p', pos: 'e'});
+    }
+    if (level >= 3) c.seg(0, 2, 1, 2, {color: 'p', dash: true, width: 1.6});
+    c.fn(f, {color: 'f', label: 'f', labelAt: .2, pos: 'e'});
+    c.fn(g, {color: 'g', label: 'g', labelAt: 4.2, pos: 'e'});
+    if (level >= 3) {
+      c.point(1, 2, {color: 'ok', label: level >= 4 ? 'S₁(1 | 2)' : null, pos: 'e'});
+      c.point(3, 2, {color: 'ok', label: level >= 4 ? 'S₂(3 | 2)' : null, pos: 'e'});
+    }
+  });
+
+  /* ---------- Aufgaben mit eigener Interaktion ---------- */
+  // Parabel an die Nullstellen 1 und 5 schieben
+  {
+    const answer = $('schieben-answer');
+    const plot = KA.plot('#schieben-plot', {x: [-1, 7], y: [-5, 4], label: 'Normalparabel, deren Scheitel sich ziehen lässt, und die zwei Ziel-Nullstellen'});
+    const S = plot.handle({x: 2, y: -1, snap: .5, color: 'p', name: 'Scheitel der Parabel verschieben', bounds: {x: [0, 6], y: [-5, 3]}, onMove: sync});
+    function sync() {
+      answer.kaValue = S.x + '|' + S.y;
+      setText('schieben-term', 'f(x) = ' + KA.vertexForm(1, S.x, S.y) + ' mit ' + KA.point(S.x, S.y, 'S'));
+    }
+    plot.render(c => {
+      const f = x => (x - S.x) ** 2 + S.y;
+      c.fn(f, {color: 'f'});
+      for (const [x, name, pos] of [[1, 'N₁', 'nw'], [5, 'N₂', 'ne']]) {
+        c.el('circle', {cx: c.X(x), cy: c.Y(0), r: 11, fill: 'none', stroke: KA.COLORS.ok, 'stroke-width': 2.6});
+        c.label(x, 0, name, {color: 'ok', pos});
+      }
+      if (S.y <= 0) for (const x of new Set([S.x - Math.sqrt(-S.y), S.x + Math.sqrt(-S.y)])) if (inside(plot, x, 0)) c.point(x, 0, {color: 'f', r: 4.5});
+    });
+    answer.kaJudge = value => {
+      const [x, y] = String(value).split('|').map(Number);
+      if (x === 3 && y === -4) return {ok: true, msg: 'Der Scheitel liegt in der Mitte der Nullstellen, und 2 Schritte daneben ist die Parabel 2² = 4 höher.'};
+      if (x !== 3) return {ok: false, msg: 'Eine Parabel ist symmetrisch. Der Scheitel muss genau in der Mitte zwischen x = 1 und x = 5 liegen.'};
+      if (y >= 0) return {ok: false, msg: 'Die Mitte stimmt. Der Scheitel muss aber unter der x-Achse liegen, sonst gibt es keine zwei Nullstellen.'};
+      return {ok: false, msg: 'Die Mitte stimmt. Von x = 3 bis zur Nullstelle bei x = 5 sind es 2 Schritte. Wie viel höher liegt die Normalparabel 2 Schritte neben dem Scheitel?'};
+    };
+    answer.addEventListener('ka:restore', evt => {
+      const [x, y] = String(evt.detail).split('|').map(Number);
+      if (Number.isFinite(x) && Number.isFinite(y)) S.set(x, y, true);
+      sync();
+    });
+    sync();
+  }
+  // Gerade g(x) = −2x + b zur Tangente machen
+  {
+    const answer = $('tangente-answer');
+    const f = x => x * x;
+    const plot = KA.plot('#tangente-plot', {x: [-4, 3], y: [-3, 8], aspect: .8, label: 'Normalparabel und eine fallende Gerade, die sich nach oben und unten schieben lässt'});
+    const A = plot.handle({x: 0, y: 1, axis: 'y', snap: [0, .5], color: 'g', name: 'Gerade nach oben oder unten schieben', bounds: {y: [-3, 2]}, onMove: sync});
+    function sync() {
+      answer.kaValue = String(A.y);
+      setText('tangente-term', 'g(x) = ' + KA.linear(-2, A.y));
+    }
+    plot.render(c => {
+      const b = A.y, D = 4 + 4 * b;
+      c.fn(f, {color: 'f', label: 'f', labelAt: 2.2, pos: 'e'});
+      c.fn(x => -2 * x + b, {color: 'g'});
+      if (D >= 0) for (const x of new Set([(-2 - Math.sqrt(D)) / 2, (-2 + Math.sqrt(D)) / 2])) if (inside(plot, x, f(x))) c.point(x, f(x), {color: 'p'});
+    });
+    answer.kaJudge = value => {
+      const b = Number(value);
+      if (b === -1) return {ok: true, msg: 'Für b = −1 berührt die Gerade die Parabel in genau einem Punkt.'};
+      return {ok: false, msg: b > -1 ? 'Die Gerade schneidet die Parabel noch in zwei Punkten. Schiebe sie weiter nach unten.' : 'Jetzt haben Gerade und Parabel keinen gemeinsamen Punkt mehr. Schiebe die Gerade wieder nach oben.'};
+    };
+    answer.addEventListener('ka:restore', evt => {
+      const b = evt.detail === '' ? NaN : Number(evt.detail);
+      if (Number.isFinite(b)) A.set(0, b, true);
+      sync();
+    });
+    sync();
+  }
+
+  /* ---------- Lernziele abhaken, Mini-Test auswerten ---------- */
+  const goals = [...document.querySelectorAll('#goals li')];
+  function paintGoals() {
+    for (const li of goals) {
+      const tasks = [...document.querySelectorAll('#' + li.dataset.sec + ' .ka-task')];
+      li.classList.toggle('is-done', tasks.length > 0 && tasks.every(task => task.classList.contains('is-solved')));
+    }
+  }
+  const mini = [...document.querySelectorAll('#mini-test .ka-task')];
+  const firstTry = new Map();
+  const NAMES = {'x-achse': 'Parabel und x-Achse', gerade: 'Parabel und Gerade', parabeln: 'Zwei Parabeln'};
+  function paintMini() {
+    const box = $('mini-result');
+    const allSolved = mini.every(task => task.classList.contains('is-solved'));
+    if (firstTry.size < mini.length && !allSolved) { box.hidden = true; return; }
+    box.hidden = false;
+    box.textContent = '';
+    box.append(h('b', {text: 'Dein Ergebnis'}));
+    if (firstTry.size < mini.length) { box.append('Alle fünf Aufgaben sind gelöst. Weiter geht es mit dem Modellieren.'); return; }
+    const hits = mini.filter(task => firstTry.get(task.dataset.task)).length;
+    const weak = [...new Set(mini.filter(task => !firstTry.get(task.dataset.task)).map(task => task.dataset.sec))];
+    box.append(hits + ' von ' + mini.length + ' Aufgaben im ersten Anlauf richtig. ');
+    if (!weak.length) box.append('Die Routine sitzt. Weiter geht es mit dem Modellieren.');
+    else {
+      box.append('Schau dir vor der Arbeit noch einmal an: ');
+      weak.forEach((sec, i) => box.append(i ? ', ' : '', h('a', {href: '#' + sec, text: NAMES[sec]})));
+      box.append('.');
+    }
+  }
+  for (const task of mini) {
+    const note = ok => { if (!firstTry.has(task.dataset.task)) firstTry.set(task.dataset.task, ok); };
+    task.addEventListener('ka:solved', () => note(true));
+    task.addEventListener('ka:missed', () => note(false));
+  }
+  document.addEventListener('ka:solved', () => { paintGoals(); paintMini(); });
+  document.addEventListener('ka:missed', () => { paintGoals(); paintMini(); });
+  document.addEventListener('DOMContentLoaded', () => { paintGoals(); paintMini(); });
+})();
+</script>
+</body>
+</html>

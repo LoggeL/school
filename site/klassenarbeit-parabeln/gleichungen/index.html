@@ -1,0 +1,1177 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<title>Quadratische Gleichungen lösen · Klassenarbeit Klasse 10 · school</title>
+<meta name="description" content="Modul 3 der Klassenarbeits-Vorbereitung: Wurzel ziehen, Nullprodukt und Lösungsformel. Mit Entscheidungsbaum, vier interaktiven Bildern, 16 Aufgaben und Mini-Test. Alles ohne Taschenrechner.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+<style>
+/* Bild steht im Quelltext vor der Rechnung (am Handy oben), am großen Bildschirm rechts daneben. */
+.ka .fig-right>.ka-figure{grid-column:2;grid-row:1}
+.ka .fig-right>div{grid-column:1;grid-row:1;min-width:0}
+.ka .fig-right>div>h3:first-child{margin-top:0}
+.ka .ka-readout>.c-no{background:var(--no-wash)}
+.ka .ka-readout>.c-gold{background:#f6edd6}
+.ka .ka-section>.ka-idea{margin-top:14px}
+.ka .way-w{--way:var(--f);--way-wash:var(--f-wash);--way-line:#c5d5f6}
+.ka .way-n{--way:var(--p);--way-wash:var(--p-wash);--way-line:#d6caf4}
+.ka .way-f{--way:var(--g);--way-wash:var(--g-wash);--way-line:#f3cdbd}
+
+/* Kopf: große Zahl der Lösungen */
+.ka .hero-count{display:flex;align-items:center;gap:14px;margin-top:10px;padding:10px 16px;border-radius:12px;background:var(--paper);border:1px solid var(--line)}
+.ka .hero-count b{font:italic 500 46px/1 var(--math);color:var(--p);min-width:.7em;text-align:center}
+.ka .hero-count span{font-size:15px;line-height:1.4;font-weight:600}
+.ka .hero-count[data-n="0"] b{color:var(--no)}
+
+/* Entscheidungsbaum */
+.ka .tree{list-style:none;padding:0;margin:18px 0 8px;max-width:none}
+.ka .tree>li{margin:0}
+.ka .tree-row{display:grid;grid-template-columns:minmax(0,1.2fr) 74px minmax(0,1fr);align-items:stretch}
+.ka .tree-q{border:1.5px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start}
+.ka .tree-no{font:italic 500 32px/1 var(--math);color:var(--accent)}
+.ka .tree-q b{display:block;font-size:16.5px;line-height:1.3}
+.ka .tree-q small{display:block;font-size:13.5px;color:var(--dim);line-height:1.45;margin-top:2px}
+.ka .tree-ex{display:flex;flex-wrap:wrap;gap:5px 7px;margin-top:9px}
+.ka .tree-ex span{font-family:var(--math);font-size:15.5px;padding:1px 9px;border-radius:7px;background:var(--bg);border:1px solid var(--line2);white-space:nowrap}
+.ka .tree-yes{display:grid;place-items:center;position:relative}
+.ka .tree-yes::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px solid var(--ok)}
+.ka .tree-yes span{position:relative;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);background:var(--paper);padding:2px 7px;border-radius:999px;border:1.5px solid var(--ok)}
+.ka .tree-yes span::after{content:" →"}
+.ka .tree-way{border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:center;border:1.5px solid var(--way-line);background:var(--way-wash);transition:box-shadow .25s,transform .25s}
+.ka .tree-way svg{width:72px;height:52px;background:#fff;border-radius:9px}
+.ka .tree-way b{display:block;font-size:17px;color:var(--way)}
+.ka .tree-way small{display:block;font-size:13.5px;color:var(--dim);line-height:1.4}
+.ka .tree-row.is-hit .tree-way{box-shadow:0 0 0 3px var(--ok);transform:translateX(5px)}
+.ka .tree-row.is-hit .tree-q{border-color:var(--ok)}
+.ka .tree-down{height:38px;position:relative;margin-left:30px!important;border-left:2px solid var(--soft)}
+.ka .tree-down span{position:absolute;left:-2px;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--paper);padding:2px 7px;border-radius:999px;border:1.5px solid var(--soft);white-space:nowrap}
+.ka .tree-down span::after{content:" ↓"}
+
+/* Sortierer */
+.ka .sorter-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:clamp(16px,3vw,30px);align-items:start;margin-top:12px}
+.ka .sorter-dots{display:flex;gap:5px;margin-bottom:10px}
+.ka .sorter-dots i{flex:1;height:7px;border-radius:4px;background:var(--line)}
+.ka .sorter-dots i.now{background:var(--accent)}
+.ka .sorter-dots i.ok{background:var(--ok)}
+.ka .sorter-dots i.late{background:var(--gold)}
+.ka .sorter-card{border:1.5px solid var(--karo);border-radius:14px;padding:14px 14px 22px;text-align:center;min-height:132px;display:grid;align-content:center;gap:10px;background:
+  linear-gradient(var(--karo2) 1px,transparent 1px) 0 0/100% 22px,
+  linear-gradient(90deg,var(--karo2) 1px,transparent 1px) 0 0/22px 100%,#fff}
+.ka .sorter-count{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--soft)}
+.ka .sorter-eq{font-size:clamp(27px,5.4vw,38px);line-height:1.2}
+.ka .sorter-ways{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.ka .sorter-ways button{border:1.5px solid var(--way-line);background:var(--way-wash);color:var(--way);border-radius:12px;padding:11px 6px;font-weight:750;font-size:14.5px;min-height:50px;line-height:1.25}
+.ka .sorter-ways button:hover:not(:disabled){border-color:var(--way)}
+.ka .sorter-ways button.is-right{border-color:var(--ok);background:var(--ok-wash);color:var(--ok);box-shadow:0 0 0 2px var(--ok)}
+.ka .sorter-ways button.is-wrong{opacity:.45;text-decoration:line-through}
+.ka .sorter-ways button:disabled{cursor:default}
+.ka .sorter-fb{min-height:4.4em;margin-top:10px!important;font-size:14.5px;font-weight:650;line-height:1.45}
+.ka .sorter-fb.ok{color:var(--ok)}.ka .sorter-fb.no{color:var(--no)}
+.ka .sorter .ka-task-actions .ka-btn{display:none}
+.ka .sorter .ka-btnrow{margin-top:4px}
+
+/* Live-Rechnung unter einem Bild */
+.ka .live{margin-top:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:10px 14px;display:grid;gap:5px}
+.ka .live-row{display:grid;grid-template-columns:7.6em minmax(0,1fr);gap:2px 10px;align-items:center}
+.ka .live-k{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.ka .live-v{font-family:var(--math);font-size:17px;line-height:1.7;display:flex;flex-wrap:wrap;gap:0 .4em;align-items:center}
+.ka .live-v>span{white-space:nowrap}
+.ka .live-note{font-size:13.5px;font-weight:700;line-height:1.45}
+.ka .live-note.ok{color:var(--ok)}.ka .live-note.no{color:var(--no)}.ka .live-note.gold{color:var(--gold)}
+.ka .toggle[aria-pressed=true]{background:var(--no-wash);border-color:var(--no);color:var(--no)}
+
+/* Kleine Rechenkarten */
+.ka .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.ka .card-box{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px}
+.ka .card-box h4{margin-bottom:2px}
+.ka .card-box p{font-size:14px;color:var(--dim);line-height:1.5}
+.ka .bad,.ka .good{font-family:var(--math);font-size:16.5px;line-height:1.5;padding:5px 10px;border-radius:8px;margin-top:7px;display:flex;gap:4px 10px;align-items:baseline;flex-wrap:wrap}
+.ka .bad{background:var(--no-wash);color:var(--no)}
+.ka .good{background:var(--ok-wash);color:var(--ok)}
+.ka .bad::before,.ka .good::before{font:800 10.5px/1.6 School,system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;min-width:4.6em}
+.ka .bad::before{content:"falsch"}.ka .good::before{content:"richtig"}
+.ka .ka-warn .bad{background:#fff}.ka .ka-warn .good{background:#fff}
+.ka .bad>span,.ka .good>span{white-space:nowrap}
+
+/* Zahl unter der Wurzel: drei Fälle */
+.ka .disc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.ka .disc div{background:#fff;border-radius:10px;padding:8px 6px 9px;text-align:center;font-size:13px;line-height:1.35}
+.ka .disc svg{width:100%;max-width:120px;height:auto;margin:0 auto 4px}
+.ka .disc b{display:block;font-family:var(--math);font-size:17px;font-weight:600}
+
+/* Aufgaben */
+.ka .ask{font-size:14.5px;font-weight:650;margin-top:10px!important}
+.ka .ask i{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line2);font-size:11.5px;font-weight:800;margin-right:6px}
+.ka .ka-task.wide{grid-column:1/-1}
+.ka .rows{display:grid;gap:10px;margin:10px 0 2px}
+.ka .rows>div{display:grid;grid-template-columns:10.5em minmax(0,1fr);gap:6px 12px;align-items:center}
+.ka .rows .m{font-size:18.5px}
+.ka .task-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(14px,3vw,30px);align-items:start}
+.ka .sol{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:flex-start}
+.ka .sol>.ka-calc{flex:1 1 250px;min-width:0}
+.ka .sol-fig{flex:0 0 280px;max-width:100%;margin:6px 0 0}
+.ka .sol-fig figcaption{font-size:12.5px;color:var(--dim);line-height:1.4;margin-top:5px}
+
+/* Spickzettel */
+.ka .spick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.ka .spick>div{border:1.5px solid var(--way-line);border-top:6px solid var(--way);border-radius:12px;background:#fff;padding:14px 16px}
+.ka .spick h3{margin:0 0 2px;color:var(--way)}
+.ka .spick .when{font-size:13.5px;color:var(--dim);line-height:1.45}
+.ka .spick ol{padding-left:1.25em;font-size:14.5px;line-height:1.5;margin-top:8px}
+.ka .spick .ex{font-family:var(--math);font-size:16px;line-height:1.6;background:var(--bg);border-radius:8px;padding:6px 10px;margin-top:10px}
+.ka .spick-foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+
+@media(max-width:820px){
+  .ka .fig-right>.ka-figure,.ka .fig-right>div{grid-column:1;grid-row:auto}
+  .ka .sorter-grid,.ka .cards,.ka .task-cols,.ka .spick,.ka .spick-foot{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:700px){
+  .ka .tree-row{grid-template-columns:minmax(0,1fr)}
+  .ka .tree-yes{justify-items:start;padding:8px 0 8px 56px;place-items:center start}
+  .ka .tree-yes::before{left:30px;right:auto;top:0;bottom:0;border-top:0;border-left:2px solid var(--ok)}
+  .ka .tree-yes span::after{content:" ↓"}
+  .ka .tree-way{margin-left:18px}
+  .ka .tree-down{height:34px}
+}
+@media(max-width:480px){
+  .ka .sorter-ways{grid-template-columns:minmax(0,1fr)}
+  .ka .sorter-ways button{min-height:44px;padding:9px 6px}
+  .ka .sorter-fb{min-height:5.6em}
+  .ka .live-row{grid-template-columns:minmax(0,1fr)}
+  .ka .ka-calc{font-size:16.5px;padding:8px 10px}
+  .ka .ka-calc .op{margin-left:8px}
+  .ka #div-seg .ka-seg,.ka [data-ka-formel] .ka-seg{display:flex}
+  .ka #div-seg .ka-seg button,.ka [data-ka-formel] .ka-seg button{flex:1 1 auto}
+  .ka .rows>div{grid-template-columns:minmax(0,1fr)}
+  .ka .tree-way{grid-template-columns:60px minmax(0,1fr);margin-left:10px}
+  .ka .tree-way svg{width:60px;height:44px}
+}
+@media(max-height:800px){.ka .ka-cols>.sticky{position:static}}
+</style>
+</head>
+<body class="ka" data-ka-page="gleichungen">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<header class="ka-hero">
+  <div>
+    <p class="ka-kicker">Modul 3 · Teil 1 · 30 Minuten</p>
+    <h1>Drei Wege zur Lösung. <em>Ein Bild dahinter.</em></h1>
+    <p class="ka-lead">Jede quadratische Gleichung stellt dieselbe Frage: An welchen Stellen trifft eine Parabel die x-Achse? Du lernst drei Wege zur Antwort. Und du lernst, in wenigen Sekunden den passenden auszuwählen.</p>
+    <ul class="ka-goals">
+      <li data-goal="sortieren">Du erkennst an der Form einer Gleichung, welcher Lösungsweg der schnellste ist.</li>
+      <li data-goal="w1 w2 w3">Du löst Gleichungen durch Wurzelziehen und gibst beide Lösungen an.</li>
+      <li data-goal="n1 n2 n3">Du löst Gleichungen mit dem Nullprodukt, ohne durch x zu teilen.</li>
+      <li data-goal="f1 f2 f3 f4">Du setzt mit Vorzeichen in die Lösungsformel ein und sagst vorher, wie viele Lösungen es gibt.</li>
+    </ul>
+    <p class="ka-small" style="margin-top:14px">Die Minuten sind ein Richtwert. Wird es knapp, lass die Aufgaben mit dem Etikett „Knobeln“ zuerst aus und hol sie später nach.</p>
+  </div>
+  <figure class="ka-figure">
+    <div id="hero-plot"></div>
+    <div class="hero-count" id="hero-count" aria-live="polite"><b id="hero-n">2</b><span id="hero-text"></span></div>
+    <div class="ka-readout"><span class="c-f" id="hero-eq"></span><span class="c-p" id="hero-L"></span></div>
+    <figcaption>Zieh den blauen Scheitel nach oben und nach unten. Zähle, wie oft die Parabel die x-Achse trifft. Der Punkt rastet dort ein, wo die Lösungen ganze Zahlen sind.</figcaption>
+  </figure>
+</header>
+
+<!-- ============ 1 · Welcher Weg passt? ============ -->
+<section class="ka-section" id="weg">
+  <p class="ka-phase"><b>Minute 0 bis 4</b> · Sortieren</p>
+  <h2>Erst entscheiden, dann rechnen</h2>
+  <p>In der Arbeit steht nicht dabei, welchen Weg du nehmen sollst. Die Entscheidung dauert drei Sekunden, wenn du jede Gleichung von oben nach unten durch diesen Baum schickst.</p>
+
+  <ol class="tree" id="tree" aria-label="Entscheidungsbaum: Welcher Lösungsweg passt?">
+    <li class="tree-row" data-way="w">
+      <div class="tree-q"><span class="tree-no" aria-hidden="true">1</span><div><b>Steht x nur in einem Quadrat?</b><small>Es gibt kein einzelnes x.</small>
+        <div class="tree-ex"><span>x² = 9</span><span>2x² − 8 = 0</span><span>(x − 1)² = 9</span></div></div></div>
+      <div class="tree-yes"><span>ja</span></div>
+      <div class="tree-way way-w">
+        <svg viewBox="0 0 72 52" aria-hidden="true"><path d="M10 6Q36 82 62 6" fill="none" stroke="#2459c4" stroke-width="2.6" stroke-linecap="round"/><path d="M5 22H67" stroke="#c2512d" stroke-width="2.2" stroke-linecap="round"/><circle cx="16.2" cy="22" r="3.8" fill="#a8791a"/><circle cx="55.8" cy="22" r="3.8" fill="#6a4bbf"/></svg>
+        <div><b>Wurzel ziehen</b><small>Nach x² auflösen, dann ± Wurzel.</small></div>
+      </div>
+    </li>
+    <li class="tree-down"><span>nein</span></li>
+    <li class="tree-row" data-way="n">
+      <div class="tree-q"><span class="tree-no" aria-hidden="true">2</span><div><b>Steht da „Produkt = 0“, oder fehlt die Zahl ohne x?</b><small>Wenn die Zahl fehlt, lässt sich x ausklammern.</small>
+        <div class="tree-ex"><span>(x − 2)(x + 5) = 0</span><span>x² − 4x = 0</span><span>x² = 4x</span></div></div></div>
+      <div class="tree-yes"><span>ja</span></div>
+      <div class="tree-way way-n">
+        <svg viewBox="0 0 72 52" aria-hidden="true"><path d="M5 30H67" stroke="#42574f" stroke-width="1.6" stroke-linecap="round"/><path d="M10 6Q36 82 62 6" fill="none" stroke="#2459c4" stroke-width="2.6" stroke-linecap="round"/><circle cx="20.2" cy="30" r="3.8" fill="#6a4bbf"/><circle cx="51.8" cy="30" r="3.8" fill="#c2512d"/></svg>
+        <div><b>Nullprodukt</b><small>Jeden Faktor einzeln gleich 0 setzen.</small></div>
+      </div>
+    </li>
+    <li class="tree-down"><span>nein</span></li>
+    <li class="tree-row" data-way="f">
+      <div class="tree-q"><span class="tree-no" aria-hidden="true">3</span><div><b>Dann kommen x², x und eine Zahl gemeinsam vor.</b><small>Bring zuerst alles auf eine Seite, bis rechts 0 steht.</small>
+        <div class="tree-ex"><span>x² − 6x + 5 = 0</span><span>x² + 2x = 8</span></div></div></div>
+      <div class="tree-yes"><span>also</span></div>
+      <div class="tree-way way-f">
+        <svg viewBox="0 0 72 52" aria-hidden="true"><path d="M5 30H67" stroke="#42574f" stroke-width="1.6" stroke-linecap="round"/><path d="M10 6Q36 82 62 6" fill="none" stroke="#2459c4" stroke-width="2.6" stroke-linecap="round"/><path d="M36 4V48" stroke="#c2512d" stroke-width="1.8" stroke-dasharray="4 3"/><path d="M36 30H24M36 30H48" stroke="#a8791a" stroke-width="3"/><path d="M20.2 30l6 -3.6v7.2zM51.8 30l-6 -3.6v7.2z" fill="#a8791a"/></svg>
+        <div><b>Lösungsformel</b><small>Funktioniert immer: Mitte ± Abstand.</small></div>
+      </div>
+    </li>
+  </ol>
+  <div class="ka-merke"><b>Merke</b>Alle drei Wege beantworten dieselbe Frage: Wo trifft die Parabel die x-Achse oder eine waagerechte Linie? Darum hat eine quadratische Gleichung immer zwei Lösungen, genau eine Lösung oder keine Lösung. Die Lösungsformel klappt bei jeder Gleichung. Die beiden anderen Wege sind Abkürzungen mit weniger Zeilen und weniger Fehlerquellen.</div>
+
+  <article class="ka-task sorter" data-task="sortieren" data-level="1" id="sorter" data-success="Du erkennst den Weg jetzt an der Form.">
+    <h4>Acht Karten, drei Wege</h4>
+    <p>Entscheide bei jeder Karte nur den Weg. Rechnen musst du noch nicht. Nach jeder richtigen Wahl siehst du das Bild zur Gleichung.</p>
+    <div class="sorter-grid">
+      <div>
+        <div class="sorter-dots" id="sort-dots" aria-hidden="true"></div>
+        <div class="sorter-card"><span class="sorter-count" id="sort-count"></span><div class="sorter-eq m" id="sort-eq" aria-live="polite"></div></div>
+        <div class="sorter-ways" id="sort-ways" role="group" aria-label="Lösungsweg für diese Karte wählen">
+          <button type="button" class="way-w" data-way="w">Wurzel ziehen</button>
+          <button type="button" class="way-n" data-way="n">Nullprodukt</button>
+          <button type="button" class="way-f" data-way="f">Lösungsformel</button>
+        </div>
+        <p class="sorter-fb" id="sort-fb" role="status"></p>
+        <div class="ka-btnrow"><button type="button" class="ka-btn primary" id="sort-next" hidden>Nächste Karte →</button><button type="button" class="ka-btn" id="sort-again" hidden>Noch einmal sortieren</button></div>
+      </div>
+      <figure class="ka-figure">
+        <div id="sort-plot"></div>
+        <div class="ka-readout" aria-live="polite"><span class="c-f" id="sort-read-f"></span><span class="c-p" id="sort-read-L"></span></div>
+        <figcaption id="sort-cap">Das Bild erscheint, sobald die Karte richtig einsortiert ist. Die violetten Punkte sind die Lösungen.</figcaption>
+      </figure>
+    </div>
+    <div class="ka-answers" hidden><div class="ka-answer" data-type="custom" id="sort-answer"></div></div>
+    <details class="ka-hint"><summary>Tipp</summary><p>Such zuerst nach einem einzelnen x, also einem x ohne Quadrat. Gibt es keins, ziehst du die Wurzel. Gibt es eins, prüfst du, ob eine Zahl ohne x vorkommt. Fehlt sie, klammerst du aus.</p></details>
+    <details class="ka-solution"><summary>Alle acht Karten im Überblick</summary>
+      <table class="ka-table"><tr><th>Wurzel ziehen</th><td>x² = 9</td><td>2x² − 8 = 0</td><td>(x − 1)² = 9</td></tr><tr><th>Nullprodukt</th><td>(x − 2)(x + 4) = 0</td><td>x² − 4x = 0</td><td>2x² = 6x</td></tr><tr><th>Lösungsformel</th><td>x² − 6x + 5 = 0</td><td>x² − 2x = 3</td><td></td></tr></table>
+    </details>
+  </article>
+</section>
+
+<!-- ============ 2 · Wurzel ziehen ============ -->
+<section class="ka-section" id="wurzel">
+  <p class="ka-phase"><b>Minute 4 bis 9</b> · Entdecken und rechnen</p>
+  <h2>Weg 1: Wurzel ziehen</h2>
+  <p>Kommt x nur im Quadrat vor, löst du die Gleichung nach <span class="m">x²</span> auf. Dann steht da <span class="m">x² = c</span>. Im Bild heißt das: Wo trifft die Normalparabel <span class="m c-f">y = x²</span> die waagerechte Linie <span class="m c-g">y = c</span>?</p>
+  <div class="ka-idea"><b>Beobachte</b>Stell c nacheinander auf 9, 4, 1, 0 und −2. Zähle jedes Mal die Schnittpunkte. Warum gibt es zu jedem Punkt rechts einen zweiten Punkt links?</div>
+
+  <div class="ka-cols fig-right">
+    <figure class="ka-figure sticky">
+      <div id="wz-plot"></div>
+      <div class="ka-controls" id="wz-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span class="c-g" id="wz-eq"></span><span class="c-p" id="wz-L"></span><span id="wz-note"></span></div>
+      <figcaption>Die Linie lässt sich mit dem Regler oder am orangen Punkt verschieben. Der goldene Punkt links ist die Lösung, die am häufigsten vergessen wird.</figcaption>
+    </figure>
+    <div>
+      <h3>Rechenweg Schritt für Schritt</h3>
+      <div class="ka-steps" id="steps-wurzel">
+        <ol>
+          <li data-step><div class="ka-line"><span>2x² − 18 = 0</span><span class="op">| + 18</span></div><p class="ka-why">Es gibt kein einzelnes x. Also löst du nach x² auf. Zuerst kommt die Zahl nach rechts.</p></li>
+          <li data-step="Durch 2 teilen"><div class="ka-line"><span>2x² = 18</span><span class="op">| : 2</span></div><p class="ka-why">Der Faktor vor x² muss weg.</p></li>
+          <li data-step="Wurzel ziehen"><div class="ka-line"><span>x² = 9</span><span class="op">| √</span></div><p class="ka-why">Jetzt steht x² allein. Im Bild liegt die Linie auf der Höhe 9.</p></li>
+          <li data-step="Beide Lösungen notieren"><div class="ka-line"><span>x = 3 &nbsp;oder&nbsp; x = −3</span></div><p class="ka-why">Zwei Zahlen ergeben quadriert 9, denn 3 · 3 = 9 und (−3) · (−3) = 9. Im Bild sind das die beiden Schnittpunkte.</p></li>
+          <li data-step="Probe und Lösungsmenge"><div class="ka-line"><span>L = {−3; 3}</span></div><p class="ka-why">Probe mit x = −3: 2 · (−3)² − 18 = 2 · 9 − 18 = 0. Mit x = 3 kommt dasselbe heraus.</p></li>
+        </ol>
+      </div>
+      <div class="ka-merke"><b>Merke</b>Die Gleichung <span class="m">x² = c</span> hat für <span class="m">c &gt; 0</span> zwei Lösungen: <span class="m">x = <span class="sqrt"><span>c</span></span></span> und <span class="m">x = −<span class="sqrt"><span>c</span></span></span>. Für <span class="m">c = 0</span> gibt es genau eine Lösung, nämlich 0. Für <span class="m">c &lt; 0</span> gibt es keine Lösung, weil ein Quadrat nie negativ ist.</div>
+      <div class="ka-warn"><b>Typischer Fehler: nur die positive Wurzel</b>
+        <div class="bad">x² = 16, also x = 4</div>
+        <div class="good">x² = 16, also x = 4 oder x = −4</div>
+        Auch <span class="m">(−4)² = 16</span>. Im Bild ist das der goldene Punkt links. Wer ihn vergisst, verliert die halbe Lösung.</div>
+    </div>
+  </div>
+
+  <h3>Auch das ist Wurzelziehen</h3>
+  <div class="cards">
+    <div class="card-box"><h4>Klammer im Quadrat</h4>
+      <div class="ka-calc">(x − 1)² = 9<span class="op">| √</span><br>x − 1 = 3 &nbsp;oder&nbsp; x − 1 = −3<span class="op">| + 1</span><br>x = 4 &nbsp;oder&nbsp; x = −2<br><b>L = {−2; 4}</b></div>
+      <p>Nicht ausmultiplizieren. Die Klammer bleibt zusammen, bis die Wurzel gezogen ist. Probe: (4 − 1)² = 9 und (−2 − 1)² = (−3)² = 9.</p><p>Diese Form entsteht immer, wenn du eine <a href="/klassenarbeit-parabeln/grundlagen/">Scheitelpunktform aus Modul 1</a> gleich 0 setzt: Aus (x − 1)² − 9 = 0 wird (x − 1)² = 9.</p></div>
+    <div class="card-box"><h4>Keine Lösung</h4>
+      <div class="ka-calc">x² + 4 = 0<span class="op">| − 4</span><br>x² = −4<br><b>L = { }</b></div>
+      <p>Kein Quadrat ist negativ. Im Bild liegt die Linie <span class="m">y = −4</span> unter der Parabel und trifft sie nie. Die leere Menge ist hier die richtige Antwort.</p></div>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="w1" data-level="1">
+      <div class="ka-given"><span>2x² − 50 = 0</span></div>
+      <p class="ask"><i>1</i>Welcher Weg ist der schnellste?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="w" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Es gibt kein einzelnes x.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="In der Zahl 50 steckt kein x. Ausklammern klappt nicht. Löse lieber nach x² auf.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht, ist aber ein Umweg. Ohne einzelnes x löst du direkt nach x² auf.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-5;5" data-wrong='{"5":"Auch (−5)² ergibt 25. Die negative Lösung fehlt.","25":"x² = 25 ist erst der Zwischenschritt. Zieh jetzt die Wurzel und denk an beide Vorzeichen.","-25;25":"x² = 25 ist erst der Zwischenschritt. Zieh jetzt die Wurzel.","-12.5;12.5":"Wurzelziehen ist nicht Halbieren. Gesucht ist die Zahl, die mit sich selbst multipliziert 25 ergibt."}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Bring die 50 nach rechts und teile durch 2. Dann steht x² allein.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">2x² − 50 = 0<span class="op">| + 50</span><br>2x² = 50<span class="op">| : 2</span><br>x² = 25<span class="op">| √</span><br>x = 5 &nbsp;oder&nbsp; x = −5<br><b>L = {−5; 5}</b><br><span class="note" style="margin-left:0">Probe: 2 · 25 − 50 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="w1"></div><figcaption>Die Linie y = 25 trifft die Normalparabel bei −5 und bei 5.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="w2" data-level="2">
+      <div class="ka-given"><span>2x² + 8 = 0</span></div>
+      <p class="ask"><i>1</i>Welcher Weg ist der schnellste?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="w" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Nach x² auflösen und dann genau auf das Vorzeichen schauen.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Ohne einzelnes x gibt es nichts auszuklammern.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht, ist aber ein Umweg. Löse direkt nach x² auf.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="leer" data-wrong='{"-2;2":"Beim Rüberbringen wird aus +8 eine −8. Es steht x² = −4 da, und ein Quadrat ist nie negativ.","2":"Beim Rüberbringen wird aus +8 eine −8. Es steht x² = −4 da, und ein Quadrat ist nie negativ.","-2":"(−2)² ergibt +4, nicht −4. Gibt es überhaupt eine Zahl, deren Quadrat negativ ist?","-4":"x² = −4 ist der Zwischenschritt. Gibt es eine Zahl, deren Quadrat negativ ist?","-4;4":"x² = −4 ist der Zwischenschritt. Gibt es eine Zahl, deren Quadrat negativ ist?"}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Löse nach x² auf: erst − 8, dann : 2. Sieh dir dann das Vorzeichen auf der rechten Seite an.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">2x² + 8 = 0<span class="op">| − 8</span><br>2x² = −8<span class="op">| : 2</span><br>x² = −4<br><b>L = { }</b><br><span class="note" style="margin-left:0">Ein Quadrat ist nie negativ.</span></div>
+        <figure class="sol-fig"><div data-fig="w2"></div><figcaption>Die Linie y = −4 liegt unter der Parabel. Es gibt keinen Schnittpunkt.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task wide" data-task="w3" data-level="3">
+      <div class="ka-given"><span>(x + 2)² = 25</span></div>
+      <p class="ask"><i>1</i>Welcher Weg ist der schnellste?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="w" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Klammer im Quadrat gleich Zahl: direkt die Wurzel ziehen.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Rechts steht 25, nicht 0. Der Satz vom Nullprodukt gilt nur für „… = 0“.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht nach dem Ausmultiplizieren (x² + 4x − 21 = 0), kostet aber deutlich mehr Zeilen.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-7;3" data-wrong='{"3":"Die Klammer x + 2 kann auch −5 sein. Dann ist x = −7.","-5;5":"Das sind die Werte der Klammer x + 2. Rechne auf beiden Seiten noch − 2.","-3;7":"Aus x + 2 = 5 folgt x = 3, und aus x + 2 = −5 folgt x = −7. Du hast 2 addiert statt abgezogen.","-7":"Die Klammer x + 2 kann auch +5 sein. Dann ist x = 3."}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Zieh die Wurzel, ohne die Klammer aufzulösen: <span class="m">x + 2 = 5</span> oder <span class="m">x + 2 = −5</span>. Löse dann beide kleinen Gleichungen.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">(x + 2)² = 25<span class="op">| √</span><br>x + 2 = 5 &nbsp;oder&nbsp; x + 2 = −5<span class="op">| − 2</span><br>x = 3 &nbsp;oder&nbsp; x = −7<br><b>L = {−7; 3}</b><br><span class="note" style="margin-left:0">Probe: (3 + 2)² = 25 und (−7 + 2)² = (−5)² = 25</span></div>
+        <figure class="sol-fig"><div data-fig="w3"></div><figcaption>Die Parabel y = (x + 2)² trifft die Linie y = 25 bei −7 und bei 3.</figcaption></figure></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 3 · Nullprodukt ============ -->
+<section class="ka-section" id="nullprodukt">
+  <p class="ka-phase"><b>Minute 9 bis 15</b> · Entdecken und rechnen</p>
+  <h2>Weg 2: Der Satz vom Nullprodukt</h2>
+  <p>Ein Produkt ist genau dann null, wenn mindestens ein Faktor null ist. Steht eine Gleichung als „Produkt = 0“ da, zerfällt sie deshalb in zwei ganz einfache Gleichungen. Im Bild sind die beiden Faktoren die beiden Nullstellen der Parabel.</p>
+  <div class="ka-idea"><b>Beobachte</b>Zieh die beiden Punkte auf der x-Achse und lies die Faktoren ab. Stell dann mit dem Regler verschiedene x-Werte ein. Bei welchen x wird das Produkt 0? Was passiert, wenn beide Punkte auf derselben Stelle liegen?</div>
+
+  <div class="ka-cols fig-right">
+    <figure class="ka-figure sticky">
+      <div id="np-plot"></div>
+      <div class="ka-controls" id="np-controls"></div>
+      <div class="ka-readout" aria-live="polite"><span id="np-prod"></span><span class="c-f" id="np-exp"></span><span id="np-L"></span></div>
+      <div class="live" aria-live="polite">
+        <div class="live-row"><span class="live-k" id="np-sub-k"></span><span class="live-v" id="np-sub"></span></div>
+        <div class="live-note" id="np-note"></div>
+      </div>
+      <figcaption>Der violette Punkt gehört zum violetten Faktor, der orange Punkt zum orangen. Der goldene Punkt zeigt den Wert des Produkts für das eingestellte x.</figcaption>
+    </figure>
+    <div>
+      <h3>Das Produkt steht schon da</h3>
+      <div class="ka-calc">(x − 2)(x + 5) = 0<br>x − 2 = 0 &nbsp;oder&nbsp; x + 5 = 0<br>x = 2 &nbsp;oder&nbsp; x = −5<br><b>L = {−5; 2}</b></div>
+      <p class="ka-small">Du liest die Lösungen fast ab. Achte nur auf das Vorzeichen: Die Klammer <span class="m">(x + 5)</span> wird für <span class="m">x = −5</span> zu null.</p>
+
+      <h3>Erst ausklammern</h3>
+      <p>Fehlt die Zahl ohne x, steckt in jedem Summanden ein x. Dann stellst du das Produkt selbst her.</p>
+      <div class="ka-steps" id="steps-null">
+        <ol>
+          <li data-step><div class="ka-line"><span>x² = 4x</span><span class="op">| − 4x</span></div><p class="ka-why">Auf beiden Seiten steht x. Bring alles auf eine Seite, damit rechts 0 steht. Teile nicht durch x.</p></li>
+          <li data-step="x ausklammern"><div class="ka-line"><span>x² − 4x = 0</span><span class="op">| x ausklammern</span></div><p class="ka-why">Die Zahl ohne x fehlt. In beiden Summanden steckt ein x.</p></li>
+          <li data-step="Faktoren einzeln null setzen"><div class="ka-line"><span>x · (x − 4) = 0</span></div><p class="ka-why">Ein Produkt ist null, wenn ein Faktor null ist. Im Bild springen die Nullstellen auf 0 und 4.</p></li>
+          <li data-step="Beide Gleichungen lösen"><div class="ka-line"><span>x = 0 &nbsp;oder&nbsp; x − 4 = 0</span></div><p class="ka-why">Der erste Faktor liefert sofort x = 0. Der zweite liefert x = 4.</p></li>
+          <li data-step="Probe und Lösungsmenge"><div class="ka-line"><span>L = {0; 4}</span></div><p class="ka-why">Probe mit x = 4: links 4² = 16, rechts 4 · 4 = 16. Probe mit x = 0: links 0, rechts 0.</p></li>
+        </ol>
+      </div>
+      <div class="ka-merke"><b>Merke</b>Bring die Gleichung auf die Form „Produkt = 0“. Setz dann jeden Faktor einzeln gleich 0. Fehlt die Zahl ohne x, ist <span class="m">x = 0</span> immer eine der Lösungen.</div>
+    </div>
+  </div>
+
+  <h3>Der Klassiker: durch x teilen</h3>
+  <div class="ka-cols even">
+    <div>
+      <div class="ka-warn" style="margin-top:0"><b>Typischer Fehler: eine Lösung weggeteilt</b>
+        <div class="bad"><span>x² = 4x &nbsp;| : x</span><span>→&nbsp; x = 4,</span><span>L = {4}</span></div>
+        <div class="good"><span>x² − 4x = 0</span><span>→&nbsp; x · (x − 4) = 0,</span><span>L = {0; 4}</span></div>
+        Durch x darfst du nur teilen, wenn x nicht 0 ist. Hier ist <span class="m">x = 0</span> aber selbst eine Lösung, und genau die geht beim Teilen verloren.</div>
+      <p>Schalte im Bild zwischen beiden Rechenwegen um. Beim Teilen wird aus der Parabel eine Gerade. Eine Gerade trifft die x-Achse nur einmal.</p>
+    </div>
+    <figure class="ka-figure">
+      <div id="div-seg"></div>
+      <div id="div-plot" style="margin-top:10px"></div>
+      <div class="ka-readout" aria-live="polite"><span id="div-eq"></span><span id="div-L"></span></div>
+      <figcaption>Links die Nullstelle bei 0, rechts die bei 4. Achte darauf, welche von beiden beim Teilen verschwindet.</figcaption>
+    </figure>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="n1" data-level="1">
+      <div class="ka-given"><span>(x − 3)(x + 6) = 0</span></div>
+      <p class="ask"><i>1</i>Welcher Weg ist der schnellste?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="n" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Die beiden Klammern sind verschieden. Es gibt kein Quadrat, aus dem du die Wurzel ziehen kannst.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Das Produkt steht schon da.">Nullprodukt</button>
+        <button data-value="f" data-fb="Dafür müsstest du erst ausmultiplizieren. Die Lösungen stehen fast schon da.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-6;3" data-wrong='{"-3;6":"Achte auf die Vorzeichen: x − 3 = 0 gilt für x = +3, und x + 6 = 0 gilt für x = −6.","3;6":"Die Klammer x + 6 wird für x = −6 zu null, nicht für +6.","-6;-3":"Die Klammer x − 3 wird für x = +3 zu null, nicht für −3.","-18":"Nicht ausmultiplizieren. Setz jede Klammer einzeln gleich 0."}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Frag bei jeder Klammer: Für welches x ist sie null?</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">(x − 3)(x + 6) = 0<br>x − 3 = 0 &nbsp;oder&nbsp; x + 6 = 0<br>x = 3 &nbsp;oder&nbsp; x = −6<br><b>L = {−6; 3}</b><br><span class="note" style="margin-left:0">Probe mit x = −6: (−9) · 0 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="n1"></div><figcaption>Die Parabel schneidet die x-Achse bei −6 und bei 3.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="n2" data-level="2">
+      <div class="ka-given"><span>x² + 7x = 0</span></div>
+      <p class="ask"><i>1</i>Welcher Weg ist der schnellste?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="n" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="x kommt auch ohne Quadrat vor, nämlich in 7x. Dann lässt sich die Wurzel nicht direkt ziehen.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Die Zahl ohne x fehlt, also x ausklammern.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht, ist aber ein Umweg. Die Zahl ohne x fehlt, also kannst du x ausklammern.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-7;0" data-wrong='{"-7":"x = 0 fehlt. Diese Lösung geht verloren, wenn man durch x teilt.","0;7":"Aus x + 7 = 0 folgt x = −7, nicht +7.","7":"Aus x + 7 = 0 folgt x = −7. Außerdem fehlt die Lösung x = 0.","0":"x = 0 stimmt. Die zweite Lösung kommt aus der Klammer: x + 7 = 0."}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Klammere x aus: <span class="m">x · (x + 7) = 0</span>. Jetzt hast du zwei Faktoren.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">x² + 7x = 0<span class="op">| x ausklammern</span><br>x · (x + 7) = 0<br>x = 0 &nbsp;oder&nbsp; x + 7 = 0<br>x = 0 &nbsp;oder&nbsp; x = −7<br><b>L = {−7; 0}</b><br><span class="note" style="margin-left:0">Probe mit x = −7: 49 − 49 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="n2"></div><figcaption>Fehlt die Zahl ohne x, geht die Parabel durch den Ursprung.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task wide" data-task="n3" data-level="3" id="task-n3">
+      <div class="task-cols">
+        <div>
+          <div class="ka-given"><span>3x² = 6x</span></div>
+          <p class="ask"><i>1</i>Wie gehst du vor?</p>
+          <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="n" aria-label="Vorgehen wählen">
+            <button data-value="d" data-fb="Durch x darfst du nicht teilen. x könnte 0 sein, und genau diese Lösung geht dabei verloren.">Beide Seiten durch x teilen</button>
+            <button data-value="n" data-fb="Alles auf eine Seite, dann ausklammern.">Alles nach links bringen und ausklammern</button>
+            <button data-value="w" data-fb="Rechts steht 6x und keine Zahl. Die Wurzel hilft hier nicht.">Auf beiden Seiten die Wurzel ziehen</button>
+          </div></div>
+          <p class="ask"><i>2</i>Rechne im Heft. Zieh dann die beiden violetten Punkte auf die Lösungen und prüfe.</p>
+          <div class="ka-answers"><div class="ka-answer" data-type="custom" id="n3-answer"></div></div>
+        </div>
+        <figure class="ka-figure">
+          <div id="n3-plot"></div>
+          <div class="ka-readout" aria-live="polite"><span class="c-p" id="n3-read"></span><span class="c-f" id="n3-curve" hidden>y = 3x² − 6x</span></div>
+          <figcaption id="n3-cap">Die Parabel zur Gleichung erscheint, sobald beide Punkte richtig liegen. Die Punkte lassen sich auch mit den Pfeiltasten bewegen.</figcaption>
+        </figure>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p>Rechne zuerst − 6x. In <span class="m">3x² − 6x</span> steckt in beiden Summanden der Faktor <span class="m">3x</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary>
+        <div class="ka-calc">3x² = 6x<span class="op">| − 6x</span><br>3x² − 6x = 0<span class="op">| 3x ausklammern</span><br>3x · (x − 2) = 0<br>3x = 0 &nbsp;oder&nbsp; x − 2 = 0<br>x = 0 &nbsp;oder&nbsp; x = 2<br><b>L = {0; 2}</b><br><span class="note" style="margin-left:0">Probe mit x = 2: links 3 · 4 = 12, rechts 6 · 2 = 12</span></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 4 · Lösungsformel ============ -->
+<section class="ka-section" id="formel">
+  <p class="ka-phase"><b>Minute 15 bis 25</b> · Entdecken, rechnen, üben</p>
+  <h2>Weg 3: Die Lösungsformel</h2>
+  <p>Kommen x², x und eine Zahl gemeinsam vor, hilft keine Abkürzung mehr. Die Lösungsformel funktioniert immer. Sie verlangt nur eine saubere Vorbereitung: Rechts muss 0 stehen, und du liest alle Zahlen mit Vorzeichen ab.</p>
+  <p style="margin-top:14px"><b>Welche Formel benutzt deine Klasse?</b> Die Seite zeigt dann überall den passenden Rechenweg.</p>
+  <div data-ka-formel style="margin-top:8px"></div>
+  <div class="ka-formula" data-if-formel="pq">x₁,₂ = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span><small>p-q-Formel für x² + px + q = 0. Vor x² darf keine Zahl stehen.</small></div>
+  <div class="ka-formula" data-if-formel="abc">x₁,₂ = <span class="frac"><span>−b ± <span class="sqrt"><span>b² − 4ac</span></span></span><span>2a</span></span><small>abc-Formel für ax² + bx + c = 0</small></div>
+  <p>Im Bild sagt die Formel etwas Einfaches: Geh zur Mitte der Parabel, also zur x-Koordinate ihres Scheitels. Von dort liegen die beiden Lösungen gleich weit nach links und nach rechts. Wie weit, das verrät die Wurzel.</p>
+  <div class="ka-idea"><b>Beobachte</b><span data-if-formel="pq">Lass p = −6 stehen und verändere nur q. Bei welchem q rücken die beiden Lösungen zu einer zusammen? Welche Zahl steht in diesem Moment unter der Wurzel? Und was passiert, wenn du q noch größer machst?</span><span data-if-formel="abc">Lass b = −6 stehen und verändere nur c. Bei welchem c rücken die beiden Lösungen zu einer zusammen? Welche Zahl steht in diesem Moment unter der Wurzel? Und was passiert, wenn du c noch größer machst?</span></div>
+
+  <div class="ka-cols fig-right">
+    <figure class="ka-figure sticky">
+      <div id="lf-plot"></div>
+      <div class="ka-controls" id="lf-controls"></div>
+      <div class="ka-btnrow" id="lf-presets" role="group" aria-label="Beispiele einstellen">
+        <button type="button" class="ka-btn" data-p="-6" data-q="5">zwei Lösungen</button>
+        <button type="button" class="ka-btn" data-p="-4" data-q="4">eine Lösung</button>
+        <button type="button" class="ka-btn" data-p="2" data-q="5">keine Lösung</button>
+        <button type="button" class="ka-btn toggle" id="lf-ghost" aria-pressed="false">Vorzeichenfehler zeigen</button>
+      </div>
+      <div class="ka-readout" aria-live="polite"><span class="c-f" id="lf-eq"></span><span id="lf-L"></span></div>
+      <div class="live" id="lf-live" aria-live="polite"></div>
+      <figcaption>Orange gestrichelt ist die Mitte. Die goldenen Pfeile zeigen den Abstand, den die Wurzel liefert. Geht die Wurzel nicht glatt auf, verändere den zweiten Regler, bis eine Quadratzahl darunter steht.</figcaption>
+    </figure>
+    <div>
+      <h3>Rechenweg Schritt für Schritt</h3>
+      <div class="ka-steps" id="steps-pq" data-if-formel="pq">
+        <ol>
+          <li data-step><div class="ka-line"><span>x² − 6x + 5 = 0</span></div><p class="ka-why">Rechts steht 0, und vor x² steht keine Zahl. Du kannst direkt ablesen.</p></li>
+          <li data-step="p und q ablesen"><div class="ka-line"><span>p = −6</span><span>q = 5</span></div><p class="ka-why">Das Vorzeichen gehört zur Zahl. Vor dem x steht −6, also ist p = −6.</p></li>
+          <li data-step="In die Formel einsetzen"><div class="ka-line"><span>x₁,₂ = −<span class="frac"><span>(−6)</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>−6</span><span>2</span></span>)² − 5</span></span></span></div><p class="ka-why">Setz negative Zahlen in Klammern ein. Vorn steht jetzt minus mal minus, also +3. Das ist die Mitte im Bild.</p></li>
+          <li data-step="Ausrechnen"><div class="ka-line"><span>x₁,₂ = 3 ± <span class="sqrt"><span>9 − 5</span></span></span><span>= 3 ± <span class="sqrt"><span>4</span></span></span><span>= 3 ± 2</span></div><p class="ka-why">(−3)² ist +9. Unter der Wurzel bleibt 4. Die Lösungen liegen 2 links und 2 rechts von der Mitte.</p></li>
+          <li data-step="Probe und Lösungsmenge"><div class="ka-line"><span>x₁ = 1</span><span>x₂ = 5</span><span>L = {1; 5}</span></div><p class="ka-why">Probe: 1 − 6 + 5 = 0 und 25 − 30 + 5 = 0.</p></li>
+        </ol>
+      </div>
+      <div class="ka-steps" id="steps-abc" data-if-formel="abc">
+        <ol>
+          <li data-step><div class="ka-line"><span>x² − 6x + 5 = 0</span></div><p class="ka-why">Rechts steht 0. Du kannst direkt ablesen.</p></li>
+          <li data-step="a, b und c ablesen"><div class="ka-line"><span>a = 1</span><span>b = −6</span><span>c = 5</span></div><p class="ka-why">Das Vorzeichen gehört zur Zahl. Vor dem x steht −6, also ist b = −6. Vor x² steht unsichtbar eine 1.</p></li>
+          <li data-step="In die Formel einsetzen"><div class="ka-line"><span>x₁,₂ = <span class="frac"><span>−(−6) ± <span class="sqrt"><span>(−6)² − 4 · 1 · 5</span></span></span><span>2 · 1</span></span></span></div><p class="ka-why">Setz negative Zahlen in Klammern ein. Vorn steht jetzt minus mal minus, also +6.</p></li>
+          <li data-step="Ausrechnen"><div class="ka-line"><span>x₁,₂ = <span class="frac"><span>6 ± <span class="sqrt"><span>36 − 20</span></span></span><span>2</span></span></span><span>= <span class="frac"><span>6 ± <span class="sqrt"><span>16</span></span></span><span>2</span></span></span><span>= <span class="frac"><span>6 ± 4</span><span>2</span></span></span></div><p class="ka-why">(−6)² ist +36. Unter der Wurzel bleibt 16. Im Bild: Die Mitte liegt bei 6 : 2 = 3, der Abstand ist 4 : 2 = 2.</p></li>
+          <li data-step="Probe und Lösungsmenge"><div class="ka-line"><span>x₁ = <span class="frac"><span>2</span><span>2</span></span> = 1</span><span>x₂ = <span class="frac"><span>10</span><span>2</span></span> = 5</span><span>L = {1; 5}</span></div><p class="ka-why">Probe: 1 − 6 + 5 = 0 und 25 − 30 + 5 = 0.</p></li>
+        </ol>
+      </div>
+
+      <div class="ka-merke"><b>Merke</b>Die Zahl unter der Wurzel entscheidet, wie viele Lösungen es gibt. Du siehst das, bevor du zu Ende rechnest. Sie heißt auch Wurzelinhalt oder Diskriminante. In <a href="/klassenarbeit-parabeln/schnittpunkte/">Modul 4</a> verrät sie dir, wie viele Schnittpunkte zwei Graphen haben.
+        <div class="disc">
+          <div><svg viewBox="0 0 120 70" aria-hidden="true"><path d="M8 46H112" stroke="#42574f" stroke-width="1.6"/><path d="M20 8Q60 112 100 8" fill="none" stroke="#2459c4" stroke-width="2.8" stroke-linecap="round"/><circle cx="39.2" cy="46" r="4.4" fill="#6a4bbf"/><circle cx="80.8" cy="46" r="4.4" fill="#6a4bbf"/></svg><b>positiv</b>zwei Lösungen</div>
+          <div><svg viewBox="0 0 120 70" aria-hidden="true"><path d="M8 46H112" stroke="#42574f" stroke-width="1.6"/><path d="M20 8Q60 84 100 8" fill="none" stroke="#2459c4" stroke-width="2.8" stroke-linecap="round"/><circle cx="60" cy="46" r="4.4" fill="#6a4bbf"/></svg><b>null</b>genau eine Lösung</div>
+          <div><svg viewBox="0 0 120 70" aria-hidden="true"><path d="M8 46H112" stroke="#42574f" stroke-width="1.6"/><path d="M20 8Q60 52 100 8" fill="none" stroke="#2459c4" stroke-width="2.8" stroke-linecap="round"/><path d="M60 32V46" stroke="#b23a2e" stroke-width="2.4" stroke-dasharray="3 3"/></svg><b>negativ</b>keine Lösung</div>
+        </div>
+        <div class="ka-calc" data-if-formel="pq" style="margin-top:10px">x² − 4x + 4 = 0<span class="note">p = −4, q = 4</span><br>x₁,₂ = 2 ± <span class="sqrt"><span>4 − 4</span></span> = 2 ± 0<br><b>L = {2}</b><span class="note">genau eine Lösung</span></div>
+        <div class="ka-calc" data-if-formel="abc" style="margin-top:10px">x² − 4x + 4 = 0<span class="note">a = 1, b = −4, c = 4</span><br>x₁,₂ = <span class="frac"><span>4 ± <span class="sqrt"><span>16 − 16</span></span></span><span>2</span></span> = <span class="frac"><span>4 ± 0</span><span>2</span></span><br><b>L = {2}</b><span class="note">genau eine Lösung</span></div>
+      </div>
+
+      <div class="ka-warn"><b>Typischer Fehler: Vorzeichen verloren</b>
+        <div data-if-formel="pq">
+          <div class="bad"><span>x² − 6x + 5 = 0 mit p = 6:</span><span>x = −3 ± 2</span></div>
+          <div class="good"><span>p = −6, also −<span class="frac"><span>p</span><span>2</span></span> = +3:</span><span>x = 3 ± 2</span></div>
+        </div>
+        <div data-if-formel="abc">
+          <div class="bad"><span>x² − 6x + 5 = 0 mit b = 6:</span><span>x = <span class="frac"><span>−6 ± 4</span><span>2</span></span></span></div>
+          <div class="good"><span>b = −6, also −b = +6:</span><span>x = <span class="frac"><span>6 ± 4</span><span>2</span></span></span></div>
+        </div>
+        Die falsche Rechnung liefert −5 und −1. Schalte im Bild „Vorzeichenfehler zeigen“ ein: Die falschen Lösungen liegen gespiegelt auf der anderen Seite der y-Achse. Eine Probe deckt das sofort auf, denn <span class="m">(−1)² − 6 · (−1) + 5 = 12</span> und nicht 0.</div>
+    </div>
+  </div>
+
+  <h3>Erst umformen, dann einsetzen</h3>
+  <div class="cards">
+    <div class="card-box"><h4>Rechts steht keine 0</h4>
+      <div class="ka-calc" data-if-formel="pq">x² + 2x = 8<span class="op">| − 8</span><br>x² + 2x − 8 = 0<span class="note">p = 2, q = −8</span><br>x₁,₂ = −1 ± <span class="sqrt"><span>1 + 8</span></span> = −1 ± 3<br><b>L = {−4; 2}</b></div>
+      <div class="ka-calc" data-if-formel="abc">x² + 2x = 8<span class="op">| − 8</span><br>x² + 2x − 8 = 0<span class="note">a = 1, b = 2, c = −8</span><br>x₁,₂ = <span class="frac"><span>−2 ± <span class="sqrt"><span>4 + 32</span></span></span><span>2</span></span> = <span class="frac"><span>−2 ± 6</span><span>2</span></span><br><b>L = {−4; 2}</b></div>
+      <p>Die Formel gilt nur für „… = 0“. Probe mit x = −4: 16 − 8 = 8.</p></div>
+    <div class="card-box"><h4>Vor x² steht eine Zahl</h4>
+      <div class="ka-calc" data-if-formel="pq">2x² − 8x + 6 = 0<span class="op">| : 2</span><br>x² − 4x + 3 = 0<span class="note">p = −4, q = 3</span><br>x₁,₂ = 2 ± <span class="sqrt"><span>4 − 3</span></span> = 2 ± 1<br><b>L = {1; 3}</b></div>
+      <div class="ka-calc" data-if-formel="abc">2x² − 8x + 6 = 0<span class="note">a = 2, b = −8, c = 6</span><br>x₁,₂ = <span class="frac"><span>8 ± <span class="sqrt"><span>64 − 48</span></span></span><span>2 · 2</span></span> = <span class="frac"><span>8 ± 4</span><span>4</span></span><br><b>L = {1; 3}</b></div>
+      <p data-if-formel="pq">Die p-q-Formel verlangt, dass vor x² nichts steht. Teile deshalb zuerst die ganze Gleichung durch 2. Probe mit x = 3: 18 − 24 + 6 = 0.</p>
+      <p data-if-formel="abc">Hier ist a = 2. Unter dem Bruchstrich steht deshalb 2 · 2 = 4. Du darfst die Gleichung auch vorher durch 2 teilen, dann werden die Zahlen kleiner. Probe mit x = 3: 18 − 24 + 6 = 0.</p></div>
+  </div>
+
+  <h3>Drei weitere Stolperstellen</h3>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(250px,1fr))">
+    <div class="card-box"><h4>Nicht auf null gebracht</h4>
+      <div class="bad" data-if-formel="pq">x² + 2x = 8 mit q = 8</div><div class="good" data-if-formel="pq">erst − 8, dann q = −8</div>
+      <div class="bad" data-if-formel="abc">x² + 2x = 8 mit c = 8</div><div class="good" data-if-formel="abc">erst − 8, dann c = −8</div>
+      <p>Mit +8 wäre die Zahl unter der Wurzel negativ, und du würdest fälschlich „keine Lösung“ schreiben.</p></div>
+    <div class="card-box"><h4>Minus im Quadrat</h4>
+      <div class="bad" data-if-formel="pq">(−3)² = −9</div><div class="good" data-if-formel="pq">(−3)² = 9</div>
+      <div class="bad" data-if-formel="abc">(−6)² = −36</div><div class="good" data-if-formel="abc">(−6)² = 36</div>
+      <p>Ein Quadrat ist nie negativ. Der erste Summand unter der Wurzel ist deshalb immer positiv oder null.</p></div>
+    <div class="card-box" data-if-formel="pq"><h4>Nicht durch die Zahl vor x² geteilt</h4>
+      <div class="bad"><span>2x² − 8x + 6 = 0</span><span>mit p = −8, q = 6</span></div><div class="good"><span>erst : 2,</span><span>dann p = −4, q = 3</span></div>
+      <p>Bleibt die 2 stehen, liefert die Formel Zahlen, die bei der Probe nicht aufgehen.</p></div>
+    <div class="card-box" data-if-formel="abc"><h4>Nur die Wurzel geteilt</h4>
+      <div class="bad">x = 8 ± <span class="frac"><span>4</span><span>4</span></span></div><div class="good">x = <span class="frac"><span>8 ± 4</span><span>4</span></span></div>
+      <p>Der Bruchstrich gilt für den ganzen Zähler. Rechne erst 8 + 4 und 8 − 4, teile danach.</p></div>
+  </div>
+
+  <h3>Üben</h3>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="f1" data-level="1">
+      <div class="ka-given"><span>x² − 8x + 12 = 0</span></div>
+      <p class="ask"><i>1</i>Die beiden Lösungen liegen gleich weit links und rechts von einer Mitte. Bei welchem x liegt sie?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="number" data-answer="4" data-label="Mitte bei x =" data-wrong='{"-4":"Vor dem x steht −8. Das Minus in der Formel dreht das Vorzeichen um: Die Mitte liegt bei +4.","8":"Das ist erst die Zahl mit umgedrehtem Vorzeichen. Die Mitte ist die Hälfte davon.","-8":"Das ist die Zahl vor dem x. Dreh das Vorzeichen um und halbiere.","12":"Die 12 ist die Zahl ohne x. Für die Mitte brauchst du die Zahl vor dem x."}'></div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="2;6" data-wrong='{"-6;-2":"Vorzeichenfehler: Die Mitte liegt bei +4, nicht bei −4. Probe mit x = −2: 4 + 16 + 12 = 32, nicht 0.","4":"4 ist die Mitte. Die Lösungen liegen links und rechts davon. Wie weit, sagt dir die Wurzel."}'></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p data-if-formel="pq">Die Mitte ist <span class="m">−<span class="frac"><span>p</span><span>2</span></span></span> mit <span class="m">p = −8</span>.</p><p data-if-formel="abc">Die Mitte ist <span class="m"><span class="frac"><span>−b</span><span>2a</span></span></span> mit <span class="m">b = −8</span> und <span class="m">a = 1</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p data-if-formel="pq">Unter der Wurzel steht <span class="m">(−4)² − 12 = 4</span>.</p><p data-if-formel="abc">Unter der Wurzel steht <span class="m">(−8)² − 4 · 1 · 12 = 16</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">x² − 8x + 12 = 0<span class="note">p = −8, q = 12</span><br>x₁,₂ = 4 ± <span class="sqrt"><span>16 − 12</span></span><br>x₁,₂ = 4 ± 2<br><b>L = {2; 6}</b><br><span class="note" style="margin-left:0">Probe: 4 − 16 + 12 = 0 und 36 − 48 + 12 = 0</span></div>
+        <div class="ka-calc" data-if-formel="abc">x² − 8x + 12 = 0<span class="note">a = 1, b = −8, c = 12</span><br>x₁,₂ = <span class="frac"><span>8 ± <span class="sqrt"><span>64 − 48</span></span></span><span>2</span></span> = <span class="frac"><span>8 ± 4</span><span>2</span></span><br>x₁ = 2, &nbsp;x₂ = 6<br><b>L = {2; 6}</b><br><span class="note" style="margin-left:0">Probe: 4 − 16 + 12 = 0 und 36 − 48 + 12 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="f1"></div><figcaption>Mitte bei 4, von dort 2 nach links und 2 nach rechts.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="f2" data-level="2">
+      <p>Wie viele Lösungen hat die Gleichung? Rechne nur die Zahl unter der Wurzel aus.</p>
+      <div class="rows">
+        <div><span class="m">x² + 8x + 16 = 0</span><div class="ka-answer" data-type="choice" data-answer="1" aria-label="Anzahl der Lösungen von x² + 8x + 16 = 0">
+          <button data-value="0" data-fb="Bei der ersten Gleichung steht 0 unter der Wurzel. Das ist erlaubt, denn die Wurzel aus 0 ist 0. Es bleibt genau eine Lösung.">keine</button>
+          <button data-value="1" data-fb="Erste Gleichung: Unter der Wurzel steht 0.">eine</button>
+          <button data-value="2" data-fb="Rechne bei der ersten Gleichung die Zahl unter der Wurzel aus. Sie ist 0, also bleibt vom ± nichts übrig.">zwei</button></div></div>
+        <div><span class="m">x² − 2x + 5 = 0</span><div class="ka-answer" data-type="choice" data-answer="0" aria-label="Anzahl der Lösungen von x² − 2x + 5 = 0">
+          <button data-value="0" data-fb="Zweite Gleichung: Unter der Wurzel steht eine negative Zahl.">keine</button>
+          <button data-value="1" data-fb="Eine einzige Lösung gibt es nur, wenn 0 unter der Wurzel steht. Bei der zweiten Gleichung ist die Zahl negativ.">eine</button>
+          <button data-value="2" data-fb="Bei der zweiten Gleichung steht eine negative Zahl unter der Wurzel. Diese Wurzel gibt es nicht.">zwei</button></div></div>
+        <div><span class="m">x² − 8x + 15 = 0</span><div class="ka-answer" data-type="choice" data-answer="2" aria-label="Anzahl der Lösungen von x² − 8x + 15 = 0">
+          <button data-value="0" data-fb="Bei der dritten Gleichung ist die Zahl unter der Wurzel positiv. Achte auf das Quadrat: Aus −4 wird +16, aus −8 wird +64.">keine</button>
+          <button data-value="1" data-fb="Eine einzige Lösung gibt es nur, wenn 0 unter der Wurzel steht. Bei der dritten Gleichung bleibt eine positive Zahl.">eine</button>
+          <button data-value="2" data-fb="Dritte Gleichung: Unter der Wurzel steht eine positive Zahl.">zwei</button></div></div>
+      </div>
+      <details class="ka-hint"><summary>Tipp</summary><p data-if-formel="pq">Berechne jeweils <span class="m">(<span class="frac"><span>p</span><span>2</span></span>)² − q</span>. Ist das Ergebnis positiv, null oder negativ?</p><p data-if-formel="abc">Berechne jeweils <span class="m">b² − 4ac</span>. Ist das Ergebnis positiv, null oder negativ?</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">x² + 8x + 16 = 0<span class="note">p = 8, q = 16</span><br>4² − 16 = 0<span class="note">eine Lösung</span><br>x² − 2x + 5 = 0<span class="note">p = −2, q = 5</span><br>(−1)² − 5 = −4<span class="note">keine Lösung</span><br>x² − 8x + 15 = 0<span class="note">p = −8, q = 15</span><br>(−4)² − 15 = 1<span class="note">zwei Lösungen</span></div>
+        <div class="ka-calc" data-if-formel="abc">x² + 8x + 16 = 0<span class="note">b = 8, c = 16</span><br>8² − 4 · 1 · 16 = 0<span class="note">eine Lösung</span><br>x² − 2x + 5 = 0<span class="note">b = −2, c = 5</span><br>(−2)² − 4 · 1 · 5 = −16<span class="note">keine Lösung</span><br>x² − 8x + 15 = 0<span class="note">b = −8, c = 15</span><br>(−8)² − 4 · 1 · 15 = 4<span class="note">zwei Lösungen</span></div>
+        <figure class="sol-fig"><div data-fig="f2"></div><figcaption>Blau berührt die x-Achse bei −4, orange bleibt darüber, violett schneidet sie bei 3 und 5.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="f3" data-level="2">
+      <div class="ka-given"><span>x² + 2x = 15</span></div>
+      <p class="ask"><i>1</i>Welcher Weg passt?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="f" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Das 2x stört. x kommt auch ohne Quadrat vor.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Ausklammern ergibt x · (x + 2) = 15. Rechts steht keine 0, also hilft das Nullprodukt nicht.">Nullprodukt</button>
+        <button data-value="f" data-fb="Vorher − 15 rechnen, damit rechts 0 steht.">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-5;3" data-wrong='{"leer":"Du hast mit +15 gerechnet. Bring erst alles auf eine Seite: x² + 2x − 15 = 0. Dann wird unter der Wurzel addiert.","-3;5":"Vorzeichenfehler bei der Mitte. Sie liegt bei −1. Probe mit x = 5: 25 + 10 = 35, nicht 15.","-2;0":"Das sind die Lösungen von x² + 2x = 0. Rechts steht aber 15. Bring zuerst die 15 nach links."}'></div></div>
+      <details class="ka-hint"><summary>Tipp 1</summary><p>Rechne zuerst − 15. Dann steht da <span class="m">x² + 2x − 15 = 0</span>.</p></details>
+      <details class="ka-hint"><summary>Tipp 2</summary><p data-if-formel="pq">Jetzt ist <span class="m">p = 2</span> und <span class="m">q = −15</span>. Unter der Wurzel steht <span class="m">1 − (−15) = 16</span>.</p><p data-if-formel="abc">Jetzt ist <span class="m">a = 1</span>, <span class="m">b = 2</span> und <span class="m">c = −15</span>. Unter der Wurzel steht <span class="m">4 − 4 · 1 · (−15) = 64</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">x² + 2x = 15<span class="op">| − 15</span><br>x² + 2x − 15 = 0<span class="note">p = 2, q = −15</span><br>x₁,₂ = −1 ± <span class="sqrt"><span>1 + 15</span></span> = −1 ± 4<br><b>L = {−5; 3}</b><br><span class="note" style="margin-left:0">Probe: 25 − 10 = 15 und 9 + 6 = 15</span></div>
+        <div class="ka-calc" data-if-formel="abc">x² + 2x = 15<span class="op">| − 15</span><br>x² + 2x − 15 = 0<span class="note">a = 1, b = 2, c = −15</span><br>x₁,₂ = <span class="frac"><span>−2 ± <span class="sqrt"><span>4 + 60</span></span></span><span>2</span></span> = <span class="frac"><span>−2 ± 8</span><span>2</span></span><br><b>L = {−5; 3}</b><br><span class="note" style="margin-left:0">Probe: 25 − 10 = 15 und 9 + 6 = 15</span></div>
+        <figure class="sol-fig"><div data-fig="f3"></div><figcaption>Die Parabel y = x² + 2x trifft die Linie y = 15 bei −5 und bei 3.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="f4" data-level="3">
+      <div class="ka-given"><span>2x² + 4x − 6 = 0</span></div>
+      <p class="ask"><i>1</i>Welcher Weg passt?</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="f" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Das 4x stört. x kommt auch ohne Quadrat vor.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="In der Zahl −6 steckt kein x. Ausklammern klappt nicht.">Nullprodukt</button>
+        <button data-value="f" data-fb="Denk an die 2 vor x².">Lösungsformel</button>
+      </div></div>
+      <p class="ask"><i>2</i>Gib die Lösungsmenge an.</p>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-3;1" data-wrong='{"-6;2":"Diese Zahlen sind doppelt so groß wie die Lösungen. Unter dem Bruchstrich steht 2a = 2 · 2 = 4, nicht 2. Mit der p-q-Formel passiert das nicht, wenn du vorher die ganze Gleichung durch 2 teilst.","-1;3":"Vorzeichenfehler bei der Mitte. Sie liegt bei −1. Probe mit x = 3: 18 + 12 − 6 = 24, nicht 0."}'></div></div>
+      <details class="ka-hint"><summary>Tipp</summary><p data-if-formel="pq">Teile die ganze Gleichung durch 2. Dann steht da <span class="m">x² + 2x − 3 = 0</span>.</p><p data-if-formel="abc">Lies ab: <span class="m">a = 2</span>, <span class="m">b = 4</span>, <span class="m">c = −6</span>. Unter dem Bruchstrich steht <span class="m">2a = 4</span>.</p></details>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">2x² + 4x − 6 = 0<span class="op">| : 2</span><br>x² + 2x − 3 = 0<span class="note">p = 2, q = −3</span><br>x₁,₂ = −1 ± <span class="sqrt"><span>1 + 3</span></span> = −1 ± 2<br><b>L = {−3; 1}</b><br><span class="note" style="margin-left:0">Probe: 18 − 12 − 6 = 0 und 2 + 4 − 6 = 0</span></div>
+        <div class="ka-calc" data-if-formel="abc">2x² + 4x − 6 = 0<span class="note">a = 2, b = 4, c = −6</span><br>x₁,₂ = <span class="frac"><span>−4 ± <span class="sqrt"><span>16 + 48</span></span></span><span>4</span></span> = <span class="frac"><span>−4 ± 8</span><span>4</span></span><br>x₁ = −3, &nbsp;x₂ = 1<br><b>L = {−3; 1}</b><br><span class="note" style="margin-left:0">Probe: 18 − 12 − 6 = 0 und 2 + 4 − 6 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="f4"></div><figcaption>Die Parabel y = 2x² + 4x − 6 schneidet die x-Achse bei −3 und bei 1.</figcaption></figure></div></details>
+    </article>
+  </div>
+</section>
+
+<!-- ============ 5 · Mini-Test ============ -->
+<section class="ka-section" id="test">
+  <p class="ka-phase"><b>Minute 25 bis 30</b> · Mini-Test</p>
+  <h2>Mini-Test: fünf Gleichungen, drei Wege</h2>
+  <p>Jetzt ohne Tipps und gemischt, wie in der Arbeit. Entscheide bei jeder Gleichung zuerst den Weg und rechne dann im Heft. Stell dir fünf Minuten.</p>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="m1" data-level="1" data-way="w">
+      <div class="ka-given"><span>4x² − 36 = 0</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="w" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Es gibt kein einzelnes x.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="In der Zahl 36 steckt kein x. Ausklammern klappt nicht.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht, ist aber ein Umweg. Ohne einzelnes x löst du direkt nach x² auf.">Lösungsformel</button>
+      </div></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-3;3" data-wrong='{"3":"Auch (−3)² ergibt 9. Die negative Lösung fehlt.","-9;9":"x² = 9 ist erst der Zwischenschritt. Zieh jetzt die Wurzel.","9":"x² = 9 ist erst der Zwischenschritt. Zieh jetzt die Wurzel und denk an beide Vorzeichen."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">4x² − 36 = 0<span class="op">| + 36</span><br>4x² = 36<span class="op">| : 4</span><br>x² = 9<span class="op">| √</span><br>x = 3 &nbsp;oder&nbsp; x = −3<br><b>L = {−3; 3}</b></div>
+        <figure class="sol-fig"><div data-fig="m1"></div><figcaption>Die Linie y = 9 trifft die Normalparabel bei −3 und bei 3.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="m2" data-level="1" data-way="n">
+      <div class="ka-given"><span>x² − 9x = 0</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="n" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Hier steht −9x, nicht −9. x kommt auch ohne Quadrat vor.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Die Zahl ohne x fehlt, also x ausklammern.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht, ist aber ein Umweg. Die Zahl ohne x fehlt, also kannst du x ausklammern.">Lösungsformel</button>
+      </div></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="0;9" data-wrong='{"-3;3":"Hier steht −9x, nicht −9. Wurzelziehen passt nicht. Klammere x aus.","9":"x = 0 fehlt. Diese Lösung geht verloren, wenn man durch x teilt.","-9;0":"Aus x − 9 = 0 folgt x = +9, nicht −9.","-9":"Aus x − 9 = 0 folgt x = +9. Außerdem fehlt die Lösung x = 0."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">x² − 9x = 0<span class="op">| x ausklammern</span><br>x · (x − 9) = 0<br>x = 0 &nbsp;oder&nbsp; x − 9 = 0<br><b>L = {0; 9}</b><br><span class="note" style="margin-left:0">Probe mit x = 9: 81 − 81 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="m2"></div><figcaption>Die Parabel geht durch den Ursprung und schneidet die x-Achse noch einmal bei 9.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="m3" data-level="2" data-way="f">
+      <div class="ka-given"><span>x² + 4x − 12 = 0</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="f" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Das 4x stört. x kommt auch ohne Quadrat vor.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="In der Zahl −12 steckt kein x. Ausklammern klappt nicht.">Nullprodukt</button>
+        <button data-value="f" data-fb="x², x und eine Zahl kommen gemeinsam vor.">Lösungsformel</button>
+      </div></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-6;2" data-wrong='{"-2;6":"Vorzeichenfehler bei der Mitte. Sie liegt bei −2. Probe mit x = 6: 36 + 24 − 12 = 48, nicht 0.","leer":"Die Zahl ohne x ist −12. Unter der Wurzel wird deshalb addiert, und das Ergebnis ist positiv."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">x² + 4x − 12 = 0<span class="note">p = 4, q = −12</span><br>x₁,₂ = −2 ± <span class="sqrt"><span>4 + 12</span></span> = −2 ± 4<br><b>L = {−6; 2}</b><br><span class="note" style="margin-left:0">Probe: 36 − 24 − 12 = 0 und 4 + 8 − 12 = 0</span></div>
+        <div class="ka-calc" data-if-formel="abc">x² + 4x − 12 = 0<span class="note">a = 1, b = 4, c = −12</span><br>x₁,₂ = <span class="frac"><span>−4 ± <span class="sqrt"><span>16 + 48</span></span></span><span>2</span></span> = <span class="frac"><span>−4 ± 8</span><span>2</span></span><br><b>L = {−6; 2}</b><br><span class="note" style="margin-left:0">Probe: 36 − 24 − 12 = 0 und 4 + 8 − 12 = 0</span></div>
+        <figure class="sol-fig"><div data-fig="m3"></div><figcaption>Mitte bei −2, von dort 4 nach links und 4 nach rechts.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task" data-task="m4" data-level="2" data-way="w">
+      <div class="ka-given"><span>(x − 3)² = 16</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="w" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Klammer im Quadrat gleich Zahl: direkt die Wurzel ziehen.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Rechts steht 16, nicht 0.">Nullprodukt</button>
+        <button data-value="f" data-fb="Das geht nach dem Ausmultiplizieren, kostet aber deutlich mehr Zeilen.">Lösungsformel</button>
+      </div></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="-1;7" data-wrong='{"7":"Die Klammer x − 3 kann auch −4 sein. Dann ist x = −1.","-4;4":"Das sind die Werte der Klammer x − 3. Rechne auf beiden Seiten noch + 3.","-7;1":"Aus x − 3 = 4 folgt x = 7, und aus x − 3 = −4 folgt x = −1. Du hast 3 abgezogen statt addiert."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc">(x − 3)² = 16<span class="op">| √</span><br>x − 3 = 4 &nbsp;oder&nbsp; x − 3 = −4<span class="op">| + 3</span><br>x = 7 &nbsp;oder&nbsp; x = −1<br><b>L = {−1; 7}</b><br><span class="note" style="margin-left:0">Probe: 4² = 16 und (−4)² = 16</span></div>
+        <figure class="sol-fig"><div data-fig="m4"></div><figcaption>Die Parabel y = (x − 3)² trifft die Linie y = 16 bei −1 und bei 7.</figcaption></figure></div></details>
+    </article>
+
+    <article class="ka-task wide" data-task="m5" data-level="3" data-way="f">
+      <div class="ka-given"><span>x² + 10 = 6x</span></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="choice" data-answer="f" aria-label="Lösungsweg wählen">
+        <button data-value="w" data-fb="Rechts steht 6x. x kommt also auch ohne Quadrat vor.">Wurzel ziehen</button>
+        <button data-value="n" data-fb="Nach dem Umstellen bleibt + 10 ohne x stehen. Ausklammern klappt nicht.">Nullprodukt</button>
+        <button data-value="f" data-fb="Vorher − 6x rechnen, damit rechts 0 steht.">Lösungsformel</button>
+      </div></div>
+      <div class="ka-answers"><div class="ka-answer" data-type="set" data-answer="leer" data-wrong='{"2;4":"Prüfe mit einer Probe. Für x = 2 steht links 4 + 10 = 14 und rechts 12.","3":"3 ist nur die Mitte. Unter der Wurzel steht eine negative Zahl. Dann gibt es keine Lösung."}'></div></div>
+      <details class="ka-solution"><summary>Lösungsweg</summary><div class="sol">
+        <div class="ka-calc" data-if-formel="pq">x² + 10 = 6x<span class="op">| − 6x</span><br>x² − 6x + 10 = 0<span class="note">p = −6, q = 10</span><br>x₁,₂ = 3 ± <span class="sqrt"><span>9 − 10</span></span><br>9 − 10 = −1 ist negativ.<br><b>L = { }</b></div>
+        <div class="ka-calc" data-if-formel="abc">x² + 10 = 6x<span class="op">| − 6x</span><br>x² − 6x + 10 = 0<span class="note">a = 1, b = −6, c = 10</span><br>x₁,₂ = <span class="frac"><span>6 ± <span class="sqrt"><span>36 − 40</span></span></span><span>2</span></span><br>36 − 40 = −4 ist negativ.<br><b>L = { }</b></div>
+        <figure class="sol-fig"><div data-fig="m5"></div><figcaption>Der Scheitel liegt bei S(3 | 1) über der x-Achse. Die Parabel trifft sie nie.</figcaption></figure></div></details>
+    </article>
+  </div>
+  <div class="ka-merke" id="test-result" role="status" hidden></div>
+</section>
+
+<!-- ============ Spickzettel ============ -->
+<section class="ka-section" id="spickzettel">
+  <p class="ka-phase"><b>Zum Abschreiben</b> · Spickzettel</p>
+  <h2>Spickzettel: drei Wege zur Lösung</h2>
+  <p>Schreib diese Übersicht einmal mit der Hand ab. Was du selbst geschrieben hast, bleibt besser hängen.</p>
+  <div class="spick">
+    <div class="way-w"><h3>Wurzel ziehen</h3>
+      <p class="when">x steht nur in einem Quadrat: <span class="m">2x² − 18 = 0</span>, <span class="m">(x − 1)² = 9</span></p>
+      <ol><li>Nach x² oder nach der Klammer auflösen.</li><li>Wurzel ziehen, plus und minus notieren.</li><li>Rechts negativ? Dann keine Lösung.</li></ol>
+      <div class="ex">x² = 9<br>x = 3 oder x = −3</div></div>
+    <div class="way-n"><h3>Nullprodukt</h3>
+      <p class="when">Produkt gleich 0, oder die Zahl ohne x fehlt: <span class="m">(x − 2)(x + 5) = 0</span>, <span class="m">x² = 4x</span></p>
+      <ol><li>Alles auf eine Seite bringen.</li><li>x ausklammern. Nie durch x teilen.</li><li>Jeden Faktor einzeln gleich 0 setzen.</li></ol>
+      <div class="ex">x · (x − 4) = 0<br>x = 0 oder x = 4</div></div>
+    <div class="way-f"><h3>Lösungsformel</h3>
+      <p class="when">x², x und Zahl kommen vor: <span class="m">x² − 6x + 5 = 0</span></p>
+      <ol data-if-formel="pq"><li>Auf „… = 0“ bringen.</li><li>Durch die Zahl vor x² teilen.</li><li>p und q mit Vorzeichen ablesen.</li><li>Einsetzen, erst die Wurzel ausrechnen.</li></ol>
+      <ol data-if-formel="abc"><li>Auf „… = 0“ bringen.</li><li>a, b und c mit Vorzeichen ablesen.</li><li>Einsetzen, erst die Wurzel ausrechnen.</li><li>Den ganzen Zähler durch 2a teilen.</li></ol>
+      <div class="ex" data-if-formel="pq">x₁,₂ = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span></div>
+      <div class="ex" data-if-formel="abc">x₁,₂ = <span class="frac"><span>−b ± <span class="sqrt"><span>b² − 4ac</span></span></span><span>2a</span></span></div></div>
+  </div>
+  <div class="spick-foot">
+    <div class="ka-merke" style="margin:0"><b>Anzahl der Lösungen</b>Zahl unter der Wurzel positiv: zwei Lösungen. Gleich null: genau eine Lösung. Negativ: keine Lösung, <span class="m">L = { }</span>.</div>
+    <div class="ka-idea" style="margin:0"><b>Immer zum Schluss</b>Probe durch Einsetzen in die ursprüngliche Gleichung. Dann die Lösungsmenge aufschreiben, zum Beispiel <span class="m">L = {1; 5}</span>.</div>
+  </div>
+</section>
+
+<nav data-ka-next></nav>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const $$ = (sel, root) => [...(root || document).querySelectorAll(sel)];
+  const fmt = KA.fmt;
+  const setText = list => (list.length ? 'L = {' + list.map(v => fmt(v)).join('; ') + '}' : 'L = { }');
+  const par = n => (n < 0 ? '(' + fmt(n) + ')' : fmt(n));
+  const frac = (a, b) => '<span class="frac"><span>' + a + '</span><span>' + b + '</span></span>';
+  const sqrt = a => '<span class="sqrt"><span>' + a + '</span></span>';
+  const HALO = {stroke: '#fff', 'stroke-width': 4, 'paint-order': 'stroke', 'stroke-linejoin': 'round'};
+
+  /* ---------- Kopf: Scheitel ziehen, Lösungen zählen ---------- */
+  {
+    const LEVELS = [-4, -1, 0, 1, 2, 3];
+    const plot = KA.plot('#hero-plot', {x: [-5, 5], y: [-5, 5], label: 'Parabel mit verschiebbarem Scheitel. Ihre Schnittpunkte mit der x-Achse sind die Lösungen der Gleichung.'});
+    const nearest = y => LEVELS.reduce((best, v) => (Math.abs(v - y) < Math.abs(best - y) ? v : best), LEVELS[0]);
+    const S = plot.handle({x: 1, y: -4, snap: [1, 0], bounds: {x: [-2, 2], y: [-4, 3]}, constrain: (x, y) => [x, nearest(y)], color: 'f', name: 'Scheitel der Parabel verschieben', onMove: show});
+    // Die Höhen sind ungleich verteilt (−4, −1, 0, 1, …). Pfeil hoch und runter springen deshalb zur nächsten Stufe.
+    plot.svg.addEventListener('keydown', evt => {
+      if ((evt.key !== 'ArrowUp' && evt.key !== 'ArrowDown') || !evt.target.closest('.ka-handle')) return;
+      evt.preventDefault(); evt.stopPropagation();
+      const next = LEVELS[LEVELS.indexOf(S.y) + (evt.key === 'ArrowUp' ? 1 : -1)];
+      if (next !== undefined) S.set(S.x, next);
+    }, true);
+    const zeros = () => (S.y > 0 ? [] : S.y === 0 ? [S.x] : [S.x - Math.sqrt(-S.y), S.x + Math.sqrt(-S.y)]);
+    function show() {
+      const z = zeros();
+      $('#hero-eq').textContent = KA.quad(1, -2 * S.x, S.x * S.x + S.y) + ' = 0';
+      $('#hero-L').textContent = setText(z);
+      $('#hero-n').textContent = z.length;
+      $('#hero-count').dataset.n = z.length;
+      $('#hero-text').textContent = z.length === 2 ? 'Lösungen: Die Parabel schneidet die x-Achse zweimal.' : z.length === 1 ? 'Lösung: Die Parabel berührt die x-Achse nur mit dem Scheitel.' : 'Lösungen: Die Parabel liegt ganz über der x-Achse.';
+    }
+    plot.render(g => {
+      const z = zeros();
+      g.seg(-5, 0, 5, 0, {color: 'p', width: 5, opacity: .16});
+      if (!z.length) g.seg(S.x, 0, S.x, S.y, {color: 'no', dash: true, width: 2.4});
+      g.fn(x => (x - S.x) ** 2 + S.y, {color: 'f'});
+      if (z.length === 2) { g.point(z[0], 0, {color: 'p', r: 6.5, label: 'x = ' + fmt(z[0]), pos: 'nw'}); g.point(z[1], 0, {color: 'p', r: 6.5, label: 'x = ' + fmt(z[1]), pos: 'ne'}); }
+      if (z.length === 1) g.label(S.x, .9, 'x = ' + fmt(S.x), {color: 'p', pos: 'n'});
+    });
+    show();
+  }
+
+  /* ---------- Sortierer: Welcher Weg passt? ---------- */
+  {
+    const CARDS = [
+      {eq: 'x² = 9', way: 'w', f: x => x * x, fn: 'y = x²', c: 9, sol: [-3, 3],
+        why: 'Es gibt nur x² und eine Zahl. Die Wurzel liefert sofort x = 3 und x = −3.',
+        no: {n: 'Für das Nullprodukt brauchst du ein Produkt, das 0 ergibt. Hier steht rechts 9.', f: 'Das geht, ist aber ein Umweg. Ohne einzelnes x ziehst du direkt die Wurzel.'}},
+      {eq: '(x − 2)(x + 4) = 0', way: 'n', f: x => (x - 2) * (x + 4), fn: 'y = (x − 2)(x + 4)', c: null, sol: [-4, 2],
+        why: 'Das Produkt steht schon da. Jede Klammer einzeln gleich 0 setzen.',
+        no: {w: 'Die beiden Klammern sind verschieden. Es gibt kein Quadrat, aus dem du die Wurzel ziehen kannst.', f: 'Dafür müsstest du erst ausmultiplizieren. Die Lösungen stehen fast schon da.'}},
+      {eq: 'x² − 6x + 5 = 0', way: 'f', f: x => x * x - 6 * x + 5, fn: 'y = x² − 6x + 5', c: null, sol: [1, 5],
+        why: 'x², x und eine Zahl kommen gemeinsam vor, und rechts steht schon 0.',
+        no: {w: 'Das −6x stört. x kommt auch ohne Quadrat vor.', n: 'Ausklammern klappt nur, wenn die Zahl ohne x fehlt. Hier steht + 5.'}},
+      {eq: 'x² − 4x = 0', way: 'n', f: x => x * x - 4 * x, fn: 'y = x² − 4x', c: null, sol: [0, 4],
+        why: 'Die Zahl ohne x fehlt. Also x ausklammern: x · (x − 4) = 0.',
+        no: {w: 'x kommt auch ohne Quadrat vor, nämlich in −4x. Dann lässt sich die Wurzel nicht direkt ziehen.', f: 'Das geht, ist aber ein Umweg. Die Zahl ohne x fehlt, also kannst du x ausklammern.'}},
+      {eq: '2x² − 8 = 0', way: 'w', f: x => 2 * x * x - 8, fn: 'y = 2x² − 8', c: null, sol: [-2, 2],
+        why: 'Es gibt kein einzelnes x. Nach x² auflösen: x² = 4.',
+        no: {n: 'In der Zahl 8 steckt kein x. Ausklammern klappt nicht.', f: 'Das geht, dauert aber länger. Löse direkt nach x² auf.'}},
+      {eq: 'x² − 2x = 3', way: 'f', f: x => x * x - 2 * x, fn: 'y = x² − 2x', c: 3, sol: [-1, 3],
+        why: 'Erst − 3 rechnen, damit rechts 0 steht: x² − 2x − 3 = 0. Dann die Lösungsformel.',
+        no: {w: 'Das −2x stört. x kommt auch ohne Quadrat vor.', n: 'Ausklammern ergibt x · (x − 2) = 3. Der Satz vom Nullprodukt gilt aber nur, wenn rechts 0 steht.'}},
+      {eq: '(x − 1)² = 9', way: 'w', f: x => (x - 1) ** 2, fn: 'y = (x − 1)²', c: 9, sol: [-2, 4],
+        why: 'Klammer im Quadrat gleich Zahl: direkt die Wurzel ziehen, also x − 1 = 3 oder x − 1 = −3.',
+        no: {n: 'Rechts steht 9, nicht 0.', f: 'Das geht nach dem Ausmultiplizieren, kostet aber drei Zeilen mehr. Zieh direkt die Wurzel.'}},
+      {eq: '2x² = 6x', way: 'n', f: x => 2 * x * x - 6 * x, fn: 'y = 2x² − 6x', c: null, sol: [0, 3],
+        why: 'Erst − 6x rechnen, dann ausklammern: 2x · (x − 3) = 0. Nicht durch x teilen, sonst fehlt x = 0.',
+        no: {w: 'Rechts steht 6x und keine Zahl. Bring erst alles auf eine Seite.', f: 'Das geht, ist aber ein Umweg. Nach dem Umstellen fehlt die Zahl ohne x: 2x² − 6x = 0.'}},
+    ];
+    const answer = $('#sort-answer'), ways = $$('#sort-ways button'), fb = $('#sort-fb'), next = $('#sort-next'), again = $('#sort-again');
+    const dots = CARDS.map(() => $('#sort-dots').appendChild(document.createElement('i')));
+    let index = 0, tries = 0, open = true, marks = CARDS.map(() => '');
+    const plot = KA.plot('#sort-plot', {x: [-6, 6], y: [-10, 10], aspect: .55, labelEvery: [1, 2], label: 'Parabel zur aktuellen Karte mit ihren Lösungen'});
+    plot.render(g => {
+      const card = CARDS[index];
+      if (open) { g.el('text', Object.assign({x: g.X(3), y: g.Y(3), 'text-anchor': 'middle', 'font-size': 76, 'font-weight': 700, fill: '#cfd8d2'}, HALO), 'top', '?'); return; }
+      if (card.c != null) g.hline(card.c, {color: 'g', dash: false, width: 2.4});
+      g.fn(card.f, {color: 'f'});
+      card.sol.forEach((x, i) => g.point(x, card.c ?? 0, {color: 'p', r: 6, label: 'x = ' + fmt(x), pos: i ? 'ne' : 'nw'}));
+    });
+    function paint() {
+      const card = CARDS[index];
+      $('#sort-count').textContent = `Karte ${index + 1} von ${CARDS.length}`;
+      $('#sort-eq').textContent = card.eq;
+      dots.forEach((dot, i) => { dot.className = marks[i] || (i === index ? 'now' : ''); });
+      ways.forEach(b => { b.disabled = !open; b.className = b.className.replace(/ ?is-(right|wrong)/g, ''); if (!open && b.dataset.way === card.way) b.classList.add('is-right'); });
+      $('#sort-read-f').textContent = open ? 'Bild noch verdeckt' : card.fn + (card.c != null ? ' und y = ' + fmt(card.c) : '');
+      $('#sort-read-L').textContent = open ? '' : setText(card.sol);
+      $('#sort-read-L').hidden = open;
+      $$('#tree .tree-row').forEach(row => row.classList.toggle('is-hit', !open && row.dataset.way === card.way));
+      plot.update();
+    }
+    function finish() {
+      const first = marks.filter(m => m === 'ok').length;
+      next.hidden = true; again.hidden = false;
+      fb.className = 'sorter-fb ok';
+      fb.textContent += ` Alle acht Karten sind sortiert, ${first === CARDS.length ? 'alle' : first} im ersten Versuch.`;
+    }
+    ways.forEach(button => button.addEventListener('click', () => {
+      if (!open) return;
+      const card = CARDS[index];
+      if (button.dataset.way !== card.way) {
+        tries++;
+        button.classList.add('is-wrong'); button.disabled = true;
+        fb.className = 'sorter-fb no'; fb.textContent = card.no[button.dataset.way];
+        return;
+      }
+      open = false; marks[index] = tries ? 'late' : 'ok';
+      fb.className = 'sorter-fb ok'; fb.textContent = 'Richtig. ' + card.why;
+      paint();
+      if (index < CARDS.length - 1) { next.hidden = false; next.focus({preventScroll: true}); return; }
+      finish();
+      answer.kaValue = 'fertig:' + marks.map(m => (m === 'ok' ? 1 : 0)).join('');
+      $('#sorter .ka-task-actions .ka-btn').click();
+    }));
+    next.addEventListener('click', () => { index++; tries = 0; open = true; next.hidden = true; fb.textContent = ''; fb.className = 'sorter-fb'; paint(); ways[0].focus({preventScroll: true}); });
+    again.addEventListener('click', () => { index = 0; tries = 0; open = true; marks = CARDS.map(() => ''); again.hidden = true; fb.textContent = ''; fb.className = 'sorter-fb'; paint(); });
+    answer.kaJudge = value => ({ok: /^fertig:/.test(value), msg: 'Sortiere zuerst alle acht Karten.'});
+    answer.addEventListener('ka:restore', evt => {
+      const saved = /^fertig:([01]{8})$/.exec(evt.detail || '');
+      if (!saved) return;
+      marks = [...saved[1]].map(c => (c === '1' ? 'ok' : 'late'));
+      index = CARDS.length - 1; open = false;
+      fb.className = 'sorter-fb ok'; fb.textContent = 'Richtig. ' + CARDS[index].why;
+      paint(); finish();
+    });
+    paint();
+  }
+
+  /* ---------- Weg 1: Normalparabel und Linie y = c ---------- */
+  {
+    const plot = KA.plot('#wz-plot', {x: [-5, 5], y: [-5, 10], aspect: .62, labelEvery: [1, 2], label: 'Normalparabel y = x² und waagerechte Linie y = c mit ihren Schnittpunkten'});
+    let c = 4, focus = false;
+    const slider = KA.slider('#wz-controls', {label: 'c', aria: 'Höhe c der Linie', min: -4, max: 9, step: 1, value: c, onInput: v => setC(v, 'slider')});
+    const H = plot.handle({x: 5, y: c, axis: 'y', snap: 1, bounds: {y: [-4, 9]}, color: 'g', name: 'Linie y = c nach oben oder unten ziehen', onMove: h => setC(h.y, 'handle')});
+    function setC(v, from) {
+      c = v;
+      if (from !== 'slider') slider.set(v, true);
+      if (from !== 'handle') H.set(5, v, true);
+      plot.update(); show();
+    }
+    const root = () => (Number.isInteger(Math.sqrt(c)) ? fmt(Math.sqrt(c)) : '√' + fmt(c));
+    function show() {
+      const note = $('#wz-note');
+      $('#wz-eq').textContent = 'x² = ' + fmt(c);
+      note.className = c < 0 ? 'c-no' : 'c-gold';
+      if (c > 0) {
+        $('#wz-L').textContent = 'L = {−' + root() + '; ' + root() + '}';
+        const k = Math.floor(Math.sqrt(c));
+        note.textContent = k * k === c ? `(−${k})² = ${c} und ${k}² = ${c}` : `√${c} liegt zwischen ${k} und ${k + 1}`;
+      } else if (c === 0) { $('#wz-L').textContent = 'L = {0}'; note.textContent = 'nur 0² ergibt 0'; }
+      else { $('#wz-L').textContent = 'L = { }'; note.textContent = 'kein Quadrat ist negativ'; }
+    }
+    plot.render(g => {
+      g.hline(c, {color: 'g', dash: false, width: 2.6});
+      g.label(-5, c, 'y = ' + fmt(c), {color: 'g', pos: 'ne'});
+      g.fn(x => x * x, {color: 'f', label: 'y = x²', labelAt: 3.06, pos: 'e'});
+      if (c > 0) {
+        const r = Math.sqrt(c);
+        for (const [x, col, pos, sign] of [[-r, 'gold', 'sw', '−'], [r, 'p', 'se', '']]) {
+          g.seg(x, c, x, 0, {color: col, dash: true, arrow: true, width: 2});
+          if (focus) g.el('circle', {cx: g.X(x), cy: g.Y(c), r: 13, fill: 'none', stroke: KA.COLORS[col], 'stroke-width': 2.2});
+          g.point(x, c, {color: col, r: 6.5, label: 'x = ' + sign + root(), pos});
+        }
+      } else if (c === 0) g.point(0, 0, {color: 'p', r: 6.5, label: 'x = 0', pos: 'se'});
+      else g.label(-2.5, c, 'kein Schnittpunkt', {color: 'no', pos: 's'});
+    });
+    show();
+    $('#steps-wurzel').addEventListener('ka:step', evt => {
+      const i = evt.detail.index;
+      focus = i >= 3;
+      if (i >= 2 && c !== 9) KA.tween(c, 9, 450, v => setC(Math.round(v)));
+      else plot.update();
+    });
+  }
+
+  /* ---------- Weg 2: Parabel aus zwei Nullstellen ---------- */
+  {
+    const plot = KA.plot('#np-plot', {x: [-6, 6], y: [-13, 8], aspect: .5, labelEvery: [1, 2], label: 'Parabel f(x) = (x − x₁)(x − x₂) mit zwei verschiebbaren Nullstellen'});
+    let xs = 1;
+    const A = plot.handle({x: 2, y: 0, axis: 'x', snap: 1, bounds: {x: [-5, 5]}, color: 'p', name: 'Violette Nullstelle verschieben', onMove: show});
+    const B = plot.handle({x: -5, y: 0, axis: 'x', snap: 1, bounds: {x: [-5, 5]}, color: 'g', name: 'Orange Nullstelle verschieben', onMove: show});
+    const slider = KA.slider('#np-controls', {label: 'x', aria: 'x-Wert, der eingesetzt wird', min: -6, max: 6, step: 1, value: xs, onInput: v => { xs = v; plot.update(); show(); }});
+    const fac = r => (r === 0 ? 'x' : '(x ' + (r > 0 ? '− ' + fmt(r) : '+ ' + fmt(-r)) + ')');
+    const sub = r => (r === 0 ? par(xs) : '(' + fmt(xs) + (r > 0 ? ' − ' + fmt(r) : ' + ' + fmt(-r)) + ')');
+    function show() {
+      const same = A.x === B.x, v1 = xs - A.x, v2 = xs - B.x;
+      $('#np-prod').innerHTML = 'f(x) = ' + (same ? '<span class="c-p">' + fac(A.x) + '²</span>' : '<span class="c-p">' + fac(A.x) + '</span> · <span class="c-g">' + fac(B.x) + '</span>');
+      $('#np-exp').textContent = '= ' + KA.quad(1, -(A.x + B.x), A.x * B.x);
+      $('#np-L').textContent = setText(same ? [A.x] : [A.x, B.x].sort((a, b) => a - b));
+      $('#np-sub-k').textContent = 'x = ' + fmt(xs) + ' einsetzen';
+      $('#np-sub').innerHTML = '<span><span class="c-p">' + sub(A.x) + '</span> · <span class="c-g">' + sub(B.x) + '</span></span><span>= <span class="c-p">' + par(v1) + '</span> · <span class="c-g">' + par(v2) + '</span></span><span>= <b>' + fmt(v1 * v2) + '</b></span>';
+      const note = $('#np-note');
+      note.className = 'live-note ' + (v1 * v2 === 0 ? 'ok' : 'gold');
+      note.textContent = v1 === 0 && v2 === 0 ? 'Beide Faktoren sind 0. Liegen die Nullstellen aufeinander, gibt es genau eine Lösung.' : v1 * v2 === 0 ? `Der ${v1 === 0 ? 'violette' : 'orange'} Faktor ist 0. Darum ist das ganze Produkt 0, egal wie groß der andere Faktor ist.` : 'Kein Faktor ist 0. Darum ist auch das Produkt nicht 0.';
+    }
+    plot.render(g => {
+      const f = x => (x - A.x) * (x - B.x), y = f(xs);
+      g.vline(xs, {color: 'gold', opacity: .7});
+      g.fn(f, {color: 'f'});
+      if (y <= 8 && y >= -13) g.point(xs, y, {color: 'gold', r: 6, label: fmt(y), pos: xs >= (A.x + B.x) / 2 ? 'e' : 'w'});
+      else if (y > 8) g.label(xs, 8, '↑ ' + fmt(y), {color: 'gold', pos: xs > 4 ? 'sw' : 'se'});
+      else g.label(xs, -13, '↓ ' + fmt(y), {color: 'gold', pos: xs > 4 ? 'nw' : 'ne'});
+      const tag = (x, text, col) => g.el('text', Object.assign({x: g.X(x), y: g.Y(0) + 42, 'text-anchor': 'middle', 'font-size': 13.5, 'font-weight': 700, fill: KA.COLORS[col]}, HALO), 'top', text);
+      if (A.x === B.x) tag(A.x, 'x₁ = x₂', 'p'); else { tag(A.x, 'x₁', 'p'); tag(B.x, 'x₂', 'g'); }
+    });
+    show();
+    $('#steps-null').addEventListener('ka:step', evt => {
+      const i = evt.detail.index;
+      if (i < 2) return;
+      A.set(0, 0, true); B.set(4, 0, true);
+      xs = i >= 4 ? 4 : 0; slider.set(xs, true);
+      plot.update(); show();
+    });
+  }
+
+  /* ---------- Fehlerbild: durch x teilen ---------- */
+  {
+    const plot = KA.plot('#div-plot', {x: [-2, 6], y: [-5, 6], aspect: .62, label: 'Parabel y = x² − 4x und Gerade y = x − 4 im Vergleich'});
+    let mode = 'ok';
+    const show = () => {
+      $('#div-eq').className = mode === 'ok' ? 'c-f' : 'c-g';
+      $('#div-eq').textContent = mode === 'ok' ? 'x · (x − 4) = 0' : 'x − 4 = 0';
+      $('#div-L').className = mode === 'ok' ? 'c-p' : 'c-no';
+      $('#div-L').textContent = mode === 'ok' ? 'L = {0; 4}' : 'L = {4}, die Lösung 0 fehlt';
+    };
+    KA.seg('#div-seg', {label: 'Rechenweg für x² = 4x wählen', value: mode, options: [{value: 'ok', label: 'x ausklammern (richtig)'}, {value: 'bad', label: 'durch x teilen (falsch)'}], onChange: v => { mode = v; plot.update(); show(); }});
+    plot.render(g => {
+      const f = x => x * x - 4 * x;
+      if (mode === 'ok') {
+        g.fn(f, {color: 'f', label: 'y = x² − 4x', labelAt: 4.9, pos: 'w'});
+        g.point(0, 0, {color: 'p', r: 6.5, label: 'x = 0', pos: 'nw'});
+        g.point(4, 0, {color: 'p', r: 6.5, label: 'x = 4', pos: 'nw'});
+      } else {
+        g.fn(f, {color: 'f', dash: true, width: 2, opacity: .4});
+        g.fn(x => x - 4, {color: 'g', label: 'y = x − 4', labelAt: 5.2, pos: 'nw'});
+        g.point(4, 0, {color: 'p', r: 6.5, label: 'x = 4', pos: 'nw'});
+        g.point(0, 0, {color: 'no', open: true, r: 7, label: 'x = 0 fehlt', pos: 'nw'});
+      }
+    });
+    show();
+  }
+
+  /* ---------- Aufgabe n3: Lösungen auf der x-Achse markieren ---------- */
+  {
+    const task = $('#task-n3'), answer = $('#n3-answer');
+    const plot = KA.plot('#n3-plot', {x: [-4, 6], y: [-5, 7], aspect: .6, label: 'x-Achse mit zwei verschiebbaren Punkten für die Lösungen von 3x² = 6x'});
+    const sync = () => {
+      answer.kaValue = A.x + ';' + B.x;
+      $('#n3-read').textContent = 'Deine Wahl: x = ' + fmt(A.x) + ' und x = ' + fmt(B.x);
+    };
+    const A = plot.handle({x: -3, y: 0, axis: 'x', snap: 1, color: 'p', name: 'Erste Lösung auf der x-Achse markieren', onMove: () => sync()});
+    const B = plot.handle({x: 5, y: 0, axis: 'x', snap: 1, color: 'p', name: 'Zweite Lösung auf der x-Achse markieren', onMove: () => sync()});
+    plot.render(g => {
+      const solved = task.classList.contains('is-solved') && new Set([A.x, B.x]).size === 2 && A.x * B.x === 0 && A.x + B.x === 2;
+      $('#n3-curve').hidden = !solved;
+      $('#n3-cap').textContent = solved ? 'Die Parabel y = 3x² − 6x geht genau durch deine beiden Punkte. Die Lösung x = 0 gehört dazu.' : 'Die Parabel zur Gleichung erscheint, sobald beide Punkte richtig liegen. Die Punkte lassen sich auch mit den Pfeiltasten bewegen.';
+      if (solved) g.fn(x => 3 * x * x - 6 * x, {color: 'f'});
+    });
+    answer.kaJudge = value => {
+      const picked = [...new Set(String(value).split(';').map(Number))].sort((a, b) => a - b);
+      if (picked.join(';') === '0;2') return {ok: true, msg: 'Beide Punkte liegen auf den Nullstellen der Parabel y = 3x² − 6x.'};
+      if (picked.includes(2) && !picked.includes(0)) return {ok: false, msg: 'x = 2 stimmt. Es gibt aber eine zweite Lösung. Sie geht verloren, wenn man durch x teilt.'};
+      if (picked.includes(0) && picked.includes(-2)) return {ok: false, msg: 'x = 0 stimmt. Aus x − 2 = 0 folgt aber x = +2, nicht −2.'};
+      if (picked.includes(0)) return {ok: false, msg: 'x = 0 stimmt. Die zweite Lösung kommt aus der Klammer: x − 2 = 0.'};
+      const v = picked[0];
+      return {ok: false, msg: `Mach die Probe mit x = ${fmt(v)}: links 3 · ${par(v)}² = ${fmt(3 * v * v)}, rechts 6 · ${par(v)} = ${fmt(6 * v)}. Das passt nicht.`};
+    };
+    answer.addEventListener('ka:restore', evt => {
+      const [a, b] = String(evt.detail || '').split(';').map(Number);
+      if (Number.isFinite(a) && Number.isFinite(b) && String(evt.detail).includes(';')) { A.set(a, 0, true); B.set(b, 0, true); }
+      sync();
+    });
+    task.addEventListener('ka:solved', () => plot.update());
+    task.addEventListener('ka:missed', () => plot.update());
+    document.addEventListener('DOMContentLoaded', () => plot.update());
+    sync();
+  }
+
+  /* ---------- Weg 3: Lösungsformel, Mitte und Abstand ---------- */
+  {
+    const host = $('#lf-plot');
+    const plot = KA.plot(host, {x: [-8, 8], y: [-10, 10], aspect: .55, labelEvery: host.clientWidth < 420 ? [2, 2] : [1, 2], label: 'Parabel x² + px + q mit Mitte, Abstand und Nullstellen'});
+    let p = -6, q = 5, ghost = false, mark = '', formel = KA.pref('formel') || 'pq';
+    const sp = KA.slider('#lf-controls', {label: 'p', min: -6, max: 6, step: 2, value: p, onInput: v => { p = v; refresh(); }});
+    // q reicht bis 10, damit man bei p = −6 über die Grenze q = 9 hinausschieben kann (Beobachtungsauftrag).
+    const sq = KA.slider('#lf-controls', {label: 'q', min: -7, max: 10, step: 1, value: q, onInput: v => { q = v; refresh(); }});
+    const names = () => (formel === 'pq' ? ['p', 'q'] : ['b', 'c']);
+    function rename() {
+      [sp, sq].forEach((slider, i) => {
+        const row = slider.input.parentNode, name = names()[i], buttons = $$('button', row);
+        $('.ka-slider-name', row).textContent = name;
+        slider.input.setAttribute('aria-label', name);
+        buttons[0].setAttribute('aria-label', name + ' verkleinern'); buttons[1].setAttribute('aria-label', name + ' vergrößern');
+      });
+    }
+    function refresh() { plot.update(); show(); }
+    function setPQ(np, nq) { p = np; q = nq; sp.set(p, true); sq.set(q, true); refresh(); }
+    function show() {
+      const m = -p / 2, D = m * m - q, D4 = p * p - 4 * q, r = Math.sqrt(Math.abs(D)), smooth = Number.isInteger(r);
+      const sols = D > 0 ? [m - r, m + r] : D === 0 ? [m] : [];
+      $('#lf-eq').textContent = KA.quad(1, p, q) + ' = 0';
+      const L = $('#lf-L');
+      L.className = D < 0 ? 'c-no' : smooth ? 'c-p' : 'c-gold';
+      L.textContent = D < 0 ? 'L = { }' : smooth ? setText(sols) : 'zwei Lösungen, aber die Wurzel geht nicht glatt auf';
+      const row = (key, chunks) => '<div class="live-row"><span class="live-k">' + key + '</span><span class="live-v">' + chunks.map(t => '<span>' + t + '</span>').join('') + '</span></div>';
+      const minus = n => (n < 0 ? '− ' + par(n) : '− ' + fmt(n)), plain = n => (n < 0 ? '+ ' + fmt(-n) : '− ' + fmt(n));
+      let html;
+      if (formel === 'pq') {
+        html = row('ablesen', ['p = ' + fmt(p) + ',', 'q = ' + fmt(q)])
+          + row('Mitte', ['−' + frac('p', '2'), '= ' + fmt(m)])
+          + row('unter der Wurzel', ['(' + frac('p', '2') + ')² − q', '= ' + par(p / 2) + '² ' + minus(q), '= ' + fmt(m * m) + ' ' + plain(q), '= <b>' + fmt(D) + '</b>']);
+        if (D > 0) html += row('Lösungen', ['x₁,₂ = ' + fmt(m) + ' ± ' + sqrt(fmt(D))].concat(smooth ? ['= ' + fmt(m) + ' ± ' + fmt(r)] : []));
+        else if (D === 0) html += row('Lösung', ['x = ' + fmt(m) + ' ± ' + sqrt('0'), '= ' + fmt(m)]);
+      } else {
+        const r4 = Math.sqrt(Math.abs(D4));
+        html = row('ablesen', ['a = 1,', 'b = ' + fmt(p) + ',', 'c = ' + fmt(q)])
+          + row('unter der Wurzel', ['b² − 4ac', '= ' + par(p) + '² − 4 · 1 · ' + par(q), '= ' + fmt(p * p) + ' ' + plain(4 * q), '= <b>' + fmt(D4) + '</b>']);
+        if (D > 0) html += row('Lösungen', ['x₁,₂ = ' + frac(fmt(-p) + ' ± ' + sqrt(fmt(D4)), '2')].concat(smooth ? ['= ' + frac(fmt(-p) + ' ± ' + fmt(r4), '2')] : []));
+        else if (D === 0) html += row('Lösung', ['x = ' + frac(fmt(-p) + ' ± ' + sqrt('0'), '2'), '= ' + fmt(m)]);
+      }
+      const verdict = D > 0 ? ['ok', 'Positiv: Es gibt zwei Lösungen.' + (smooth ? '' : ' Die Wurzel geht hier nicht glatt auf. Stell den zweiten Regler so ein, dass eine Quadratzahl darunter steht.')] : D === 0 ? ['gold', 'Null: Die Wurzel fällt weg. Es gibt genau eine Lösung.'] : ['no', 'Negativ: Aus einer negativen Zahl lässt sich keine Wurzel ziehen. Es gibt keine Lösung.'];
+      html += '<div class="live-note ' + (D > 0 && !smooth ? 'gold' : verdict[0]) + '">' + verdict[1] + '</div>';
+      if (p === 0) html += '<div class="live-note">Hier fehlt das einzelne x. Wurzelziehen wäre der schnellere Weg.</div>';
+      else if (q === 0) html += '<div class="live-note">Hier fehlt die Zahl ohne x. Ausklammern wäre der schnellere Weg.</div>';
+      $('#lf-live').innerHTML = html;
+    }
+    plot.render(g => {
+      const m = -p / 2, D = m * m - q, r = Math.sqrt(Math.abs(D)), smooth = Number.isInteger(r);
+      if (ghost && p !== 0) {
+        g.fn(x => x * x - p * x + q, {color: 'no', dash: true, width: 2, opacity: .75});
+        if (D >= 0) for (const z of new Set([-m - r, -m + r])) g.point(z, 0, {color: 'no', open: true, r: 6});
+        // Oben im Bild, damit die Beschriftung nicht mit „Mitte …“ unter dem Bild zusammenstößt.
+        g.label(-m, 10, 'falsch: ' + names()[0] + ' = ' + fmt(-p), {color: 'no', pos: 's'});
+      }
+      g.vline(m, {color: 'g', width: mark === 'mid' ? 3.4 : 1.8});
+      g.label(m, -10, 'Mitte ' + fmt(m), {color: 'g', pos: 's'});
+      g.fn(x => x * x + p * x + q, {color: 'f'});
+      if (D > 0) {
+        const wide = r * (g.X(1) - g.X(0)) >= 32, text = smooth ? fmt(r) : '√' + fmt(D);
+        for (const dir of [-1, 1]) {
+          g.seg(m, 0, m + dir * r, 0, {color: 'gold', width: mark === 'dist' ? 5.5 : 3.4, arrow: true, clip: false});
+          g.label(m + dir * r / 2, 0, (dir < 0 ? '− ' : '+ ') + text, {color: 'gold', pos: wide ? 'n' : dir < 0 ? 'nw' : 'ne'});
+          g.point(m + dir * r, 0, {color: 'p', r: mark === 'zeros' ? 8.5 : 6.5});
+        }
+      } else if (D === 0) g.point(m, 0, {color: 'p', r: mark === 'zeros' ? 8.5 : 6.5, label: 'Abstand 0', pos: 'ne'});
+      else { g.seg(m, 0, m, -D, {color: 'no', width: 3, clip: false}); g.label(m, -D / 2, 'kein Schnittpunkt', {color: 'no', pos: m > 1 ? 'w' : 'e'}); }
+    });
+    $$('#lf-presets [data-p]').forEach(b => b.addEventListener('click', () => { mark = ''; setPQ(+b.dataset.p, +b.dataset.q); }));
+    $('#lf-ghost').addEventListener('click', evt => { ghost = !ghost; evt.currentTarget.setAttribute('aria-pressed', String(ghost)); plot.update(); });
+    document.addEventListener('ka:formel', evt => { formel = evt.detail; rename(); refresh(); });
+    for (const id of ['#steps-pq', '#steps-abc']) $(id).addEventListener('ka:step', evt => {
+      const i = evt.detail.index;
+      if (i === 0 && !mark) return;
+      mark = ['', '', 'mid', 'dist', 'zeros'][i] || '';
+      setPQ(-6, 5);
+    });
+    rename(); refresh();
+  }
+
+  /* ---------- Bilder in den Lösungswegen ---------- */
+  {
+    const FIGS = {
+      w1: {f: x => x * x, c: 25, sol: [-5, 5], x: [-7, 7], y: [-5, 35], step: [1, 5], every: [2, 1]},
+      w2: {f: x => x * x, c: -4, sol: [], x: [-4, 4], y: [-8, 8], step: [1, 2], every: [1, 1], note: [0, -4, 's']},
+      w3: {f: x => (x + 2) ** 2, c: 25, sol: [-7, 3], x: [-10, 6], y: [-5, 35], step: [1, 5], every: [2, 1]},
+      n1: {f: x => (x - 3) * (x + 6), c: null, sol: [-6, 3], x: [-8, 5], y: [-24, 16], step: [1, 4], every: [2, 2]},
+      n2: {f: x => x * x + 7 * x, c: null, sol: [-7, 0], x: [-9, 3], y: [-14, 10], step: [1, 2], every: [2, 2]},
+      f1: {f: x => x * x - 8 * x + 12, c: null, sol: [2, 6], x: [-1, 9], y: [-5, 9], step: [1, 2], every: [1, 2], mid: 4},
+      f3: {f: x => x * x + 2 * x, c: 15, sol: [-5, 3], x: [-7, 5], y: [-3, 21], step: [1, 3], every: [2, 2]},
+      f4: {f: x => 2 * x * x + 4 * x - 6, c: null, sol: [-3, 1], x: [-5, 3], y: [-9, 7], step: [1, 2], every: [1, 2]},
+      m1: {f: x => x * x, c: 9, sol: [-3, 3], x: [-5, 5], y: [-2, 14], step: [1, 2], every: [1, 2]},
+      m2: {f: x => x * x - 9 * x, c: null, sol: [0, 9], x: [-2, 11], y: [-24, 12], step: [1, 4], every: [2, 2]},
+      m3: {f: x => x * x + 4 * x - 12, c: null, sol: [-6, 2], x: [-8, 4], y: [-20, 12], step: [1, 4], every: [2, 2], mid: -2},
+      m4: {f: x => (x - 3) ** 2, c: 16, sol: [-1, 7], x: [-3, 9], y: [-4, 24], step: [1, 4], every: [2, 1]},
+      m5: {f: x => x * x - 6 * x + 10, c: null, sol: [], x: [-1, 7], y: [-4, 8], step: [1, 2], every: [1, 2], note: [3, -1, 's']},
+    };
+    const small = (id, opts, draw) => KA.plot('[data-fig="' + id + '"]', Object.assign({width: 300, height: 200, minor: false}, opts)).render(draw);
+    for (const [id, o] of Object.entries(FIGS)) small(id, {x: o.x, y: o.y, step: o.step, labelEvery: o.every, label: 'Bild zur Lösung'}, g => {
+      const level = o.c ?? 0;
+      if (o.c != null) g.hline(o.c, {color: 'g', dash: false, width: 2.2});
+      if (o.mid != null) g.vline(o.mid, {color: 'g'});
+      g.fn(o.f, {color: 'f', width: 2.6});
+      o.sol.forEach((x, i) => g.point(x, level, {color: 'p', r: 5, label: fmt(x), pos: i ? 'ne' : 'nw', size: 13}));
+      if (o.note) g.label(o.note[0], o.note[1], 'kein Schnittpunkt', {color: 'no', pos: o.note[2], size: 13});
+    });
+    small('f2', {x: [-7, 7], y: [-3, 9], step: [1, 2], labelEvery: [2, 2], label: 'Drei Parabeln mit einer, keiner und zwei Nullstellen'}, g => {
+      g.fn(x => x * x + 8 * x + 16, {color: 'f', width: 2.6});
+      g.fn(x => x * x - 2 * x + 5, {color: 'g', width: 2.6});
+      g.fn(x => x * x - 8 * x + 15, {color: 'p', width: 2.6});
+      g.point(-4, 0, {color: 'f', r: 5});
+      g.point(3, 0, {color: 'p', r: 5}); g.point(5, 0, {color: 'p', r: 5});
+    });
+  }
+
+  /* ---------- Lernziele abhaken, Mini-Test auswerten ---------- */
+  {
+    const solved = id => { const task = $('.ka-task[data-task="' + id + '"]'); return !!task && task.classList.contains('is-solved'); };
+    const tests = $$('#test .ka-task'), missed = new Set();
+    const LINKS = {w: ['#wurzel', 'Weg 1: Wurzel ziehen'], n: ['#nullprodukt', 'Weg 2: Nullprodukt'], f: ['#formel', 'Weg 3: Lösungsformel']};
+    function paint() {
+      $$('.ka-goals [data-goal]').forEach(li => li.classList.toggle('is-done', li.dataset.goal.split(' ').every(solved)));
+      const done = tests.filter(task => task.classList.contains('is-solved'));
+      const open = tests.filter(task => !task.classList.contains('is-solved') && missed.has(task.dataset.task));
+      const box = $('#test-result');
+      box.hidden = !done.length && !open.length;
+      box.textContent = '';
+      box.append(KA.h('b', {text: 'Dein Stand im Mini-Test'}), `${done.length} von ${tests.length} Gleichungen gelöst. `);
+      if (done.length === tests.length) box.append('Alle drei Wege sitzen. In Modul 4 berechnest du mit genau diesen Werkzeugen Schnittpunkte.');
+      else if (open.length) {
+        box.append('Schau dir dafür noch einmal an: ');
+        [...new Set(open.map(task => task.dataset.way))].forEach((way, i) => box.append(i ? ', ' : '', KA.h('a', {href: LINKS[way][0], text: LINKS[way][1]})));
+        box.append('.');
+      }
+    }
+    document.addEventListener('ka:solved', paint);
+    document.addEventListener('ka:missed', evt => { missed.add(evt.detail.id); paint(); });
+    document.addEventListener('DOMContentLoaded', paint);
+  }
+})();
+</script>
+</body>
+</html>

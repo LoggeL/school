@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#235849">
+<title>Fit für die Klassenarbeit · Parabeln und quadratische Gleichungen · Klasse 10 · school</title>
+<meta name="description" content="180 Minuten Vorbereitung auf die Mathe-Klassenarbeit in Klasse 10: Binome, Scheitelpunktform, Parabeln zeichnen, quadratische Gleichungen, Schnittpunkte und Modellieren. Mit interaktiven Graphen, Übungen und einer Probearbeit. Alles ohne Taschenrechner.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/school.css?v=20261022-visual2">
+<link rel="stylesheet" href="/klassenarbeit-parabeln/assets/ka.css?v=2">
+<style>
+.ka .hub-hero{padding-bottom:clamp(26px,4vw,44px)}
+.ka .hub-actions{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:24px}
+.ka .hub-actions .ka-btn{padding:13px 20px;font-size:15px}
+.ka .hub-facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;font-size:13.5px;color:var(--dim)}
+.ka .hub-facts b{font:italic 500 22px/1 var(--math);color:var(--brand);margin-right:6px}
+/* Der Zettel: die Themenliste aus dem Heft als Checkliste */
+.ka .zettel{position:relative;transform:rotate(1.2deg);border-radius:6px;padding:30px 26px 24px 46px;box-shadow:0 1px 1px #1f3a3418,0 14px 34px #1f3a3418;background:
+  linear-gradient(var(--karo) 1px,transparent 1px) 0 0/100% 21px,
+  linear-gradient(90deg,var(--karo) 1px,transparent 1px) 0 0/21px 100%,#fff}
+.ka .zettel::before{content:"";position:absolute;left:14px;top:0;bottom:0;width:14px;background:radial-gradient(circle at 7px 7px,#eef0e8 5px,transparent 5.5px) 0 34px/14px 105px repeat-y}
+.ka .zettel h2{font:600 25px/1.2 "Bradley Hand","Segoe Print",Noteworthy,cursive;color:#273a8a;text-decoration:underline wavy #273a8a66 1.5px;text-underline-offset:6px;margin-bottom:14px}
+.ka .zettel ul{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+.ka .zettel li{font:500 18.5px/1.32 "Bradley Hand","Segoe Print",Noteworthy,cursive;color:#273a8a}
+.ka .zettel li a{color:inherit;text-decoration:none;display:grid;grid-template-columns:24px 1fr;gap:9px;align-items:start;border-radius:6px}
+.ka .zettel li a:hover span:last-child{background:var(--marker)}
+.ka .zettel li small{display:block;font-size:15px;opacity:.82}
+.ka .zettel .box{width:20px;height:20px;margin-top:2px;border:2px solid #273a8a;border-radius:4px;background:#fff;position:relative}
+.ka .zettel .is-done .box::after{content:"";position:absolute;left:3px;top:-4px;width:17px;height:10px;border-left:3px solid var(--ok);border-bottom:3px solid var(--ok);transform:rotate(-48deg)}
+.ka .zettel .is-done span:last-child{text-decoration:line-through;text-decoration-color:#1d7a4f88}
+.ka .zettel-note{margin-top:14px;font-size:12.5px;color:var(--dim);font-family:School,system-ui,sans-serif}
+/* Plan */
+.ka .plan-part{margin-top:22px}
+.ka .plan-part>header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.ka .plan-part>header h3{margin:0;font-size:21px}
+.ka .plan-part>header span{font-size:13px;color:var(--dim)}
+.ka .plan-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;margin-bottom:12px}
+.ka .plan-bar i{display:block;background:var(--line);border-radius:2px}
+.ka .plan-bar i.is-done{background:var(--ok)}
+.ka .plan-bar i.is-started{background:#b7d8c2}
+.ka .mods{display:grid;gap:10px}
+.ka .mod{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:6px 18px;align-items:center;padding:16px 20px;border:1px solid var(--line);border-radius:14px;background:#fff;text-decoration:none;color:var(--ink);transition:border-color .2s,transform .2s,box-shadow .2s}
+.ka main a.mod{color:var(--ink)}
+.ka .mod:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 10px 24px #1f3a3410}
+.ka .mod-no{font:italic 500 40px/1 var(--math);color:var(--brand);opacity:.75}
+.ka .mod h4{font-size:18px;margin:0 0 3px}
+.ka .mod p{font-size:14px;color:var(--dim);line-height:1.5;margin:0}
+.ka .mod-topics{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.ka .mod-topics span{font-size:11.5px;font-weight:650;padding:2px 8px;border-radius:999px;background:var(--line2);color:var(--dim)}
+.ka .mod-side{text-align:right;white-space:nowrap}
+.ka .mod-min{font-size:13px;font-weight:750;color:var(--accent)}
+.ka .mod-state{display:block;font-size:12px;color:var(--soft);margin-top:4px}
+.ka .mod.is-done{border-color:#a9d4ba;box-shadow:inset 4px 0 0 var(--ok)}
+.ka .mod.is-done .mod-state{color:var(--ok);font-weight:700}
+.ka .pause{display:flex;align-items:center;gap:14px;margin:22px 0 0;color:var(--soft);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:750}
+.ka .pause::before,.ka .pause::after{content:"";flex:1;border-top:1px dashed var(--line)}
+.ka .howto{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px;padding:0;list-style:none}
+.ka .howto li{padding:16px;border-radius:12px;background:var(--bg);border:1px solid var(--line2);font-size:14px;line-height:1.5;margin:0}
+.ka .howto b{display:block;font-size:15px;margin-bottom:4px}
+.ka .howto i{display:block;font:italic 500 26px/1 var(--math);color:var(--accent);margin-bottom:8px}
+.ka .check-result{margin-top:16px}
+.ka .check-result:empty{display:none}
+.ka .hub-foot{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin:22px 0 10px;font-size:13px;color:var(--dim)}
+@media(max-width:820px){.ka .howto{grid-template-columns:repeat(2,minmax(0,1fr))}.ka .zettel{transform:none}}
+@media(max-width:560px){.ka .mod{grid-template-columns:36px minmax(0,1fr);padding:14px}.ka .mod-no{font-size:30px}.ka .mod-side{grid-column:2;text-align:left;display:flex;gap:12px;align-items:baseline}.ka .mod-state{margin:0}.ka .howto{grid-template-columns:1fr}.ka .zettel{padding:24px 16px 20px 38px}.ka .zettel::before{left:10px}}
+</style>
+</head>
+<body class="ka" data-ka-page="start">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="site-header"><div class="wrap header-inner">
+<a href="/" class="brand"><span class="brand-mark">s</span>school<span><small>by logge</small></span></a>
+<nav class="site-nav" aria-label="Hauptnavigation"><a href="/#faecher">Fächer entdecken</a><a href="/#unterricht">Für den Unterricht</a></nav>
+</div></header>
+<div data-ka-bar></div>
+
+<main class="wrap ka-main" id="main">
+
+<header class="ka-hero hub-hero">
+  <div>
+    <p class="ka-kicker">Mathematik · Klasse 10 · 180 Minuten</p>
+    <h1>Fit für die Klassenarbeit. <em>Punkt für Punkt.</em></h1>
+    <p class="ka-lead">Du arbeitest die Themen von deinem Zettel der Reihe nach durch: erst am Bild verstehen, dann selbst rechnen, zum Schluss eine Probearbeit unter Zeitdruck. Alle Aufgaben gehen ohne Taschenrechner auf.</p>
+    <div class="hub-actions">
+      <a class="ka-btn primary" id="resume" href="/klassenarbeit-parabeln/grundlagen/">Mit Teil 1 starten →</a>
+      <a href="#check">Erst den Kurz-Check machen</a>
+    </div>
+    <div class="hub-facts"><span><b>2 × 90</b>Minuten</span><span><b>6</b>Module</span><span><b>1</b>Probearbeit mit Note</span></div>
+  </div>
+  <aside class="zettel" aria-labelledby="zettel-title">
+    <h2 id="zettel-title">Themen</h2>
+    <ul>
+      <li data-mod="grundlagen"><a href="/klassenarbeit-parabeln/grundlagen/"><span class="box" aria-hidden="true"></span><span>Grundlagen <small>Binomische Formeln, Scheitelpunkt aufstellen</small></span></a></li>
+      <li data-mod="zeichnen"><a href="/klassenarbeit-parabeln/zeichnen/"><span class="box" aria-hidden="true"></span><span>Parabeln und Geraden zeichnen</span></a></li>
+      <li data-mod="gleichungen"><a href="/klassenarbeit-parabeln/gleichungen/"><span class="box" aria-hidden="true"></span><span>Quadratische Gleichungen lösen <small>Nullprodukt, Wurzel ziehen, Lösungsformel</small></span></a></li>
+      <li data-mod="schnittpunkte"><a href="/klassenarbeit-parabeln/schnittpunkte/"><span class="box" aria-hidden="true"></span><span>Schnittpunkte <small>zwei Parabeln, Parabel und Gerade, Parabel und x-Achse, jeweils mit y-Koordinate</small></span></a></li>
+      <li data-mod="modellieren"><a href="/klassenarbeit-parabeln/modellieren/"><span class="box" aria-hidden="true"></span><span>Mathematisch modellieren</span></a></li>
+    </ul>
+    <p class="zettel-note">Ein Haken erscheint, sobald du alle Aufgaben eines Moduls gelöst hast.</p>
+  </aside>
+</header>
+
+<section class="ka-section" id="plan">
+  <p class="ka-phase"><b>Dein Plan</b> · zwei Sitzungen zu je 90 Minuten</p>
+  <h2>180 Minuten, die sich lohnen</h2>
+  <p>Mach die beiden Teile am besten an zwei verschiedenen Tagen. Dein Fortschritt bleibt auf diesem Gerät gespeichert.</p>
+
+  <div class="plan-part" data-part="1">
+    <header><h3>Teil 1 · Werkzeuge</h3><span>5 + 35 + 20 + 30 = 90 Minuten</span></header>
+    <div class="plan-bar" aria-hidden="true"><i style="flex:5" data-bar="start"></i><i style="flex:35" data-bar="grundlagen"></i><i style="flex:20" data-bar="zeichnen"></i><i style="flex:30" data-bar="gleichungen"></i></div>
+    <div class="mods">
+      <a class="mod" href="/klassenarbeit-parabeln/grundlagen/" data-mod="grundlagen">
+        <span class="mod-no">1</span>
+        <div><h4>Binome und Scheitelpunktform</h4><p>Warum (a + b)² mehr ist als a² + b², und wie du aus jeder Parabelgleichung den Scheitel herausliest.</p>
+          <div class="mod-topics"><span>Binomische Formeln</span><span>Quadratische Ergänzung</span><span>Scheitelpunkt aufstellen</span></div></div>
+        <div class="mod-side"><span class="mod-min">35 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+      <a class="mod" href="/klassenarbeit-parabeln/zeichnen/" data-mod="zeichnen">
+        <span class="mod-no">2</span>
+        <div><h4>Parabeln und Geraden zeichnen</h4><p>Vom Scheitel aus in drei Schritten zur sauberen Parabel. Geraden mit Achsenabschnitt und Steigungsdreieck.</p>
+          <div class="mod-topics"><span>Wertetabelle</span><span>1 · 3 · 5-Regel</span><span>Steigungsdreieck</span></div></div>
+        <div class="mod-side"><span class="mod-min">20 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+      <a class="mod" href="/klassenarbeit-parabeln/gleichungen/" data-mod="gleichungen">
+        <span class="mod-no">3</span>
+        <div><h4>Quadratische Gleichungen lösen</h4><p>Drei Wege und die wichtigste Frage davor: Welcher Weg passt zu dieser Gleichung?</p>
+          <div class="mod-topics"><span>Wurzel ziehen</span><span>Nullprodukt</span><span>Lösungsformel</span></div></div>
+        <div class="mod-side"><span class="mod-min">30 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+    </div>
+  </div>
+
+  <p class="pause">Pause oder nächster Tag</p>
+
+  <div class="plan-part" data-part="2">
+    <header><h3>Teil 2 · Anwenden</h3><span>30 + 20 + 40 = 90 Minuten</span></header>
+    <div class="plan-bar" aria-hidden="true"><i style="flex:30" data-bar="schnittpunkte"></i><i style="flex:20" data-bar="modellieren"></i><i style="flex:40" data-bar="probearbeit"></i></div>
+    <div class="mods">
+      <a class="mod" href="/klassenarbeit-parabeln/schnittpunkte/" data-mod="schnittpunkte">
+        <span class="mod-no">4</span>
+        <div><h4>Schnittpunkte berechnen</h4><p>Gleichsetzen, x ausrechnen, y nicht vergessen. Für Parabel und x-Achse, Parabel und Gerade, zwei Parabeln.</p>
+          <div class="mod-topics"><span>Nullstellen</span><span>Parabel und Gerade</span><span>Zwei Parabeln</span></div></div>
+        <div class="mod-side"><span class="mod-min">30 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+      <a class="mod" href="/klassenarbeit-parabeln/modellieren/" data-mod="modellieren">
+        <span class="mod-no">5</span>
+        <div><h4>Mathematisch modellieren</h4><p>Brücken, Würfe und Tore: aus einer Situation eine Funktionsgleichung machen und die Frage beantworten.</p>
+          <div class="mod-topics"><span>Koordinatensystem wählen</span><span>Gleichung aufstellen</span><span>Antwortsatz</span></div></div>
+        <div class="mod-side"><span class="mod-min">20 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+      <a class="mod" href="/klassenarbeit-parabeln/probearbeit/" data-mod="probearbeit">
+        <span class="mod-no">6</span>
+        <div><h4>Probe-Klassenarbeit</h4><p>30 Minuten unter echten Bedingungen, danach Punkte, Note und für jede Aufgabe der vollständige Lösungsweg.</p>
+          <div class="mod-topics"><span>Mit Timer</span><span>Auswertung nach Themen</span><span>Lösungswege</span></div></div>
+        <div class="mod-side"><span class="mod-min">40 Minuten</span><span class="mod-state">noch offen</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="ka-section" id="so-gehts">
+  <p class="ka-phase"><b>Bevor du loslegst</b></p>
+  <h2>So holst du am meisten heraus</h2>
+  <ul class="howto">
+    <li><i>1</i><b>Heft und Stift bereitlegen</b>Rechne jede Aufgabe auf Papier. In der Arbeit schreibst du auch.</li>
+    <li><i>2</i><b>Taschenrechner weglegen</b>Alle Zahlen sind so gewählt, dass du im Kopf oder schriftlich ans Ziel kommst.</li>
+    <li><i>3</i><b>Erst rechnen, dann prüfen</b>Tipps und Lösungswege sind zugeklappt. Öffne sie erst, wenn du wirklich festhängst.</li>
+    <li><i>4</i><b>Am Bild überprüfen</b>Zieh an den Punkten und Reglern. Passt dein Ergebnis zu dem, was du siehst?</li>
+  </ul>
+  <h3>Welche Lösungsformel nutzt deine Klasse?</h3>
+  <p>Auf deinem Zettel steht „Lösungsformel“. Je nach Schule ist das die p-q-Formel oder die abc-Formel. Wähle deine aus, dann zeigen alle Module die passenden Rechenwege. Du kannst später jederzeit wechseln.</p>
+  <div data-ka-formel style="margin-top:10px"></div>
+  <div class="ka-formula" data-if-formel="pq">x₁,₂ = −<span class="frac"><span>p</span><span>2</span></span> ± <span class="sqrt"><span>(<span class="frac"><span>p</span><span>2</span></span>)² − q</span></span><small>für Gleichungen der Form x² + px + q = 0</small></div>
+  <div class="ka-formula" data-if-formel="abc">x₁,₂ = <span class="frac"><span>−b ± <span class="sqrt"><span>b² − 4ac</span></span></span><span>2a</span></span><small>für Gleichungen der Form ax² + bx + c = 0</small></div>
+</section>
+
+<section class="ka-section" id="check">
+  <p class="ka-phase"><b>5 Minuten</b> · Kurz-Check</p>
+  <h2>Wo stehst du gerade?</h2>
+  <p>Sechs schnelle Fragen, eine pro Thema. Rate nicht. Wenn du unsicher bist, weißt du schon, welches Modul dir am meisten bringt.</p>
+  <div class="ka-tasks two">
+    <article class="ka-task" data-task="c1" data-mod="grundlagen">
+      <p>Was ergibt <span class="m">(x − 4)²</span>?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="b">
+        <button data-value="a" data-fb="Das gemischte Glied −8x fehlt."><span class="m">x² − 16</span></button>
+        <button data-value="b" data-fb="Zweite binomische Formel: a² − 2ab + b²."><span class="m">x² − 8x + 16</span></button>
+        <button data-value="c" data-fb="In der Mitte steht 2 · x · 4, also 8x."><span class="m">x² − 4x + 16</span></button>
+        <button data-value="d" data-fb="Das Vorzeichen in der Mitte gehört zur Klammer: minus."><span class="m">x² + 8x + 16</span></button>
+      </div></div>
+    </article>
+    <article class="ka-task" data-task="c2" data-mod="grundlagen">
+      <p>Wo liegt der Scheitel von <span class="m">f(x) = (x + 2)² − 5</span>?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="a">
+        <button data-value="a" data-fb="Aus x + 2 wird die x-Koordinate −2."><span class="m">S(−2 | −5)</span></button>
+        <button data-value="b" data-fb="Vorsicht: In der Klammer dreht sich das Vorzeichen um."><span class="m">S(2 | −5)</span></button>
+        <button data-value="c" data-fb="Die Zahl hinter der Klammer wird direkt übernommen: −5."><span class="m">S(−2 | 5)</span></button>
+        <button data-value="d" data-fb="Hier stimmen beide Vorzeichen nicht."><span class="m">S(2 | 5)</span></button>
+      </div></div>
+    </article>
+    <article class="ka-task" data-task="c3" data-mod="zeichnen">
+      <p>Du zeichnest die Gerade <span class="m">y = 2x − 1</span>. Wie gehst du vor?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="c">
+        <button data-value="a" data-fb="Die −1 ist der y-Achsenabschnitt, nicht die Stelle auf der x-Achse.">Start bei (−1 | 0), dann 1 nach rechts und 2 nach oben</button>
+        <button data-value="b" data-fb="Die 2 ist die Steigung, die −1 der y-Achsenabschnitt.">Start bei (0 | 2), dann 1 nach rechts und 1 nach unten</button>
+        <button data-value="c" data-fb="y-Achsenabschnitt −1, Steigung 2.">Start bei (0 | −1), dann 1 nach rechts und 2 nach oben</button>
+      </div></div>
+    </article>
+    <article class="ka-task" data-task="c4" data-mod="gleichungen">
+      <p>Welche Lösungsmenge hat <span class="m">x² − 5x = 0</span>?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="b">
+        <button data-value="a" data-fb="Wer durch x teilt, verliert die Lösung x = 0."><span class="m">L = {5}</span></button>
+        <button data-value="b" data-fb="x ausklammern: x · (x − 5) = 0."><span class="m">L = {0; 5}</span></button>
+        <button data-value="c" data-fb="Aus x − 5 = 0 folgt x = +5."><span class="m">L = {−5; 0}</span></button>
+        <button data-value="d" data-fb="Wurzelziehen passt hier nicht, weil ein x ohne Quadrat vorkommt."><span class="m">L = {−5; 5}</span></button>
+      </div></div>
+    </article>
+    <article class="ka-task" data-task="c5" data-mod="schnittpunkte">
+      <p>Wo schneidet die Parabel <span class="m">f(x) = x²</span> die Gerade <span class="m">g(x) = 4</span>?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="d">
+        <button data-value="a" data-fb="Auch (−2)² ergibt 4. Es gibt einen zweiten Punkt.">nur in <span class="m">S(2 | 4)</span></button>
+        <button data-value="b" data-fb="Gesucht ist x mit x² = 4, nicht 4².">in <span class="m">S(4 | 16)</span></button>
+        <button data-value="c" data-fb="Die x-Werte stimmen. Die Punkte liegen aber auf der Höhe y = 4.">in <span class="m">S₁(−2 | 0)</span> und <span class="m">S₂(2 | 0)</span></button>
+        <button data-value="d" data-fb="x² = 4 hat zwei Lösungen, beide Punkte liegen auf der Höhe 4.">in <span class="m">S₁(−2 | 4)</span> und <span class="m">S₂(2 | 4)</span></button>
+      </div></div>
+    </article>
+    <article class="ka-task" data-task="c6" data-mod="modellieren">
+      <p>Das Tragseil einer Hängebrücke hängt zwischen zwei Pfeilern durch. Welche Gleichung kann dazu passen?</p>
+      <div class="ka-answers"><div class="ka-answer stack" data-type="choice" data-answer="a">
+        <button data-value="a" data-fb="Positiver Faktor vor x²: Die Parabel ist nach oben geöffnet, wie das durchhängende Seil."><span class="m">y = 0,01x²</span></button>
+        <button data-value="b" data-fb="Ein negativer Faktor öffnet die Parabel nach unten. Das wäre ein Brückenbogen."><span class="m">y = −0,01x²</span></button>
+        <button data-value="c" data-fb="Das ist eine Gerade, kein Seil, das durchhängt."><span class="m">y = 0,01x</span></button>
+      </div></div>
+    </article>
+  </div>
+  <div class="check-result ka-merke" id="check-result" role="status" hidden></div>
+</section>
+
+<div class="hub-foot">
+  <span>Dein Fortschritt wird nur in diesem Browser gespeichert. Es gibt kein Konto und keine Übertragung.</span>
+  <button type="button" class="ka-btn" id="reset">Fortschritt zurücksetzen</button>
+</div>
+</main>
+
+<footer class="site-footer"><div class="wrap footer-inner"><span>school.logge.top · Lernen in deinem Tempo.</span><span><a href="/">Alle Lerninhalte</a> · <a href="https://github.com/LoggeL/school">Quellcode</a></span></div></footer>
+
+<script src="/klassenarbeit-parabeln/assets/ka.js?v=2"></script>
+<script>
+(() => {
+  const mods = KA.MODULES.slice(1);
+  function paint() {
+    let next = null;
+    for (const mod of mods) {
+      const prog = KA.progress(mod.id);
+      const state = prog.done ? (mod.id === 'probearbeit' ? `Note ${prog.exam.grade} · ${prog.exam.percent} %` : 'geschafft ✓')
+        : prog.total && prog.solved ? `${prog.solved} von ${prog.total} Aufgaben` : prog.started ? 'angefangen' : 'noch offen';
+      document.querySelectorAll(`[data-mod="${mod.id}"]`).forEach(el => {
+        if (el.matches('.ka-task')) return;
+        el.classList.toggle('is-done', prog.done);
+        const label = el.querySelector('.mod-state');
+        if (label) label.textContent = state;
+      });
+      const bar = document.querySelector(`[data-bar="${mod.id}"]`);
+      if (bar) { bar.classList.toggle('is-done', prog.done); bar.classList.toggle('is-started', !prog.done && prog.started); }
+      if (!next && !prog.done) next = {mod, prog};
+    }
+    const resume = document.getElementById('resume');
+    if (!next) { resume.textContent = 'Alles geschafft. Probearbeit wiederholen →'; resume.href = mods[mods.length - 1].href; }
+    else if (next.mod.id !== 'grundlagen' || next.prog.started) { resume.textContent = `Weiter mit Modul ${mods.indexOf(next.mod) + 1}: ${next.mod.short} →`; resume.href = next.mod.href; }
+  }
+  document.addEventListener('ka:progress', paint);
+  document.addEventListener('DOMContentLoaded', paint);
+
+  // Kurz-Check: Themen merken, bei denen der erste Versuch danebenging.
+  const missed = new Set(), answered = new Set();
+  const tasks = [...document.querySelectorAll('#check .ka-task')];
+  function summary() {
+    const box = document.getElementById('check-result');
+    if (answered.size < tasks.length) { box.hidden = true; return; }
+    box.hidden = false;
+    box.textContent = '';
+    const title = document.createElement('b');
+    title.textContent = 'Dein Ergebnis';
+    box.append(title);
+    const weak = mods.filter(mod => missed.has(mod.id));
+    if (!weak.length) { box.append('Alle sechs auf Anhieb richtig. Arbeite die Module trotzdem zügig durch, die Aufgaben dort gehen deutlich tiefer.'); return; }
+    box.append('Nimm dir für diese Module besonders Zeit: ');
+    weak.forEach((mod, i) => { const a = document.createElement('a'); a.href = mod.href; a.textContent = mod.title; box.append(i ? ', ' : '', a); });
+    box.append('.');
+  }
+  for (const task of tasks) {
+    task.addEventListener('ka:missed', () => { if (!answered.has(task.dataset.task)) missed.add(task.dataset.mod); answered.add(task.dataset.task); summary(); });
+    task.addEventListener('ka:solved', () => { answered.add(task.dataset.task); summary(); });
+  }
+  document.getElementById('reset').addEventListener('click', () => { if (confirm('Wirklich den gesamten Fortschritt dieser Lerneinheit löschen?')) KA.reset(); });
+})();
+</script>
+</body>
+</html>
